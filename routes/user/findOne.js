@@ -9,35 +9,23 @@ const fault = require('../../utilities/Errors');
 require('../../models/User');
 const User = require('../../models/User');
 
-// @desc    Login User / Returning JWT Token
-// @access  Public
+
 router.get('/', (req, res) => {
     const id = req.query.id
     //const Autentification = req.s.Autentification // need condition with token
     User.findById(id, function (err, user) {
         if (!user) {
-            return res.status(404).json(fault(257)); //if (err) throw err;
+            return res.status(404).json({
+                res_no: 101,
+                res_message: fault(101).message
+                    //"101": "User does not exist",
+            });
         }
         else {
-            return res.json(user); //return user.email
+            return res.json(user);
         }
     });
 });
 
 
 module.exports = router;
-
-//   const password = req.body.password;
-
-  // Find user by email
-//   User.find({firstname}).then(User => {//findById
-//     // Check for user
-//     if (!User) {
-//       return res.status(404).json(fault(257)); //if (err) throw err;
-//     }
-//     else{
-//       return res.json(User); //return user.email
-//     }
-
-//   })
-// });

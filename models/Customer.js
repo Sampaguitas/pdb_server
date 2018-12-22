@@ -32,10 +32,34 @@ const CustomerSchema = new Schema({
     email: {
         type: String
     },
+    invoiceName: {
+        type: String,
+    },
+    invoiceAddress: {
+        type: String
+    },
+    invoiceCity: {
+        type: String,
+    },
+    invoiceZip: {
+        type: String
+    },
+    invoiceCountry: {
+        type: String
+    },
+    invoicePhone: {
+        type: String
+    },
+    invoiceFax: {
+        type: String
+    },
+    invoiceEmail: {
+        type: String
+    },
     vat_no: {
         type: String
     },
-    date: {
+    createDate: {
         type: Date,
         default: Date.now
     }

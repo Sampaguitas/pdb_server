@@ -12,8 +12,11 @@ router.get('/', (req, res) => {
 
     Customer.find(data, function (err, customer) {
         if (!customer) {
-            return res.status(400).json({ error: 260, message: fault(260).message });
-            // "260": "customer does not exist"
+            return res.status(400).json({ 
+                res_no: 204,
+                res_message: fault(204).message
+                // "204": "No customer match",
+            });
         }
         else {
             return res.json(customer);

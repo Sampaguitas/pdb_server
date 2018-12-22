@@ -8,8 +8,11 @@ router.get('/', (req, res) => {
     const id = req.query.id
     Customer.findById(id, function (err, customer) {
         if (!customer) {
-            return res.status(400).json({ error: 260, message: fault(260).message });
-            // "260": "customer does not exist"
+            return res.status(400).json({ 
+                res_no: 201,
+                res_message: fault(201).message
+                // "201": "Customer does not exist",
+            });
         }
         else {
             return res.json(customer);

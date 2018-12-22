@@ -8,8 +8,11 @@ router.get('/', (req, res) => {
     const id = req.query.id
     Opco.findById(id, function (err, opco) {
         if (!opco) {
-            return res.status(400).json({ error: 260, message: fault(260).message });
-            // "260": "opco does not exist"
+            return res.status(400).json({ 
+                res_no: 301,
+                res_message: fault(301).message
+                //"301": "OPCO does not exist",
+            });
         }
         else {
             return res.json(opco);

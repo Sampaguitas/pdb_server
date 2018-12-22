@@ -20,7 +20,11 @@ router.post('/', (req, res) => {
     User.findOne({ email }, { password:1 , firstname:1, lastname:1, email:1}).then(user => {
         // Check for user
         if (!user) {
-            return res.status(404).json(fault(257));
+            return res.status(404).json({
+                res_no: 101,
+                res_message: fault(101).message
+                //"101": "User does not exist",
+            });
         }
         
         // Check Password
@@ -46,7 +50,11 @@ router.post('/', (req, res) => {
                     }
                 );
             } else {
-                return res.status(400).json(fault(258));
+                return res.status(400).json({
+                    res_no: 105,
+                    res_message: fault(105).message
+                    //"105": "Password does not match",
+                });
             }
         });
     });

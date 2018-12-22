@@ -12,8 +12,11 @@ router.post('/', (req, res) => {
 
     Customer.findOne({ code: req.body.code }).then(customer => {
         if (customer) {
-            return res.status(400).json({ error: 261, message: fault(261).message });
-            //261: "customer Already exist"
+            return res.status(400).json({
+                res_no: 200,
+                res_message: fault(200).message
+                //"200": "Customer already exists",
+                });
         } else {
 
             const newCustomer = new Customer({
@@ -26,6 +29,14 @@ router.post('/', (req, res) => {
                 phone: req.body.phone,
                 fax: req.body.fax,
                 email: req.body.email,
+                invoiceName: req.body.invoiceName,
+                invoiceAddress: req.body.invoiceAddress,
+                invoiceCity: req.body.invoiceCity,
+                invoiceZip: req.body.invoiceZip,
+                invoiceCountry: req.body.invoiceCountry,
+                invoicePhone: req.bodyinvoicePhone,
+                invoiceFax: req.body.invoiceFax,
+                invoiceEmail: req.body.invoiceEmail,
                 vat_no: req.body.vat_no
             });
 

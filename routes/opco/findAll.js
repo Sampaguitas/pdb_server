@@ -12,8 +12,11 @@ router.get('/', (req, res) => {
 
     Opco.find(data, function (err, opco) {
         if (!opco) {
-            return res.status(400).json({ error: 260, message: fault(260).message });
-            // "260": "opco does not exist"
+            return res.status(400).json({ 
+                res_no: 304,
+                res_message: fault(304).message
+                //"304": "No OPCO match",
+            });
         }
         else {
             return res.json(opco);

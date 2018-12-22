@@ -15,7 +15,11 @@ router.post('/', (req, res) => {
 
     User.findOne({ email: req.body.email }).then(user => {
         if (user) {
-            return res.status(400).json({ email: "Email already exists" });
+            return res.status(400).json({
+                res_no: 100,
+                res_message: fault(100).message
+                //"100": "User already exists"
+                });
         } else {
             const newUser = new User({
                 firstname: req.body.firstname,
@@ -26,12 +30,18 @@ router.post('/', (req, res) => {
 
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(newUser.password, salt, (err, hash) => {
-                    if (err) throw fault(250);
+                    if (err){
+                        return res.status(400).json({
+                            res_no: 106,
+                            res_message: fault(106).message
+                            //"106": "Error generating hashed token"
+                        });
+                    } 
                     newUser.password = hash;
                     newUser
                         .save()
-                        .then(user => res.json(user))       //
-                        .catch(err => res.json(err));    //.cath(err => jsonError(err))
+                        .then(user => res.json(user))      
+                        .catch(err => res.json(err));   
                 });
             });
         }

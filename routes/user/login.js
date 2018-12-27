@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
     const password = req.body.password;
 
     // Find user by email
-    User.findOne({ email }, { password:1 , firstname:1, lastname:1, email:1}).then(user => {
+    User.findOne({ email }, { password:1 , firstname:1, lastname:1, phone:1, email:1}).then(user => {
         // Check for user
         if (!user) {
             return res.status(404).json({
@@ -31,7 +31,7 @@ router.post('/', (req, res) => {
         bcrypt.compare(password, user.password).then(isMatch => {
             if (isMatch) {
                 // User Matched                              
-                const payload = { id: user.id, firstname: user.firstname, lastname: user.lastname, email: user.email }; // Create JWT Payload
+                const payload = { id: user.id, firstname: user.firstname, lastname: user.lastname, phone: user.phone, email: user.email }; // Create JWT Payload
 
                 // Sign Token
                 jwt.sign(
@@ -45,6 +45,7 @@ router.post('/', (req, res) => {
                             id: payload.id,
                             firstname: payload.firstname,
                             lastname: payload.lastname,
+                            phone: payload.phone,
                             email: payload.email
                         });
                     }

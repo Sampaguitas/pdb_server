@@ -34,7 +34,7 @@ mongoose
 // Protected Routes
 //customer
 const customerCreate = require('./routes/customer/create');
-app.get('/customer/findAll', passport.authenticate('jwt', { session: false }), customerFindAll);
+app.get('/customer/create', passport.authenticate('jwt', { session: false }), customerCreate);
 const customerFindAll = require('./routes/customer/findAll');
 app.get('/customer/findAll', passport.authenticate('jwt', { session: false }), customerFindAll);
 const customerFindOne = require('./routes/customer/findOne');
@@ -45,7 +45,7 @@ const customerUpdate = require('./routes/customer/update');
 app.get('/customer/update', passport.authenticate('jwt', { session: false }), customerUpdate);
 //opco
 const opcoCreate = require('./routes/opco/create');
-app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
+app.get('/opco/create', passport.authenticate('jwt', { session: false }), opcoCreate);
 const opcoFindAll = require('./routes/opco/findAll');
 app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
 const opcoFindOne = require('./routes/opco/findOne');
@@ -56,7 +56,7 @@ const opcoUpdate = require('./routes/opco/update');
 app.get('/opco/update', passport.authenticate('jwt', { session: false }), opcoUpdate);
 //role
 const roleCreate = require('./routes/role/create');
-app.get('/role/findAll', passport.authenticate('jwt', { session: false }), roleFindAll);
+app.get('/role/create', passport.authenticate('jwt', { session: false }), roleCreate);
 const roleFindAll = require('./routes/role/findAll');
 app.get('/role/findAll', passport.authenticate('jwt', { session: false }), roleFindAll);
 const roleFindOne = require('./routes/role/findOne');

@@ -20,7 +20,12 @@ const Errors = {
     "302": "OPCO has been updated",
     "303": "OPCO has been deleted",
     "304": "No OPCO match",
-
+    //4**: "Roles Errors",
+    "400": "Role already exists",
+    "401": "Role does not exist",
+    "402": "Role has been updated",
+    "403": "Role has been deleted",
+    "404": "No Role match",
 
 }
 

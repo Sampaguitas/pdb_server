@@ -22,11 +22,12 @@ router.post('/', (req, res) => {
                 });
         } else {
             const newUser = new User({
-                firstname: req.body.firstname,
-                lastname: req.body.lastname,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
                 phone: req.body.phone,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                isAdmin:req.body.isAdmin
             });
 
             bcrypt.genSalt(10, (err, salt) => {

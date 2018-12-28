@@ -1,24 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User');
+const Role = require('../../models/Role');
 const fault = require('../../utilities/Errors')
 
 
 router.delete('/', (req, res) => {
     const id = req.query.id
-    User.findByIdAndRemove(id, function (err, user) {
-        if (!user) {
+    Role.findByIdAndRemove(id, function (err, role) {
+        if (!role) {
             return res.status(400).json({
-                res_no: 101,
-                res_message: fault(101).message
-                    //"101": "User does not exist",
+                res_no: 401,
+                res_message: fault(401).message
+                //"401": "Role does not exist",
             });
         }
         else {
             return res.status(200).json({
                 res_no: 103,
                 res_message: fault(103).message,
-                //"105": "User has been deleted",
+                //"403": "Role has been deleted",
             });
         }
     });

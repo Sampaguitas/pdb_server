@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const UserSchema = new Schema({
-    firstname: {
+    firstName: {
         type: String,
         required: true
     },
-    lastname: {
+    lastName: {
         type: String,
         required: true
     },
@@ -23,6 +23,10 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         select: false
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     },
     date: {
         type: Date,

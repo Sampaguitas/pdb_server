@@ -9,7 +9,7 @@ const ProjectSchema = new Schema({
     },
     customer: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'customer'
+        ref: 'customers'
     },
     date: {
         type: Date,

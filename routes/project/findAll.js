@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    Project.find(data).populate("customer")
+    Project.find(data).populate("customer", "name code")
     .exec(function (err, project) {
         console.log(err);
         console.log(project);

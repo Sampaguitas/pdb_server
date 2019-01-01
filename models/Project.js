@@ -11,6 +11,34 @@ const ProjectSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'customers'
     },
+    opco: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'opcos'
+    },
+    users: [{
+        user: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: 'users'
+        },
+        roles: {
+            expediter: {
+                type: Boolean,
+                default: false
+            },
+            inspector: {
+                type: Boolean,
+                default: false
+            },
+            shipper: {
+                type: Boolean,
+                default: false
+            },
+            warehouse: {
+                type: Boolean,
+                default: false
+            }
+        }
+    }],
     date: {
         type: Date,
         default: Date.now

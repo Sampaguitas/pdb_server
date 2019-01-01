@@ -26,6 +26,12 @@ const Errors = {
     "402": "Role has been updated",
     "403": "Role has been deleted",
     "404": "No Role match",
+    //5**: "Project Errors",
+    "500": "Project already exists",
+    "501": "Project does not exist",
+    "502": "Project has been updated",
+    "503": "Project has been deleted",
+    "504": "No Project match",
 
 }
 

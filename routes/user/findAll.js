@@ -7,8 +7,20 @@ const keys = require('../../config/keys');
 
 router.get('/', (req, res) => {
     var data = {};
+    // var roles = [
+    //     'admin',
+    //     'superUser',
+    //     'expediter',
+    //     'inspector',
+    //     'shipper',
+    //     'warehouse'
+    // ]
     Object.keys(req.body).forEach(function (k) {
-        data[k] = req.body[k];
+        // if (roles.indexOf(k) > -1) {
+        //     data['roles.' + k] = req.body[k];
+        // } else {
+            data[k] = req.body[k];
+        // }   
     });
 
 User.find(data, function (err, user) {

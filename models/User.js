@@ -24,7 +24,7 @@ const UserSchema = new Schema({
         required: true,
         select: false
     },
-    isAdmin: {
+    isAdmin:{
         type: Boolean,
         default: false
     },
@@ -38,3 +38,30 @@ const UserSchema = new Schema({
 
 //module.exports = mongoose.model('users', UserSchema);
 module.exports= User = mongoose.model('users', UserSchema);
+
+
+// roles: {
+//     admin: {
+//         type: Boolean,
+//             default: false
+//     },
+//     superUser: {
+//         type: Boolean,
+//             default: false
+//     },
+//     expediter: {
+//         type: Boolean,
+//             default: false
+//     },
+//     inspector: {
+//         type: Boolean,
+//             default: false
+//     },
+//     shipper: {
+//         type: Boolean,
+//             default: false
+//     },
+//     warehouse: {
+//         type: Boolean,
+//             default: false
+//     }

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Role = require('../../models/Role');
+const Currency = require('../../models/Currency');
 const fault = require('../../utilities/Errors')
 const keys = require('../../config/keys');
 
@@ -11,16 +11,16 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    Role.find(data, function (err, Role) {
-        if (!Role) {
+    Currency.find(data, function (err, currency) {
+        if (!currency) {
             return res.status(400).json({
                 res_no: 404,
                 res_message: fault(404).message
-                //"404": "No Role match",
+                //"404": "No Currency match",
             });
         }
         else {
-            return res.json(Role);
+            return res.json(currency);
         }
     });
 });

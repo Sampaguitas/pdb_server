@@ -1,26 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const fault = require('../../utilities/Errors')
-const Role = require('../../models/Role');
+const Currency = require('../../models/Currency');
 
 router.post('/', (req, res) => {
 
-    Role.findOne({ name: req.body.name }).then(role => {
-        if (role) {
+    Currency.findOne({ name: req.body.name }).then(currency => {
+        if (currency) {
             return res.status(400).json({
                 res_no: 300,
                 res_message: fault(300).message
-                //"400": "Role already exists",
+                //"400": "Currency already exists",
             });
         } else {
 
-            const newRole = new Role({
+            const newCurrency = new Currency({
                 name: req.body.name
             });
 
-            newRole
+            newCurrency
                 .save()
-                .then(role => res.json(role))
+                .then(currency => res.json(currency))
                 .catch(err => res.json(err));
         }
     });

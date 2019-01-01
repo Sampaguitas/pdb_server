@@ -75,8 +75,7 @@ app.get('/user/delete', passport.authenticate('jwt', { session: false }), userDe
 const userUpdate = require('./routes/user/update');
 app.get('/user/update', passport.authenticate('jwt', { session: false }), userUpdate);
 
-// const projectCreate = require('./routes/project/create');
-// app.post('/project/create', passport.authenticate('jwt', { session: false }), projectCreate);
+
 
 
 // Listen on port

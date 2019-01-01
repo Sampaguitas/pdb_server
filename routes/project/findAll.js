@@ -12,6 +12,8 @@ router.get('/', (req, res) => {
 
     Project.find(data).populate("customer")
     .exec(function (err, project) {
+        console.log(err);
+        console.log(project);
         if (!project) {
             return res.status(400).json({
                 res_no: 504,

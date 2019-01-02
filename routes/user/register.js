@@ -23,7 +23,7 @@ router.post('/', (req, res) => {
             if (user) {
                 return res.status(400).json({
                     res_no: 100,
-                    res_message: fault(100).message
+                    message: fault(100).message
                     //"100": "User already exists"
                 });
             } else {
@@ -41,7 +41,7 @@ router.post('/', (req, res) => {
                         if (err) {
                             return res.status(400).json({
                                 res_no: 106,
-                                res_message: fault(106).message
+                                message: fault(106).message
                                 //"106": "Error generating hashed token"
                             });
                         }

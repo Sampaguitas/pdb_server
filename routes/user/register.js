@@ -15,7 +15,7 @@ router.post('/', (req, res) => {
     if (req.body.password !== req.body.confirmPassword) {
         return res.status(400).json({
             res_no: 105,
-            res_message: fault(105).message
+            message: fault(105).message
             //"105": "Password does not match", 
         });
     } else {

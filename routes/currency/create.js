@@ -15,6 +15,7 @@ router.post('/', (req, res) => {
         } else {
 
             const newCurrency = new Currency({
+                code: req.body.code,
                 name: req.body.name
             });
 

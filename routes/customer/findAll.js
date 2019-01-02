@@ -10,7 +10,8 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    Customer.find(data, function (err, customer) {
+    Customer.find(data).populate("projects")
+    .exec( function (err, customer) {
         if (!customer) {
             return res.status(400).json({ 
                 message: fault(204).message

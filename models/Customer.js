@@ -65,5 +65,12 @@ const CustomerSchema = new Schema({
     }
 });
 
+CustomerSchema.virtual("projects", {
+    ref: "projects",
+    localField: "_id",
+    foreignField: "customer",
+    justOne: false
+})
+
 module.exports = mongoose.model('customers', CustomerSchema);
 //module.exports= User = mongoose.model('users', UserSchema);

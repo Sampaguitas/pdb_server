@@ -14,7 +14,6 @@ const User = require('../../models/User');
 router.post('/', (req, res) => {
     if (req.body.password !== req.body.confirmPassword) {
         return res.status(400).json({
-            res_no: 105,
             message: fault(105).message
             //"105": "Password does not match", 
         });
@@ -22,7 +21,6 @@ router.post('/', (req, res) => {
         User.findOne({ email: req.body.email }).then(user => {
             if (user) {
                 return res.status(400).json({
-                    res_no: 100,
                     message: fault(100).message
                     //"100": "User already exists"
                 });
@@ -40,7 +38,6 @@ router.post('/', (req, res) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
                         if (err) {
                             return res.status(400).json({
-                                res_no: 106,
                                 message: fault(106).message
                                 //"106": "Error generating hashed token"
                             });

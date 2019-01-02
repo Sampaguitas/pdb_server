@@ -16,8 +16,7 @@ router.get('/', (req, res) => {
     User.findById(id, function (err, user) {
         if (!user) {
             return res.status(404).json({
-                res_no: 101,
-                res_message: fault(101).message
+                message: fault(101).message
                     //"101": "User does not exist",
             });
         }

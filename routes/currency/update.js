@@ -14,15 +14,13 @@ router.put('/', (req, res) => {
     Currency.findByIdAndUpdate(id, { $set: data }, function (err, currency) {
         if (!currency) {
             return res.status(400).json({
-                res_no: 401,
-                res_message: fault(401).message
+                message: fault(401).message
                 //"401": "currency does not exist",
             });
         }
         else {
             return res.status(200).json({
-                res_no: 102,
-                res_message: fault(102).message
+                message: fault(102).message
                 //"402": "currency has been updated",
             });
         }

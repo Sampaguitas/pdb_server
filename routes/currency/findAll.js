@@ -14,8 +14,7 @@ router.get('/', (req, res) => {
     Currency.find(data, function (err, currency) {
         if (!currency) {
             return res.status(400).json({
-                res_no: 404,
-                res_message: fault(404).message
+                message: fault(404).message
                 //"404": "No Currency match",
             });
         }

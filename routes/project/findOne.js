@@ -10,8 +10,7 @@ router.get('/', (req, res) => {
         .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({
-                    res_no: 501,
-                    res_message: fault(501).message
+                    message: fault(501).message
                     // "501": "Project does not exist",
                 });
             }

@@ -9,15 +9,13 @@ router.delete('/', (req, res) => {
     User.findByIdAndRemove(id, function (err, user) {
         if (!user) {
             return res.status(400).json({
-                res_no: 101,
-                res_message: fault(101).message
+                message: fault(101).message
                     //"101": "User does not exist",
             });
         }
         else {
             return res.status(200).json({
-                res_no: 103,
-                res_message: fault(103).message,
+                message: fault(103).message,
                 //"105": "User has been deleted",
             });
         }

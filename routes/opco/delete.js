@@ -9,15 +9,13 @@ router.delete('/', (req, res) => {
     Opco.findByIdAndRemove(id, function (err, opco) {
         if (!opco) {
             return res.status(400).json({
-                res_no: 301,
-                res_message: fault(301).message
+                message: fault(301).message
                 //"301": "OPCO does not exist",
             });
         }
         else {
             return res.status(200).json({
-                res_no: 303,
-                res_message: fault(303).message
+                message: fault(303).message
                 //"303": "OPCO has been deleted",
             });
         }

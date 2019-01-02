@@ -16,8 +16,7 @@ router.get('/', (req, res) => {
         console.log(project);
         if (!project) {
             return res.status(400).json({
-                res_no: 504,
-                res_message: fault(504).message
+                message: fault(504).message
                 //"504": "No Project match",
             });
         }

@@ -8,8 +8,7 @@ router.post('/', (req, res) => {
     Opco.findOne({ name: req.body.name }).then(opco => {
         if (opco) {
             return res.status(400).json({ 
-                res_no: 300,
-                res_message: fault(300).message
+                message: fault(300).message
                     //"300": "OPCO already exists",
             });
         } else {

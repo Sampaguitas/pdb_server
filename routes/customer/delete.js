@@ -9,15 +9,13 @@ router.delete('/', (req, res) => {
     Customer.findByIdAndRemove(id, function (err, customer) {
         if (!customer) {
             return res.status(400).json({
-                res_no: 201,
-                res_message: fault(201).message
+                message: fault(201).message
                 // "201": "Customer does not exist",
             });
         }
         else {
             return res.status(200).json({
-                res_no: 203,
-                res_message: fault(203).message
+                message: fault(203).message
                 // "203": "Customer has been deleted",
             });
         }

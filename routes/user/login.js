@@ -21,8 +21,7 @@ router.post('/', (req, res) => {
         // Check for user
         if (!user) {
             return res.status(404).json({
-                res_no: 101,
-                res_message: fault(101).message
+                message: fault(101).message
                 //"101": "User does not exist",
             });
         }
@@ -53,8 +52,7 @@ router.post('/', (req, res) => {
                 );
             } else {
                 return res.status(400).json({
-                    res_no: 105,
-                    res_message: fault(105).message
+                    message: fault(105).message
                     //"105": "Password does not match",
                 });
             }

@@ -13,8 +13,7 @@ router.post('/', (req, res) => {
     Customer.findOne({ code: req.body.code }).then(customer => {
         if (customer) {
             return res.status(400).json({
-                res_no: 200,
-                res_message: fault(200).message
+                message: fault(200).message
                 //"200": "Customer already exists",
                 });
         } else {

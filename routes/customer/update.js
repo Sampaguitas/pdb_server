@@ -14,15 +14,13 @@ router.put('/', (req, res) => {
     Customer.findByIdAndUpdate(id, { $set: data }, function (err, customer) {
         if (!customer) {
             return res.status(400).json({
-                res_no: 201,
-                res_message: fault(201).message
+                message: fault(201).message
                 // "201": "Customer does not exist",
             });
         }
         else {
             return res.status(200).json({
-                res_no: 202,
-                res_message: fault(202).message
+                message: fault(202).message
                 //"202": "Customer has been updated",
             });
         }

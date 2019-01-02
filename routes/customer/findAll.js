@@ -13,8 +13,7 @@ router.get('/', (req, res) => {
     Customer.find(data, function (err, customer) {
         if (!customer) {
             return res.status(400).json({ 
-                res_no: 204,
-                res_message: fault(204).message
+                message: fault(204).message
                 // "204": "No customer match",
             });
         }

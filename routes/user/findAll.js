@@ -26,8 +26,7 @@ router.get('/', (req, res) => {
 User.find(data, function (err, user) {
         if (!user) {
             return res.status(400).json({
-                res_no: 104,
-                res_message: fault(104).message
+                message: fault(104).message
                     //"104": "No user match",
                 });
         }

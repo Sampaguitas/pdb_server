@@ -5,7 +5,7 @@ const Currency = require('../../models/Currency');
 
 router.post('/', (req, res) => {
 
-    Currency.findOne({ name: req.body.name }).then(currency => {
+    Currency.findOne({ code: req.body.code }).then(currency => {
         if (currency) {
             return res.status(400).json({
                 res_no: 300,

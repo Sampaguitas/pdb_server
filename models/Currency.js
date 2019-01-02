@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const CurrencySchema = new Schema({
+    code:{
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true

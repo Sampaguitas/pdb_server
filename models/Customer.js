@@ -70,7 +70,9 @@ CustomerSchema.virtual("projects", {
     localField: "_id",
     foreignField: "customer",
     justOne: false
-})
+});
+
+CustomerSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('customers', CustomerSchema);
 //module.exports= User = mongoose.model('users', UserSchema);

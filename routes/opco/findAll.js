@@ -10,7 +10,8 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    Opco.find(data, function (err, opco) {
+    Opco.find(data).populate("projects")
+    .exec( function (err, opco) {
         if (!opco) {
             return res.status(400).json({ 
                 message: fault(304).message

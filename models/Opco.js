@@ -34,5 +34,14 @@ const OpcoSchema = new Schema({
     }
 });
 
+OpcoSchema.virtual("projects", {
+    ref: "projects",
+    localField: "_id",
+    foreignField: "opco",
+    justOne: false
+});
+
+OpcoSchema.set('toJSON', { virtuals: true });
+
 module.exports = mongoose.model('opcos', OpcoSchema);
 //module.exports= User = mongoose.model('users', UserSchema);

@@ -6,7 +6,8 @@ const fault = require('../../utilities/Errors')
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    Customer.findById(id, function (err, customer) {
+    Customer.findById(id).populate("projects")
+    .exec( function (err, customer) {
         if (!customer) {
             return res.status(400).json({ 
                 message: fault(201).message

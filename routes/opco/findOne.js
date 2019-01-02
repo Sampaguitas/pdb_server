@@ -6,7 +6,8 @@ const fault = require('../../utilities/Errors')
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    Opco.findById(id, function (err, opco) {
+    Opco.findById(id).populate("projects")
+    .exec( function (err, opco) {
         if (!opco) {
             return res.status(400).json({ 
                 message: fault(301).message

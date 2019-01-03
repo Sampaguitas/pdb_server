@@ -15,6 +15,10 @@ const ProjectSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'opcos'
     },
+    currency: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'currencies'       
+    },
     users: [{
         user: {
             type: mongoose.SchemaTypes.ObjectId,

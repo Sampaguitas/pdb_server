@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
                 invoiceCity: req.body.invoiceCity,
                 invoiceZip: req.body.invoiceZip,
                 invoiceCountry: req.body.invoiceCountry,
-                invoicePhone: req.bodyinvoicePhone,
+                invoicePhone: req.body.invoicePhone,
                 invoiceFax: req.body.invoiceFax,
                 invoiceEmail: req.body.invoiceEmail,
                 vat_no: req.body.vat_no

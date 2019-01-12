@@ -28,6 +28,10 @@ const OpcoSchema = new Schema({
     email: {
         type: String
     },
+    projectAdmin: [{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'users'
+    }],
     date: {
         type: Date,
         default: Date.now

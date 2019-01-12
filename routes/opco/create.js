@@ -21,7 +21,8 @@ router.post('/', (req, res) => {
                 country: req.body.country,
                 phone: req.body.phone,
                 fax: req.body.fax,
-                email: req.body.email
+                email: req.body.email,
+                projectAdmin: req.body.projectAdmin
             });
 
             newOpco

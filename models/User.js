@@ -38,6 +38,8 @@ UserSchema.virtual('name').get(function () {
     return this.firstName + ' ' + this.lastName
 })
 
+UserSchema.set('toJSON', { virtuals: true });
+
 
 //module.exports = mongoose.model('users', UserSchema);
 module.exports= User = mongoose.model('users', UserSchema);

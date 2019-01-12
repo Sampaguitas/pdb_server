@@ -34,6 +34,9 @@ const UserSchema = new Schema({
     }
 });
 
+UserSchema.virtual('name').get(function () {
+    return this.firstName + ' ' + this.lastName
+})
 
 
 //module.exports = mongoose.model('users', UserSchema);

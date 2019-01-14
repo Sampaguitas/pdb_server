@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
                 phone: req.body.phone,
                 fax: req.body.fax,
                 email: req.body.email,
-                projectAdmin: req.body.projectAdmin
+                projectAdmins: req.body.projectAdmins// ["_id1", "_id2"]
             });
 
             newOpco

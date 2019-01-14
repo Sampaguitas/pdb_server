@@ -28,7 +28,7 @@ const OpcoSchema = new Schema({
     email: {
         type: String
     },
-    projectAdmin: [{
+    projectAdmins: [{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'users'
     }],

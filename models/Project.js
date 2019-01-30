@@ -43,6 +43,18 @@ const ProjectSchema = new Schema({
             }
         }
     }],
+    projectInspection:{
+        type: Boolean,
+        default: true
+    },
+    projectShipping:{
+        type: Boolean,
+        default: true
+    },
+    projectWarehouse:{
+        type: Boolean,
+        default: true
+    },
     date: {
         type: Date,
         default: Date.now

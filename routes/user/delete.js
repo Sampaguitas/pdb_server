@@ -5,7 +5,11 @@ const fault = require('../../utilities/Errors')
 
 
 router.delete('/', (req, res) => {
-    const id = req.query.id
+    const id = req.query.id;
+    // validate role
+    if(!req.user.isAdmin){
+
+    }
     User.findByIdAndRemove(id, function (err, user) {
         if (!user) {
             return res.status(400).json({

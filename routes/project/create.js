@@ -12,11 +12,14 @@ router.post('/', (req, res) => {
                 //"500": "Project already exists",
             });
         } else {
-
+            
             const newProject = new Project({
                 name: req.body.name,
                 customer: req.body.customer,
-                opco: req.body.opco
+                opco: req.body.opco,
+                projectInspection: req.body.projectInspection,
+                projectShipping: req.body.projectShipping,
+                projectWarehouse: req.body.projectWarehouse
             });
 
             newProject

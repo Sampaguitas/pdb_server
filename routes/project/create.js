@@ -17,6 +17,7 @@ router.post('/', (req, res) => {
                 name: req.body.name,
                 customer: req.body.customer,
                 opco: req.body.opco,
+                currency: req.body.currency,
                 projectInspection: req.body.projectInspection,
                 projectShipping: req.body.projectShipping,
                 projectWarehouse: req.body.projectWarehouse

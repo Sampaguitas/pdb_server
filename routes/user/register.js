@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
                     firstName: req.body.firstName,
                     lastName: req.body.lastName,
                     phone: req.body.phone,
-                    email: req.body.email,
+                    email: req.body.email.toLowerCase(),
                     password: req.body.password,
                     isAdmin: req.body.isAdmin
                 });

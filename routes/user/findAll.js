@@ -7,7 +7,7 @@ const keys = require('../../config/keys');
 
 router.get('/', (req, res) => {
     var data = {};
-    console.log(JSON.stringify(req.user, null, 4));
+    // console.log(JSON.stringify(req.user, null, 4));
     // var roles = [
     //     'admin',
     //     'superUser',

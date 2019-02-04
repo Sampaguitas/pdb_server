@@ -12,8 +12,6 @@ router.get('/', (req, res) => {
 
     Project.find(data).populate("customer", "name code").populate("opco", "name").populate("user", "name")
     .exec(function (err, project) {
-        console.log(err);
-        console.log(project);
         if (!project) {
             return res.status(400).json({
                 message: fault(504).message

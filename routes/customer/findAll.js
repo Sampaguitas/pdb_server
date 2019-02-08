@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Customer = require('../../models/Customer');
-const fault = require('../../utilities/Errors')
-
+const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     var data = {};
@@ -23,6 +22,5 @@ router.get('/', (req, res) => {
         }
     });
 });
-
 
 module.exports = router;

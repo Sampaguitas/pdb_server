@@ -1,27 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const Currency = require('../../models/Currency');
+const Country = require('../../models/Country');
 const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
-    Currency.findOne({ code: req.body.code }).then(currency => {
-        if (currency) {
+
+    Country.findOne({ code: req.body.code }).then(country => {
+        if (country) {
             return res.status(400).json({
-                message: fault(400).message
-                //"400": "Currency already exists",
+                message: fault(600).message
+                //"600": "Country already exists",
             });
         } else {
 
-            const newCurrency = new Currency({
+            const newCountry = new Country({
                 code: req.body.code,
                 name: req.body.name
             });
 
-            newCurrency
+            newCountry
                 .save()
-                .then(currency => res.json(currency))
+                .then(country => res.json(country))
                 .catch(err => res.json(err));
         }
     });
 });
+
 module.exports = router;

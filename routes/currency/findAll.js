@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Currency = require('../../models/Currency');
-const fault = require('../../utilities/Errors')
-const keys = require('../../config/keys');
-
+const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     var data = {};
@@ -23,6 +21,5 @@ router.get('/', (req, res) => {
         }
     });
 });
-
 
 module.exports = router;

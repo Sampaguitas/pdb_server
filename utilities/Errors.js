@@ -20,7 +20,7 @@ const Errors = {
     "302": "OPCO has been updated",
     "303": "OPCO has been deleted",
     "304": "No OPCO match",
-    //4**: "Roles Errors",
+    //4**: "Currency Errors",
     "400": "Currency already exists",
     "401": "Currency does not exist",
     "402": "Currency has been updated",
@@ -32,12 +32,14 @@ const Errors = {
     "502": "Project has been updated",
     "503": "Project has been deleted",
     "504": "No Project match",
-
+    //6**: "Country Errors",
+    "600": "Country already exists",
+    "601": "Country does not exist",
+    "602": "Country has been updated",
+    "603": "Country has been deleted",
+    "604": "No Country match",
 }
 
-
 module.exports = function generateError(ErrCode) {
-
     return new Error(Errors[ErrCode]);
-
 }

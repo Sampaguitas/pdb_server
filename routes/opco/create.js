@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const fault = require('../../utilities/Errors')
 const Opco = require('../../models/Opco');
+const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
 

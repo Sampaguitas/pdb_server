@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Currency = require('../../models/Currency');
-const fault = require('../../utilities/Errors')
+const fault = require('../../utilities/Errors');
 
 
 router.delete('/', (req, res) => {
@@ -15,7 +15,7 @@ router.delete('/', (req, res) => {
         }
         else {
             return res.status(200).json({
-                message: fault(103).message,
+                message: fault(403).message,
                 //"403": "Currency has been deleted",
             });
         }

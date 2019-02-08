@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const fault = require('../../utilities/Errors')
 const Project = require('../../models/Project');
+const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
-
     Project.findOne({ name: req.body.name }).then(project => {
         if (project) {
             return res.status(400).json({
@@ -12,7 +11,6 @@ router.post('/', (req, res) => {
                 //"500": "Project already exists",
             });
         } else {
-            
             const newProject = new Project({
                 name: req.body.name,
                 customer: req.body.customer,
@@ -22,7 +20,6 @@ router.post('/', (req, res) => {
                 projectShipping: req.body.projectShipping,
                 projectWarehouse: req.body.projectWarehouse
             });
-
             newProject
                 .save()
                 .then(project => res.json(project))
@@ -30,4 +27,5 @@ router.post('/', (req, res) => {
         }
     });
 });
+
 module.exports = router;

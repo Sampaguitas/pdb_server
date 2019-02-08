@@ -1,21 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User');
+const Country = require('../../models/Country');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    User.findById(id, function (err, user) {
-        if (!user) {
+    Country.findById(id, function (err, country) {
+        if (!country) {
             return res.status(404).json({
-                message: fault(101).message
-                    //"101": "User does not exist",
+                message: fault(601).message
+                //"601": "Country does not exist",
             });
         }
         else {
-            return res.json(user);
+            return res.json(country);
         }
     });
 });
+
 
 module.exports = router;

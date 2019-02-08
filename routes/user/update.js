@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
-const fault = require('../../utilities/Errors')
+const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     var data = {};
@@ -27,7 +27,7 @@ router.put('/', (req, res) => {
             if (!user) {
                 return res.status(400).json({
                     message: fault(101).message
-                    //"102": "User does not exist",
+                    //"101": "User does not exist",
                 });
             }
             else {

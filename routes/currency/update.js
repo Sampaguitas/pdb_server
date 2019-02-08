@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Currency = require('../../models/Currency');
-const fault = require('../../utilities/Errors')
+const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     var data = {};
@@ -20,14 +20,11 @@ router.put('/', (req, res) => {
         }
         else {
             return res.status(200).json({
-                message: fault(102).message
-                //"402": "currency has been updated",
+                message: fault(402).message
+                //"402": "Currency has been updated",
             });
         }
     });
 });
 
-
 module.exports = router;
-
-//https://webapplog.com/express-js-and-mongoose-example-building-hackhall/

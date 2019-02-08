@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const fault = require('../../utilities/Errors')
 const Customer = require('../../models/Customer');
+const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
     var data = {};

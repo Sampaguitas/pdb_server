@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Opco = require('../../models/Opco');
+const Country = require('../../models/Country');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
@@ -9,18 +9,18 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    Opco.find(data).populate("projects")
-    .exec( function (err, opco) {
-        if (!opco) {
-            return res.status(400).json({ 
-                message: fault(304).message
-                //"304": "No OPCO match",
+    Country.find(data, function (err, country) {
+        if (!country) {
+            return res.status(400).json({
+                message: fault(604).message
+                //"604": "No Country match",
             });
         }
         else {
-            return res.json(opco);
+            return res.json(country);
         }
     });
 });
+
 
 module.exports = router;

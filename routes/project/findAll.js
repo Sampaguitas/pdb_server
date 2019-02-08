@@ -1,15 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../../models/Project');
-const fault = require('../../utilities/Errors')
-
+const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     var data = {};
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-
     Project.find(data).populate("customer", "name code").populate("opco", "name").populate("user", "name")
     .exec(function (err, project) {
         if (!project) {
@@ -23,6 +21,5 @@ router.get('/', (req, res) => {
         }
     });
 });
-
 
 module.exports = router;

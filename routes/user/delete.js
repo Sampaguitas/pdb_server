@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
-const fault = require('../../utilities/Errors')
-
+const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
     const id = req.query.id;
@@ -20,7 +19,7 @@ router.delete('/', (req, res) => {
         else {
             return res.status(200).json({
                 message: fault(103).message,
-                //"105": "User has been deleted",
+                //"103": "User has been deleted",
             });
         }
     });

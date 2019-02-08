@@ -1,21 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const Opco = require('../../models/Opco');
+const Country = require('../../models/Country');
 const fault = require('../../utilities/Errors');
+
 
 router.delete('/', (req, res) => {
     const id = req.query.id
-    Opco.findByIdAndRemove(id, function (err, opco) {
-        if (!opco) {
+    Country.findByIdAndRemove(id, function (err, country) {
+        if (!country) {
             return res.status(400).json({
-                message: fault(301).message
-                //"301": "OPCO does not exist",
+                message: fault(601).message
+                //"601": "Country does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(303).message
-                //"303": "OPCO has been deleted",
+                message: fault(603).message,
+                //"603": "Country has been deleted",
             });
         }
     });

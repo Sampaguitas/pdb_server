@@ -9,7 +9,6 @@ const cors = require('cors');
 //const bcrypt = require('bcryptjs');
 const fs = require('fs');
 
-
 app.use(cors());
 
 //bodyParser middleware
@@ -74,9 +73,6 @@ const userDelete = require('./routes/user/delete');
 app.delete('/user/delete', passport.authenticate('jwt', { session: false }), userDelete);
 const userUpdate = require('./routes/user/update');
 app.put('/user/update', passport.authenticate('jwt', { session: false }), userUpdate);
-
-
-
 
 // Listen on port
 const port = process.env.PORT || 5000;

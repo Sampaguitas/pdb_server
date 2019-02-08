@@ -1,9 +1,11 @@
 'use strict'
 
-require('./User');
+require('./Country');
+require('./Currency');
 require('./Customer');
 require('./Opco');
-
+require('./Project');
+require('./User');
 
 
 

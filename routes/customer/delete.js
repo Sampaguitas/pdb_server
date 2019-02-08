@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Customer = require('../../models/Customer');
-const fault = require('../../utilities/Errors')
-
+const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
     const id = req.query.id
@@ -21,6 +20,5 @@ router.delete('/', (req, res) => {
         }
     });
 });
-
 
 module.exports = router;

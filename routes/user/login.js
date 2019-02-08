@@ -3,36 +3,22 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
-const passport = require('passport');
+const User = require('../../models/User');
 const fault = require('../../utilities/Errors');
 
-require('../../models/User');
-const User = require('../../models/User');
-
-// @desc    Login User / Returning JWT Token
-// @access  Public
 router.post('/', (req, res) => {
-
     const email = req.body.email;
     const password = req.body.password;
-
-    // Find user by email
     User.findOne({ email }, { password:1 , firstName:1, lastName:1, phone:1, email:1, isAdmin:1 }).then(user => {
-        // Check for user
         if (!user) {
             return res.status(404).json({
                 message: fault(101).message
                 //"101": "User does not exist",
             });
         }
-        
-        // Check Password
         bcrypt.compare(password, user.password).then(isMatch => {
-            if (isMatch) {
-                // User Matched                              
-                const payload = { id: user.id, firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email, isAdmin: user.isAdmin }; // Create JWT Payload
-
-                // Sign Token
+            if (isMatch) {                          
+                const payload = { id: user.id, firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email, isAdmin: user.isAdmin };
                 jwt.sign(
                     payload,
                     keys.secret,
@@ -59,6 +45,5 @@ router.post('/', (req, res) => {
         });
     });
 });
-
 
 module.exports = router;

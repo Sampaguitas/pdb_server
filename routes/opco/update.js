@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Opco = require('../../models/Opco');
-const fault = require('../../utilities/Errors')
+const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     var data = {};
@@ -27,7 +27,4 @@ router.put('/', (req, res) => {
     });
 });
 
-
 module.exports = router;
-
-//https://webapplog.com/express-js-and-mongoose-example-building-hackhall/

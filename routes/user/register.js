@@ -1,15 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const keys = require('../../config/keys');
-const passport = require('passport');
-const fault = require('../../utilities/Errors');
-
-// Load User model
-require('../../models/User');
 const User = require('../../models/User');
-
+const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
     if (req.body.password !== req.body.confirmPassword) {
@@ -33,7 +26,6 @@ router.post('/', (req, res) => {
                     password: req.body.password,
                     isAdmin: req.body.isAdmin
                 });
-
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
                         if (err) {

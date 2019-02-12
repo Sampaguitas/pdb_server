@@ -18,7 +18,8 @@ router.post('/', (req, res) => {
                 currency: req.body.currency,
                 projectInspection: req.body.projectInspection,
                 projectShipping: req.body.projectShipping,
-                projectWarehouse: req.body.projectWarehouse
+                projectWarehouse: req.body.projectWarehouse,
+                dave_ID: req.body.dave_ID
             });
             newProject
                 .save()

@@ -38,6 +38,12 @@ const Errors = {
     "602": "Country has been updated",
     "603": "Country has been deleted",
     "604": "No Country match",
+    //7**: "Erp Errors",
+    "700": "Erp already exists",
+    "701": "Erp does not exist",
+    "702": "Erp has been updated",
+    "703": "Erp has been deleted",
+    "704": "No Erp match",
 }
 
 module.exports = function generateError(ErrCode) {

@@ -32,8 +32,8 @@ mongoose
 
 // Protected Routes
 //customer
-// const customerCreate = require('./routes/customer/create');
-// app.post('/customer/create', passport.authenticate('jwt', { session: false }), customerCreate);
+const customerCreate = require('./routes/customer/create');
+app.post('/customer/create', passport.authenticate('jwt', { session: false }), customerCreate);
 const customerFindAll = require('./routes/customer/findAll');
 app.get('/customer/findAll', passport.authenticate('jwt', { session: false }), customerFindAll);
 const customerFindOne = require('./routes/customer/findOne');

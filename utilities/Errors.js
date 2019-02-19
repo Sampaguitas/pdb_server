@@ -44,6 +44,12 @@ const Errors = {
     "702": "Erp has been updated",
     "703": "Erp has been deleted",
     "704": "No Erp match",
+    //8**: "Incoterm Errors",
+    "800": "Incoterm already exists",
+    "801": "Incoterm does not exist",
+    "802": "Incoterm has been updated",
+    "803": "Incoterm has been deleted",
+    "804": "No Incoterm match",
 }
 
 module.exports = function generateError(ErrCode) {

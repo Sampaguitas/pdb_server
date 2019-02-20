@@ -31,28 +31,6 @@ mongoose
 .catch(err => console.log(err));
 
 // Protected Routes
-//customer
-const customerCreate = require('./routes/customer/create');
-app.post('/customer/create', passport.authenticate('jwt', { session: false }), customerCreate);
-const customerFindAll = require('./routes/customer/findAll');
-app.get('/customer/findAll', passport.authenticate('jwt', { session: false }), customerFindAll);
-const customerFindOne = require('./routes/customer/findOne');
-app.get('/customer/findOne', passport.authenticate('jwt', { session: false }), customerFindOne);
-const customerDelete = require('./routes/customer/delete');
-app.delete('/customer/delete', passport.authenticate('jwt', { session: false }), customerDelete);
-const customerUpdate = require('./routes/customer/update');
-app.put('/customer/update', passport.authenticate('jwt', { session: false }), customerUpdate);
-//opco
-const opcoCreate = require('./routes/opco/create');
-app.post('/opco/create', passport.authenticate('jwt', { session: false }), opcoCreate);
-const opcoFindAll = require('./routes/opco/findAll');
-app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
-const opcoFindOne = require('./routes/opco/findOne');
-app.get('/opco/findOne', passport.authenticate('jwt', { session: false }), opcoFindOne);
-const opcoDelete = require('./routes/opco/delete');
-app.delete('/opco/delete', passport.authenticate('jwt', { session: false }), opcoDelete);
-const opcoUpdate = require('./routes/opco/update');
-app.put('/opco/update', passport.authenticate('jwt', { session: false }), opcoUpdate);
 //currency
 const currencyCreate = require('./routes/currency/create');
 app.post('/currency/create', passport.authenticate('jwt', { session: false }), currencyCreate);
@@ -64,6 +42,39 @@ const currencyDelete = require('./routes/currency/delete');
 app.delete('/currency/delete', passport.authenticate('jwt', { session: false }), currencyDelete);
 const currencyUpdate = require('./routes/currency/update');
 app.put('/currency/update', passport.authenticate('jwt', { session: false }), currencyUpdate);
+//customer
+const customerCreate = require('./routes/customer/create');
+app.post('/customer/create', passport.authenticate('jwt', { session: false }), customerCreate);
+const customerFindAll = require('./routes/customer/findAll');
+app.get('/customer/findAll', passport.authenticate('jwt', { session: false }), customerFindAll);
+const customerFindOne = require('./routes/customer/findOne');
+app.get('/customer/findOne', passport.authenticate('jwt', { session: false }), customerFindOne);
+const customerDelete = require('./routes/customer/delete');
+app.delete('/customer/delete', passport.authenticate('jwt', { session: false }), customerDelete);
+const customerUpdate = require('./routes/customer/update');
+app.put('/customer/update', passport.authenticate('jwt', { session: false }), customerUpdate);
+//incoterm
+const incotermCreate = require('./routes/incoterm/create');
+app.post('/incoterm/create', passport.authenticate('jwt', { session: false }), incotermCreate);
+const incotermFindAll = require('./routes/incoterm/findAll');
+app.get('/incoterm/findAll', passport.authenticate('jwt', { session: false }), incotermFindAll);
+const incotermFindOne = require('./routes/incoterm/findOne');
+app.get('/incoterm/findOne', passport.authenticate('jwt', { session: false }), incotermFindOne);
+const incotermDelete = require('./routes/incoterm/delete');
+app.delete('/incoterm/delete', passport.authenticate('jwt', { session: false }), incotermDelete);
+const incotermUpdate = require('./routes/incoterm/update');
+app.put('/incoterm/update', passport.authenticate('jwt', { session: false }), incotermUpdate);
+//opco
+const opcoCreate = require('./routes/opco/create');
+app.post('/opco/create', passport.authenticate('jwt', { session: false }), opcoCreate);
+const opcoFindAll = require('./routes/opco/findAll');
+app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
+const opcoFindOne = require('./routes/opco/findOne');
+app.get('/opco/findOne', passport.authenticate('jwt', { session: false }), opcoFindOne);
+const opcoDelete = require('./routes/opco/delete');
+app.delete('/opco/delete', passport.authenticate('jwt', { session: false }), opcoDelete);
+const opcoUpdate = require('./routes/opco/update');
+app.put('/opco/update', passport.authenticate('jwt', { session: false }), opcoUpdate);
 //user
 const userFindAll = require('./routes/user/findAll');
 app.get('/user/findAll', passport.authenticate('jwt', { session: false }), userFindAll);

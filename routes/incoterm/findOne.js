@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
             });
         }
         else {
-            return res.json(Incoterm);
+            return res.json(incoterm);
         }
     });
 });

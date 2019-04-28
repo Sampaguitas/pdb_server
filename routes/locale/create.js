@@ -14,6 +14,10 @@ router.post('/', (req, res) => {
 
             const newLocale = new Locale({
                 name: req.body.name,
+                dateFormat: req.body.dateFormat,
+                decimalSeparator: req.body.decimalSeparator,
+                thousandSeparator: req.body.thousandSeparator,
+                dateSeparator: req.body.dateSeparator,
             });
 
             newLocale

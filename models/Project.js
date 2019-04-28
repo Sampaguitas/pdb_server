@@ -13,15 +13,18 @@ const ProjectSchema = new Schema({
     },
     erpId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'erps'
+        ref: 'erps',
+        required: true
     },
     localeId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'locales'
+        ref: 'locales',
+        required: true
     },
     opcoId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'opcos'
+        ref: 'opcos',
+        required: true
     },
     daveId: {
         type: Number,

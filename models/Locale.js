@@ -6,6 +6,22 @@ const LocaleSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    dateFormat: {
+        type: String,
+        required: true
+    },
+    decimalSeparator: {
+        type: String,
+        required: true  
+    },
+    thousandSeparator: {
+        type: String,
+        required: true  
+    },
+    dateSeparator: {
+        type: String,
+        required: true  
     }
 });
 

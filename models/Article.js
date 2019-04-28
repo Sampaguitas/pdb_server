@@ -15,9 +15,8 @@ const ArticleSchema = new Schema({
     vlArtNoX: {
         type: String
     },
-    erpId: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'erps'  
+    erp: {
+        type: String
     },
     daveId: {
         type: Number,

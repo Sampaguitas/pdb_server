@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
             //"1605": "Password does not match",  
         });
     } else {
-        User.findOne({ email: req.body.email }).then(user => {
+        User.findOne({ email: req.body.email.toLowerCase() }).then(user => {
             if (user) {
                 return res.status(400).json({
                     message: fault(1600).message
@@ -22,6 +22,7 @@ router.post('/', (req, res) => {
                     userName: req.body.userName,
                     name: req.body.name,
                     email: req.body.email.toLowerCase(),
+                    password: req.body.password,
                     isAdmin: req.body.isAdmin,
                     opcoId: req.body.opcoId,
                     daveId: req.body.daveId,

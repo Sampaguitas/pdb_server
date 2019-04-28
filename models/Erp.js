@@ -6,6 +6,10 @@ const ErpSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    articleField: {
+        type: String,
+        required: true 
     }
 });
 

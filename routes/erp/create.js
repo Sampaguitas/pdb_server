@@ -13,7 +13,8 @@ router.post('/', (req, res) => {
         } else {
 
             const newErp = new Erp({
-                name: req.body.name
+                name: req.body.name,
+                articleField: req.body.articleField
             });
 
             newErp

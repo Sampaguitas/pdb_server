@@ -8,14 +8,14 @@ router.delete('/', (req, res) => {
     Project.findByIdAndRemove(id, function (err, project) {
         if (!project) {
             return res.status(400).json({
-                message: fault(501).message
-                //"501": "Project does not exist",
+                message: fault(1301).message
+                //"1301": "Project does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(503).message
-                //"503": "Project has been deleted",
+                message: fault(1303).message
+                //"1303": "Project has been deleted",
             });
         }
     });

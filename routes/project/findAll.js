@@ -8,12 +8,13 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    Project.find(data).populate("customer", "name code").populate("opco", "name").populate("user", "name")
+    // Project.find(data).populate("customer", "name code").populate("opco", "name").populate("user", "name")
+    Project.find(data).populate("opco", "name")
     .exec(function (err, project) {
         if (!project) {
             return res.status(400).json({
-                message: fault(504).message
-                //"504": "No Project match",
+                message: fault(1304).message
+                //"1304": "No Project match",
             });
         }
         else {

@@ -3,21 +3,25 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const ProjectSchema = new Schema({
+    number: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true
     },
-    customer: {
+    erp: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'customers'
+        ref: 'erps'
+    },
+    locale: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'locales'
     },
     opco: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'opcos'
-    },
-    currency: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'currencies'       
     },
     users: [{
         user: {
@@ -25,43 +29,28 @@ const ProjectSchema = new Schema({
             ref: 'users'
         },
         roles: {
-            expediter: {
+            expediting: {
                 type: Boolean,
                 default: false
             },
-            inspector: {
+            inspection: {
                 type: Boolean,
                 default: false
             },
-            shipper: {
+            shipping: {
                 type: Boolean,
                 default: false
             },
             warehouse: {
                 type: Boolean,
                 default: false
+            },
+            configuration: {
+                type: Boolean,
+                default: false
             }
         }
-    }],
-    projectInspection:{
-        type: Boolean,
-        default: true
-    },
-    projectShipping:{
-        type: Boolean,
-        default: true
-    },
-    projectWarehouse:{
-        type: Boolean,
-        default: true
-    },
-    date: {
-        type: Date,
-        default: Date.now
-    },
-    dave_ID: {
-        type: Number,
-    }
+    }]
 });
 
 

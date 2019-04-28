@@ -5,12 +5,12 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    Project.findById(id).populate("customer", "name code").populate("opco", "name").populate("user", "name")
+    Project.findById(id).populate("opco", "name")
         .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({
-                    message: fault(501).message
-                    // "501": "Project does not exist",
+                    message: fault(1301).message
+                    //"1301": "Project does not exist",
                 });
             }
             else {

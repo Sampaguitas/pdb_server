@@ -5,21 +5,21 @@ const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
     const id = req.query.id;
-    // validate role
-    if(!req.user.isAdmin){
+    // // validate role
+    // if(!req.user.isAdmin){
 
-    }
+    // }
     User.findByIdAndRemove(id, function (err, user) {
         if (!user) {
             return res.status(400).json({
-                message: fault(101).message
-                    //"101": "User does not exist",
+                message: fault(1601).message
+                    //"1601": "User does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(103).message,
-                //"103": "User has been deleted",
+                message: fault(1603).message,
+                //"1603": "User has been deleted",
             });
         }
     });

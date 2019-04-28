@@ -3,19 +3,11 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const UserSchema = new Schema({
-    firstName: {
+    userName: {
         type: String,
         required: true
     },
-    lastName: {
-        type: String,
-        required: true
-    },
-    phone: {
-        type: String,
-        required: true
-    },
-    email: {
+    name: {
         type: String,
         required: true
     },
@@ -28,18 +20,11 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false
     },
-    date: {
-        type: Date,
-        default: Date.now
+    opco: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'opcos'
     }
 });
-
-UserSchema.virtual('name').get(function () {
-    return this.firstName + ' ' + this.lastName
-})
-
-UserSchema.set('toJSON', { virtuals: true });
-
 
 //module.exports = mongoose.model('users', UserSchema);
 module.exports= User = mongoose.model('users', UserSchema);

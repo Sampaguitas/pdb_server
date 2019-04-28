@@ -7,8 +7,8 @@ router.post('/', (req, res) => {
     Erp.findOne({ name: req.body.name }).then(erp => {
         if (erp) {
             return res.status(400).json({
-                message: fault(700).message
-                //"700": "Erp already exists",
+                message: fault(0600).message
+                //"0600": "Erp already exists",
             });
         } else {
 

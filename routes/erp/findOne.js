@@ -8,8 +8,8 @@ router.get('/', (req, res) => {
     Erp.findById(id, function (err, erp) {
         if (!erp) {
             return res.status(404).json({
-                message: fault(701).message
-                //"701": "Erp does not exist",
+                message: fault(0601).message
+                //"0601": "Erp does not exist",
             });
         }
         else {

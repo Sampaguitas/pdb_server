@@ -9,8 +9,8 @@ router.get('/', (req, res) => {
     .exec( function (err, opco) {
         if (!opco) {
             return res.status(400).json({ 
-                message: fault(301).message
-                //"301": "OPCO does not exist",
+                message: fault(1001).message
+                //"1001": "Opco does not exist",
             });
         }
         else {

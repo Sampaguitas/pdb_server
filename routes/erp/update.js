@@ -14,14 +14,14 @@ router.put('/', (req, res) => {
     Erp.findByIdAndUpdate(id, { $set: data }, function (err, erp) {
         if (!erp) {
             return res.status(400).json({
-                message: fault(701).message
-                //"701": "erp does not exist",
+                message: fault(0601).message
+                //"0601": "Erp does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(702).message
-                //"702": "erp has been updated",
+                message: fault(0602).message
+                //"0602": "Erp has been updated",
             });
         }
     });

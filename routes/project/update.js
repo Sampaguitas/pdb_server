@@ -12,14 +12,14 @@ router.put('/', (req, res) => {
     Project.findByIdAndUpdate(id, { $set: data }, function (err, project) {
         if (!project) {
             return res.status(400).json({
-                message: fault(501).message
-                // "501": "Project does not exist",
+                message: fault(1301).message
+                //"1301": "Project does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(502).message
-                // "502": "Project has been updated",
+                message: fault(1302).message
+                //"1302": "Project has been updated",
             });
         }
     });

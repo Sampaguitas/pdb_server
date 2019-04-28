@@ -8,21 +8,19 @@ router.post('/', (req, res) => {
     Opco.findOne({ name: req.body.name }).then(opco => {
         if (opco) {
             return res.status(400).json({ 
-                message: fault(300).message
-                    //"300": "OPCO already exists",
+                message: fault(1000).message
+                    //"1000": "Opco already exists",
             });
         } else {
 
             const newOpco = new Opco({
+                code: req.body.code,
                 name: req.body.name,
                 address: req.body.address,
                 city: req.body.city,
                 zip: req.body.zip,
                 country: req.body.country,
-                phone: req.body.phone,
-                fax: req.body.fax,
-                email: req.body.email,
-                projectAdmins: req.body.projectAdmins// ["_id1", "_id2"]
+                projectAdmins: req.body.projectAdmins
             });
 
             newOpco

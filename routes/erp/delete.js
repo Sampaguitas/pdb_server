@@ -9,14 +9,14 @@ router.delete('/', (req, res) => {
     Erp.findByIdAndRemove(id, function (err, erp) {
         if (!erp) {
             return res.status(400).json({
-                message: fault(701).message
-                //"701": "Erp does not exist",
+                message: fault(0601).message
+                //"0601": "Erp does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(703).message,
-                //"703": "Erp has been deleted",
+                message: fault(0603).message,
+                //"0603": "Erp has been deleted",
             });
         }
     });

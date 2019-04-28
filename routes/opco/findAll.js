@@ -13,8 +13,8 @@ router.get('/', (req, res) => {
     .exec( function (err, opco) {
         if (!opco) {
             return res.status(400).json({ 
-                message: fault(304).message
-                //"304": "No OPCO match",
+                message: fault(1004).message
+                //"1004": "No Opco match",
             });
         }
         else {

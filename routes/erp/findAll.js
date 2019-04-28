@@ -12,8 +12,8 @@ router.get('/', (req, res) => {
     Erp.find(data, function (err, erp) {
         if (!erp) {
             return res.status(400).json({
-                message: fault(704).message
-                //"704": "No Erp match",
+                message: fault(0604).message
+                //"0604": "No Erp match",
             });
         }
         else {

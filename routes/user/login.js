@@ -9,16 +9,16 @@ const fault = require('../../utilities/Errors');
 router.post('/', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    User.findOne({ email }, { password:1 , firstName:1, lastName:1, phone:1, email:1, isAdmin:1 }).then(user => {
+    User.findOne({ email }, { password:1 , userName:1, isAdmin:1, opco:1 }).then(user => {
         if (!user) {
             return res.status(404).json({
-                message: fault(101).message
-                //"101": "User does not exist",
+                message: fault(1601).message
+                //"1601": "User does not exist",
             });
         }
         bcrypt.compare(password, user.password).then(isMatch => {
             if (isMatch) {                          
-                const payload = { id: user.id, firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email, isAdmin: user.isAdmin };
+                const payload = { id: user.id, userName: user.userName, name: user.name, email: user.email, isAdmin: user.isAdmin, opco: user.opco };
                 jwt.sign(
                     payload,
                     keys.secret,
@@ -28,18 +28,18 @@ router.post('/', (req, res) => {
                             success: true,
                             token: 'Bearer ' + token,
                             id: payload.id,
-                            firstName: payload.firstName,
-                            lastName: payload.lastName,
-                            phone: payload.phone,
+                            userName: payload.userName,
+                            name: payload.name,
                             email: payload.email,
-                            isAdmin: payload.isAdmin
+                            isAdmin: payload.isAdmin,
+                            opco: payload.opco
                         });
                     }
                 );
             } else {
                 return res.status(400).json({
-                    message: fault(105).message
-                    //"105": "Password does not match",
+                    message: fault(1605).message
+                    //"1605": "Password does not match",
                 });
             }
         });

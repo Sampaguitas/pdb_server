@@ -9,7 +9,7 @@ const fault = require('../../utilities/Errors');
 router.post('/', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    User.findOne({ email }, { password:1 , userName:1, isAdmin:1, opcoId:1 }).then(user => {
+    User.findOne({ email }, { password:1 , userName:1, name: 1, email: 1, isAdmin:1, opcoId:1 }).then(user => {
         if (!user) {
             return res.status(404).json({
                 message: fault(1601).message

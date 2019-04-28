@@ -13,11 +13,11 @@ router.post('/', (req, res) => {
     //     } else {
 
             const newArticle = new Article({
+                erp: req.body.erp,
                 vlArtNo: req.body.vlArtNo,
+                vlArtNoX: req.body.vlArtNoX,
                 netWeight: req.body.netWeight,
                 hsCode: req.body.hsCode,
-                vlArtNoX: req.body.vlArtNoX,
-                erp: req.body.erp,
                 daveId: req.body.daveId,
             });
 

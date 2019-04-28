@@ -3,20 +3,21 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const ArticleSchema = new Schema({
+    erp: {
+        type: String,
+        required: true
+    },    
     vlArtNo: {
         type: Number,
+    },
+    vlArtNoX: {
+        type: String
     },
     netWeight: {
         type: Number,
     },
     hsCode: {
         type: Number,
-    },
-    vlArtNoX: {
-        type: String
-    },
-    erp: {
-        type: String
     },
     daveId: {
         type: Number,

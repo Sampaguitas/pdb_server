@@ -10,7 +10,8 @@ router.post('/', (req, res) => {
                 width: req.body.width,
                 height: req.body.height,
                 pkWeight: req.body.pkWeight,
-                project: req.body.project,
+                projectId: req.body.projectId,
+                daveId: req.body.daveId,
             });
 
             newColliType

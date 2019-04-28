@@ -17,7 +17,8 @@ router.post('/', (req, res) => {
                 netWeight: req.body.netWeight,
                 hsCode: req.body.hsCode,
                 vlArtNoX: req.body.vlArtNoX,
-                erp: req.body.erp,
+                erpId: req.body.erpId,
+                daveId: req.body.daveId,
             });
 
             newArticle

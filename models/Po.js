@@ -201,9 +201,12 @@ const PoSchema = new Schema({
     udfPoD10: {
         type: Date,
     },
-    project: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'  
+    },
+    daveId: {
+        type: Number,
     }
 });
 

@@ -23,6 +23,9 @@ const UserSchema = new Schema({
     opco: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'opcos'
+    },
+    daveId: {
+        type: Number,
     }
 });
 

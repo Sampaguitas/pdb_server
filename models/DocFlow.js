@@ -11,6 +11,9 @@ const DocFlowSchema = new Schema({
     },
     predecessorType: {
         type: String,
+    },
+    daveId: {
+        type: Number,
     }
 });
 

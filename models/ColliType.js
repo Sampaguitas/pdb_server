@@ -18,9 +18,12 @@ const ColliTypeSchema = new Schema({
     pkWeight: {
         type: Number
     },
-    project: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'   
+    },
+    daveId: {
+        type: Number,
     }
 });
 

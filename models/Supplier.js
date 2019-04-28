@@ -124,9 +124,12 @@ const SupplierSchema = new Schema({
     udfSpD10: {
         type: Date,
     },
-    project: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'   
+    },
+    daveId: {
+        type: Number,
     }
 });
 

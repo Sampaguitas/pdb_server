@@ -44,7 +44,8 @@ router.post('/', (req, res) => {
                 udfCpD8: req.body.udfCpD8,
                 udfCpD9: req.body.udfCpD9,
                 udfCpD10: req.body.udfCpD10,
-                project: req.body.project,
+                projectId: req.body.projectId,
+                daveId: req.body.daveId,
             });
 
             newColliPack

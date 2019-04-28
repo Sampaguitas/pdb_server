@@ -9,7 +9,8 @@ router.post('/', (req, res) => {
                 custom: req.body.custom,
                 type: req.body.type,
                 fromTbl: req.body.fromTbl,
-                project: req.body.project
+                projectId: req.body.projectId,
+                daveId: req.body.daveId,
             });
 
             newField

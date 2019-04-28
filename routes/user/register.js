@@ -23,7 +23,8 @@ router.post('/', (req, res) => {
                     name: req.body.name,
                     email: req.body.email.toLowerCase(),
                     isAdmin: req.body.isAdmin,
-                    opco: req.body.opco,
+                    opcoId: req.body.opcoId,
+                    daveId: req.body.daveId,
                 });
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {

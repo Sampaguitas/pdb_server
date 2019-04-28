@@ -14,9 +14,10 @@ router.post('/', (req, res) => {
             const newProject = new Project({
                 number:req.body.number,
                 name: req.body.name,
-                erp: req.body.erp,
-                locale: req.body.locale,
-                opco: req.body.opco,
+                erpId: req.body.erpId,
+                localeId: req.body.localeId,
+                opcoId: req.body.opcoId,
+                daveId: req.body.daveId,
                 users: req.body.users,
             });
             newProject

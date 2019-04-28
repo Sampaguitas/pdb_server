@@ -16,13 +16,16 @@ const UserSettingSchema = new Schema({
     gridSettings: {
         type: String,
     },
-    project: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'   
     },
-    user: {
+    userId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'users'   
+    },
+    daveId: {
+        type: Number,
     }
 });
 

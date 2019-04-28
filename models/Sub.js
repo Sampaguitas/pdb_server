@@ -6,11 +6,26 @@ const SubSchema = new Schema({
     vlDelDateExp: {
         type: Date,
     },
-    supDelDateAct: {
+    vlDelDateAct: {
+        type: Date,
+    },
+    supReadyDateExp: {
+        type: Date,
+    },
+    supReadyDateAct: {
         type: Date,
     },
     supDelDateExp: {
         type: Date,
+    },
+    supDelDateAct: {
+        type: Date,
+    },
+    nfiDateExp: {
+        type: Date,
+    },
+    nfiDateAct:{
+        type: Date, 
     },
     rfiDateExp: {
         type: Date,
@@ -19,6 +34,24 @@ const SubSchema = new Schema({
         type: Date,
     },
     inspRelDate: {
+        type: Date,
+    },
+    rfsDateExp: {
+        type: Date,
+    },
+    rfsDateAct: {
+        type: Date,
+    },
+    shipDateExp: {
+        type: Date,
+    },
+    shipDateAct: {
+        type: Date,
+    },
+    shipDocSent: {
+        type: Date,
+    },
+    etaDate: {
         type: Date,
     },
     rfiQty:{
@@ -30,26 +63,11 @@ const SubSchema = new Schema({
     relQty: {
         type: Number,
     },
-    inspector: {
-        type: String,
-    },
-    rfsDateExp: {
-        type: Date,
-    },
-    rfsDateAct: {
-        type: Date,
-    },
-    shipDateAct: {
-        type: Date,
-    },
-    etaDate: {
-        type: Date,
-    },
     shippedQty: {
         type: Number,
     },
-    intComments: {
-        type: String,
+    splitQty: {
+        type: Number,
     },
     nfi: {
         type: Number,
@@ -57,16 +75,40 @@ const SubSchema = new Schema({
     heatNr: {
         type: String,
     },
-    nfiDateExp: {
-        type: Date,
-    },
-    destination: {
-        type: String,
-    },
     manufacturer: {
         type: String,
     },
     manufOrigin: {
+        type: String,
+    },
+    inspector: {
+        type: String,
+    },
+    delivery: {
+        type: String,
+    },
+    deliveryPos: {
+        type: Number,
+    },
+    transport: {
+        type: String,
+    },
+    transportPos: {
+        type: Number,
+    },
+    destination: {
+        type: String,
+    },
+    commentsExp: {
+        type: String,
+    },
+    commentsInsp: {
+        type: String,
+    },
+    commentsLog: {
+        type: String,
+    },
+    intComments: {
         type: String,
     },
     udfSbX1: {
@@ -159,52 +201,16 @@ const SubSchema = new Schema({
     udfSbD10: {
         type: Date,
     },
-    supReadyDateExp: {
-        type: Date,
-    },
-    supReadyDateAct: {
-        type: Date,
-    },
-    shipDocSent: {
-        type: Date,
-    },
-    shipDateExp: {
-        type: Date,
-    },
-    vlDelDateAct: {
-        type: Date,
-    },
-    commentsExp: {
-        type: String,
-    },
-    commentsInsp: {
-        type: String,
-    },
-    commentsLog: {
-        type: String,
-    },
-    splitQty: {
-        type: Number,
-    },
-    delivery: {
-        type: String,
-    },
-    deliveryPos: {
-        type: Number,
-    },
-    transport: {
-        type: String,
-    },
-    transportPos: {
-        type: Number,
-    },
-    project: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'   
     },
-    po: {
+    poId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'pos' 
+    },
+    daveId: {
+        type: Number,
     }
 });
 

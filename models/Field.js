@@ -16,10 +16,13 @@ const FieldSchema = new Schema({
     fromTbl: {
         type: String,
     },
-    project: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'   
     },
+    daveId: {
+        type: Number,
+    }
 });
 
 module.exports = Field = mongoose.model('fields',FieldSchema);

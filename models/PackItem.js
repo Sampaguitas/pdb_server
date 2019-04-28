@@ -123,17 +123,20 @@ const PackItemSchema = new Schema({
     udfPiD10: {
         type: Date,
     },
-    project: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'   
     },
-    sub: {
+    subId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'subs'  
     },
-    packed: {
+    packedId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'collipacked'  
+    },
+    daveId: {
+        type: Number,
     }
 });
 

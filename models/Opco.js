@@ -27,6 +27,9 @@ const OpcoSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'users'
     }],
+    daveId: {
+        type: Number,
+    }
 });
 
 // OpcoSchema.virtual("projects", {

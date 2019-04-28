@@ -10,8 +10,9 @@ router.post('/', (req, res) => {
                 selectSettings: req.body.selectSettings,
                 showSettings: req.body.showSettings,
                 gridSettings: req.body.gridSettings,
-                project: req.body.project,
-                user: req.body.user,
+                projectId: req.body.projectId,
+                userId: req.body.userId,
+                daveId: req.body.daveId,
             });
 
             newUserSetting

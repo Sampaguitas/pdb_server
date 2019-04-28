@@ -8,6 +8,7 @@ router.post('/', (req, res) => {
                 predecessor: req.body.predecessor,
                 predecessorPos: req.body.predecessorPos,
                 predecessorType: req.body.predecessorType,
+                daveId: req.body.daveId,
             });
 
             NewDocFlow

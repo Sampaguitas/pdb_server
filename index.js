@@ -184,16 +184,16 @@ app.get('/sub/findOne', passport.authenticate('jwt', { session: false }), subFin
 const subUpdate = require('./routes/sub/update');
 app.put('/sub/update', passport.authenticate('jwt', { session: false }), subUpdate);
 //supplier
-// const supplierCreate = require('./routes/supplier/create');
-// app.post('/supplier/create', passport.authenticate('jwt', { session: false }), supplierCreate);
-// const supplierDelete = require('./routes/supplier/delete');
-// app.delete('/supplier/delete', passport.authenticate('jwt', { session: false }), supplierDelete);
-// const supplierFindAll = require('./routes/supplier/findAll');
-// app.get('/supplier/findAll', passport.authenticate('jwt', { session: false }), supplierFindAll);
-// const supplierFindOne = require('./routes/supplier/findOne');
-// app.get('/supplier/findOne', passport.authenticate('jwt', { session: false }), supplierFindOne);
-// const supplierUpdate = require('./routes/supplier/update');
-// app.put('/supplier/update', passport.authenticate('jwt', { session: false }), supplierUpdate);
+const supplierCreate = require('./routes/supplier/create');
+app.post('/supplier/create', passport.authenticate('jwt', { session: false }), supplierCreate);
+const supplierDelete = require('./routes/supplier/delete');
+app.delete('/supplier/delete', passport.authenticate('jwt', { session: false }), supplierDelete);
+const supplierFindAll = require('./routes/supplier/findAll');
+app.get('/supplier/findAll', passport.authenticate('jwt', { session: false }), supplierFindAll);
+const supplierFindOne = require('./routes/supplier/findOne');
+app.get('/supplier/findOne', passport.authenticate('jwt', { session: false }), supplierFindOne);
+const supplierUpdate = require('./routes/supplier/update');
+app.put('/supplier/update', passport.authenticate('jwt', { session: false }), supplierUpdate);
 //user
 const userDelete = require('./routes/user/delete');
 app.delete('/user/delete', passport.authenticate('jwt', { session: false }), userDelete);

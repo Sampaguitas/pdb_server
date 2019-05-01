@@ -46,9 +46,8 @@ router.post('/', (req, res) => {
                 udfSpD8: req.body.udfSpD8,
                 udfSpD9: req.body.udfSpD9,
                 udfSpD10: req.body.udfSpD10,
-                projectId: req.body.project,
-                daveId: req.body.daveId,
-                
+                projectId: req.body.projectId,
+                daveId: req.body.daveId, 
             });
 
             newSupplier

@@ -23,10 +23,6 @@ const OpcoSchema = new Schema({
     country: {
         type: String,
     },
-    projectAdmins: [{
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'users'
-    }],
     daveId: {
         type: Number,
     }

@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 const SupplierSchema = new Schema({
     name: {
         type: String,
-        required: true
     },
     registeredName: {
         type: String,
@@ -165,8 +164,7 @@ const SupplierSchema = new Schema({
     },
     projectId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects',
-        required: true
+        ref: 'projects'
     },
     daveId: {
         type: Number,

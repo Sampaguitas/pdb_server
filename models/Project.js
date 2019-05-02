@@ -65,8 +65,6 @@ ProjectSchema.virtual("pos", {
     justOne: false
 });
 
-
-
 OpcoSchema.set('toJSON', { virtuals: true });
 
 

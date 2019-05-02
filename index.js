@@ -151,16 +151,16 @@ app.get('/packitem/findOne', passport.authenticate('jwt', { session: false }), p
 const packitemUpdate = require('./routes/packitem/update');
 app.put('/packitem/update', passport.authenticate('jwt', { session: false }), packitemUpdate);
 //po
-// const poCreate = require('./routes/po/create');
-// app.post('/po/create', passport.authenticate('jwt', { session: false }), poCreate);
-// const poDelete = require('./routes/po/delete');
-// app.delete('/po/delete', passport.authenticate('jwt', { session: false }), poDelete);
-// const poFindAll = require('./routes/po/findAll');
-// app.get('/po/findAll', passport.authenticate('jwt', { session: false }), poFindAll);
-// const poFindOne = require('./routes/po/findOne');
-// app.get('/po/findOne', passport.authenticate('jwt', { session: false }), poFindOne);
-// const poUpdate = require('./routes/po/update');
-// app.put('/po/update', passport.authenticate('jwt', { session: false }), poUpdate);
+const poCreate = require('./routes/po/create');
+app.post('/po/create', passport.authenticate('jwt', { session: false }), poCreate);
+const poDelete = require('./routes/po/delete');
+app.delete('/po/delete', passport.authenticate('jwt', { session: false }), poDelete);
+const poFindAll = require('./routes/po/findAll');
+app.get('/po/findAll', passport.authenticate('jwt', { session: false }), poFindAll);
+const poFindOne = require('./routes/po/findOne');
+app.get('/po/findOne', passport.authenticate('jwt', { session: false }), poFindOne);
+const poUpdate = require('./routes/po/update');
+app.put('/po/update', passport.authenticate('jwt', { session: false }), poUpdate);
 //project
 const projectCreate = require('./routes/project/create');
 app.post('/project/create', passport.authenticate('jwt', { session: false }), projectCreate);

@@ -28,18 +28,20 @@ const OpcoSchema = new Schema({
     }
 });
 
-// OpcoSchema.virtual("projects", {
-//     ref: "projects",
-//     localField: "_id",
-//     foreignField: "opco",
-//     justOne: false
-// });
+OpcoSchema.virtual("projects", {
+    ref: "projects",
+    localField: "_id",
+    foreignField: "opcoId",
+    justOne: false
+});
+
+
+
+OpcoSchema.set('toJSON', { virtuals: true });
+
+module.exports = mongoose.model('opcos', OpcoSchema);
+//module.exports= User = mongoose.model('users', UserSchema);
 
 // CurrencySchema.virtual('name').get(function () {
 //     return this.code + ' - ' + this.description
 // })
-
-// OpcoSchema.set('toJSON', { virtuals: true });
-
-module.exports = mongoose.model('opcos', OpcoSchema);
-//module.exports= User = mongoose.model('users', UserSchema);

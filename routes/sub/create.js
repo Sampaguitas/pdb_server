@@ -24,7 +24,9 @@ router.post('/', (req, res) => {
                 shipDocSent: req.body.shipDocSent,
                 etaDate: req.body.etaDate,
                 rfiQty: req.body.rfiQty,
+                rfiQtyOrg: req.body.rfiQtyOrg,
                 inspQty: req.body.inspQty,
+                inspQtyOrg: req.body.inspQtyOrg,
                 relQty: req.body.relQty,
                 shippedQty: req.body.shippedQty,
                 splitQty: req.body.splitQty,
@@ -71,7 +73,6 @@ router.post('/', (req, res) => {
                 udfSbD8: req.body.udfSbD8,
                 udfSbD9: req.body.udfSbD9,
                 udfSbD10: req.body.udfSbD10,
-                projectId: req.body.projectId,
                 poId: req.body.poId,
                 daveId: req.body.daveId,
             });

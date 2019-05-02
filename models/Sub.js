@@ -57,8 +57,14 @@ const SubSchema = new Schema({
     rfiQty:{
         type: Number,
     },
+    rfiQtyOrg: {
+        type: Number, 
+    },
     inspQty:{
         type: Number,
+    },
+    inspQtyOrg: {
+        type: Number,  
     },
     relQty: {
         type: Number,
@@ -200,10 +206,6 @@ const SubSchema = new Schema({
     },
     udfSbD10: {
         type: Date,
-    },
-    projectId: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects'   
     },
     poId: {
         type: mongoose.SchemaTypes.ObjectId,

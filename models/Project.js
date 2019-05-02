@@ -65,7 +65,7 @@ ProjectSchema.virtual("pos", {
     justOne: false
 });
 
-OpcoSchema.set('toJSON', { virtuals: true });
+ProjectSchema.set('toJSON', { virtuals: true });
 
 
 //module.exports = mongoose.model('Projects', ProjectSchema);

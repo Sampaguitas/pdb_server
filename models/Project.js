@@ -58,7 +58,16 @@ const ProjectSchema = new Schema({
         }
     }]
 });
+ProjectSchema.virtual("pos", {
+    ref: "pos",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
 
+
+
+OpcoSchema.set('toJSON', { virtuals: true });
 
 
 //module.exports = mongoose.model('Projects', ProjectSchema);

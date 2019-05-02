@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
     // Project.find(data).populate("customer", "name code").populate("opco", "name").populate("user", "name")
-    Project.find(data).populate("opco", "name")
+    Project.find(data).populate("projects", "_id")
     .exec(function (err, project) {
         if (!project) {
             return res.status(400).json({

@@ -162,16 +162,16 @@ app.put('/packitem/update', passport.authenticate('jwt', { session: false }), pa
 // const poUpdate = require('./routes/po/update');
 // app.put('/po/update', passport.authenticate('jwt', { session: false }), poUpdate);
 //project
-const projectCreate = require('./routes/project/create');
-app.post('/project/create', passport.authenticate('jwt', { session: false }), projectCreate);
-const projectDelete = require('./routes/project/delete');
-app.delete('/project/delete', passport.authenticate('jwt', { session: false }), projectDelete);
-const projectFindAll = require('./routes/project/findAll');
-app.get('/project/findAll', passport.authenticate('jwt', { session: false }), projectFindAll);
-const projectFindOne = require('./routes/project/findOne');
-app.get('/project/findOne', passport.authenticate('jwt', { session: false }), projectFindOne);
-const projectUpdate = require('./routes/project/update');
-app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
+// const projectCreate = require('./routes/project/create');
+// app.post('/project/create', passport.authenticate('jwt', { session: false }), projectCreate);
+// const projectDelete = require('./routes/project/delete');
+// app.delete('/project/delete', passport.authenticate('jwt', { session: false }), projectDelete);
+// const projectFindAll = require('./routes/project/findAll');
+// app.get('/project/findAll', passport.authenticate('jwt', { session: false }), projectFindAll);
+// const projectFindOne = require('./routes/project/findOne');
+// app.get('/project/findOne', passport.authenticate('jwt', { session: false }), projectFindOne);
+// const projectUpdate = require('./routes/project/update');
+// app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
 //sub
 // const subCreate = require('./routes/sub/create');
 // app.post('/sub/create', passport.authenticate('jwt', { session: false }), subCreate);

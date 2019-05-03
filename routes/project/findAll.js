@@ -9,8 +9,7 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
     // Project.find(data).populate("customer", "name code").populate("opco", "name").populate("user", "name")
-    Project.find(data).populate("pos", "_id")
-    .exec(function (err, project) {
+    Project.find(data, function (err, project) {
         if (!project) {
             return res.status(400).json({
                 message: fault(1304).message

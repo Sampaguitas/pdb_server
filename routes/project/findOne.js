@@ -9,8 +9,8 @@ router.get('/', (req, res) => {
         path: 'pos',
         populate: {
             path: 'subs'
-        },
-        path: 'collitypes'})
+        }
+    }).populate('collitypes')
     .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({

@@ -173,16 +173,16 @@ app.put('/packitem/update', passport.authenticate('jwt', { session: false }), pa
 // const projectUpdate = require('./routes/project/update');
 // app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
 //sub
-const subCreate = require('./routes/sub/create');
-app.post('/sub/create', passport.authenticate('jwt', { session: false }), subCreate);
-const subDelete = require('./routes/sub/delete');
-app.delete('/sub/delete', passport.authenticate('jwt', { session: false }), subDelete);
-const subFindAll = require('./routes/sub/findAll');
-app.get('/sub/findAll', passport.authenticate('jwt', { session: false }), subFindAll);
-const subFindOne = require('./routes/sub/findOne');
-app.get('/sub/findOne', passport.authenticate('jwt', { session: false }), subFindOne);
-const subUpdate = require('./routes/sub/update');
-app.put('/sub/update', passport.authenticate('jwt', { session: false }), subUpdate);
+// const subCreate = require('./routes/sub/create');
+// app.post('/sub/create', passport.authenticate('jwt', { session: false }), subCreate);
+// const subDelete = require('./routes/sub/delete');
+// app.delete('/sub/delete', passport.authenticate('jwt', { session: false }), subDelete);
+// const subFindAll = require('./routes/sub/findAll');
+// app.get('/sub/findAll', passport.authenticate('jwt', { session: false }), subFindAll);
+// const subFindOne = require('./routes/sub/findOne');
+// app.get('/sub/findOne', passport.authenticate('jwt', { session: false }), subFindOne);
+// const subUpdate = require('./routes/sub/update');
+// app.put('/sub/update', passport.authenticate('jwt', { session: false }), subUpdate);
 //supplier
 const supplierCreate = require('./routes/supplier/create');
 app.post('/supplier/create', passport.authenticate('jwt', { session: false }), supplierCreate);

@@ -210,4 +210,13 @@ const PoSchema = new Schema({
     }
 });
 
+PoSchema.virtual("subs", {
+    ref: "subs",
+    localField: "_id",
+    foreignField: "poId",
+    justOne: false
+});
+
+PoSchema.set('toJSON', { virtuals: true });
+
 module.exports = Po = mongoose.model('pos', PoSchema);

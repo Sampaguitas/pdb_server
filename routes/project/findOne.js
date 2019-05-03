@@ -5,7 +5,7 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    Project.findById(id).populate("pos")
+    Project.findById(id).populate("pos").populate("subs")
         .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({

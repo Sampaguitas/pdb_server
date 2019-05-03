@@ -52,16 +52,16 @@ app.get('/collipack/findOne', passport.authenticate('jwt', { session: false }), 
 const collipackUpdate = require('./routes/collipack/update');
 app.put('/collipack/update', passport.authenticate('jwt', { session: false }), collipackUpdate);
 //collitype
-const collitypeCreate = require('./routes/collitype/create');
-app.post('/collitype/create', passport.authenticate('jwt', { session: false }), collitypeCreate);
-const collitypeDelete = require('./routes/collitype/delete');
-app.delete('/collitype/delete', passport.authenticate('jwt', { session: false }), collitypeDelete);
-const collitypeFindAll = require('./routes/collitype/findAll');
-app.get('/collitype/findAll', passport.authenticate('jwt', { session: false }), collitypeFindAll);
-const collitypeFindOne = require('./routes/collitype/findOne');
-app.get('/collitype/findOne', passport.authenticate('jwt', { session: false }), collitypeFindOne);
-const collitypeUpdate = require('./routes/collitype/update');
-app.put('/collitype/update', passport.authenticate('jwt', { session: false }), collitypeUpdate);
+// const collitypeCreate = require('./routes/collitype/create');
+// app.post('/collitype/create', passport.authenticate('jwt', { session: false }), collitypeCreate);
+// const collitypeDelete = require('./routes/collitype/delete');
+// app.delete('/collitype/delete', passport.authenticate('jwt', { session: false }), collitypeDelete);
+// const collitypeFindAll = require('./routes/collitype/findAll');
+// app.get('/collitype/findAll', passport.authenticate('jwt', { session: false }), collitypeFindAll);
+// const collitypeFindOne = require('./routes/collitype/findOne');
+// app.get('/collitype/findOne', passport.authenticate('jwt', { session: false }), collitypeFindOne);
+// const collitypeUpdate = require('./routes/collitype/update');
+// app.put('/collitype/update', passport.authenticate('jwt', { session: false }), collitypeUpdate);
 //docdefinition
 const docdefinitionCreate = require('./routes/docdefinition/create');
 app.post('/docdefinition/create', passport.authenticate('jwt', { session: false }), docdefinitionCreate);
@@ -129,16 +129,16 @@ app.get('/locale/findOne', passport.authenticate('jwt', { session: false }), loc
 const localeUpdate = require('./routes/locale/update');
 app.put('/locale/update', passport.authenticate('jwt', { session: false }), localeUpdate);
 //opco
-const opcoCreate = require('./routes/opco/create');
-app.post('/opco/create', passport.authenticate('jwt', { session: false }), opcoCreate);
-const opcoDelete = require('./routes/opco/delete');
-app.delete('/opco/delete', passport.authenticate('jwt', { session: false }), opcoDelete);
-const opcoFindAll = require('./routes/opco/findAll');
-app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
-const opcoFindOne = require('./routes/opco/findOne');
-app.get('/opco/findOne', passport.authenticate('jwt', { session: false }), opcoFindOne);
-const opcoUpdate = require('./routes/opco/update');
-app.put('/opco/update', passport.authenticate('jwt', { session: false }), opcoUpdate);
+// const opcoCreate = require('./routes/opco/create');
+// app.post('/opco/create', passport.authenticate('jwt', { session: false }), opcoCreate);
+// const opcoDelete = require('./routes/opco/delete');
+// app.delete('/opco/delete', passport.authenticate('jwt', { session: false }), opcoDelete);
+// const opcoFindAll = require('./routes/opco/findAll');
+// app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
+// const opcoFindOne = require('./routes/opco/findOne');
+// app.get('/opco/findOne', passport.authenticate('jwt', { session: false }), opcoFindOne);
+// const opcoUpdate = require('./routes/opco/update');
+// app.put('/opco/update', passport.authenticate('jwt', { session: false }), opcoUpdate);
 //packitem
 const packitemCreate = require('./routes/packitem/create');
 app.post('/packitem/create', passport.authenticate('jwt', { session: false }), packitemCreate);
@@ -151,16 +151,16 @@ app.get('/packitem/findOne', passport.authenticate('jwt', { session: false }), p
 const packitemUpdate = require('./routes/packitem/update');
 app.put('/packitem/update', passport.authenticate('jwt', { session: false }), packitemUpdate);
 //po
-const poCreate = require('./routes/po/create');
-app.post('/po/create', passport.authenticate('jwt', { session: false }), poCreate);
-const poDelete = require('./routes/po/delete');
-app.delete('/po/delete', passport.authenticate('jwt', { session: false }), poDelete);
-const poFindAll = require('./routes/po/findAll');
-app.get('/po/findAll', passport.authenticate('jwt', { session: false }), poFindAll);
-const poFindOne = require('./routes/po/findOne');
-app.get('/po/findOne', passport.authenticate('jwt', { session: false }), poFindOne);
-const poUpdate = require('./routes/po/update');
-app.put('/po/update', passport.authenticate('jwt', { session: false }), poUpdate);
+// const poCreate = require('./routes/po/create');
+// app.post('/po/create', passport.authenticate('jwt', { session: false }), poCreate);
+// const poDelete = require('./routes/po/delete');
+// app.delete('/po/delete', passport.authenticate('jwt', { session: false }), poDelete);
+// const poFindAll = require('./routes/po/findAll');
+// app.get('/po/findAll', passport.authenticate('jwt', { session: false }), poFindAll);
+// const poFindOne = require('./routes/po/findOne');
+// app.get('/po/findOne', passport.authenticate('jwt', { session: false }), poFindOne);
+// const poUpdate = require('./routes/po/update');
+// app.put('/po/update', passport.authenticate('jwt', { session: false }), poUpdate);
 //project
 const projectCreate = require('./routes/project/create');
 app.post('/project/create', passport.authenticate('jwt', { session: false }), projectCreate);
@@ -173,16 +173,16 @@ app.get('/project/findOne', passport.authenticate('jwt', { session: false }), pr
 const projectUpdate = require('./routes/project/update');
 app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
 //sub
-const subCreate = require('./routes/sub/create');
-app.post('/sub/create', passport.authenticate('jwt', { session: false }), subCreate);
-const subDelete = require('./routes/sub/delete');
-app.delete('/sub/delete', passport.authenticate('jwt', { session: false }), subDelete);
-const subFindAll = require('./routes/sub/findAll');
-app.get('/sub/findAll', passport.authenticate('jwt', { session: false }), subFindAll);
-const subFindOne = require('./routes/sub/findOne');
-app.get('/sub/findOne', passport.authenticate('jwt', { session: false }), subFindOne);
-const subUpdate = require('./routes/sub/update');
-app.put('/sub/update', passport.authenticate('jwt', { session: false }), subUpdate);
+// const subCreate = require('./routes/sub/create');
+// app.post('/sub/create', passport.authenticate('jwt', { session: false }), subCreate);
+// const subDelete = require('./routes/sub/delete');
+// app.delete('/sub/delete', passport.authenticate('jwt', { session: false }), subDelete);
+// const subFindAll = require('./routes/sub/findAll');
+// app.get('/sub/findAll', passport.authenticate('jwt', { session: false }), subFindAll);
+// const subFindOne = require('./routes/sub/findOne');
+// app.get('/sub/findOne', passport.authenticate('jwt', { session: false }), subFindOne);
+// const subUpdate = require('./routes/sub/update');
+// app.put('/sub/update', passport.authenticate('jwt', { session: false }), subUpdate);
 //supplier
 const supplierCreate = require('./routes/supplier/create');
 app.post('/supplier/create', passport.authenticate('jwt', { session: false }), supplierCreate);

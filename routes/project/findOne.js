@@ -9,8 +9,9 @@ router.get('/', (req, res) => {
         path: 'pos',
         populate: {
             path: 'subs'
-        }
-    }).exec(function (err, project) {
+        },
+        path: 'collitypes'})
+    .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({
                     message: fault(1301).message

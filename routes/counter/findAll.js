@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Project = require('../../models/Project');
+const Counter = require('../../models/Counter');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
@@ -8,11 +8,11 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    Project.find(data, function (err, project) {
-        if (!project) {
+    Counter.find(data, function (err, counter) {
+        if (!counter) {
             return res.status(400).json({
-                message: fault(1304).message
-                //"1304": "No Project match",
+                message: fault(1804).message
+                //"1804": "No Counter match",
             });
         }
         else {

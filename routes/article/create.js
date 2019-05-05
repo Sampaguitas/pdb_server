@@ -4,14 +4,6 @@ const Article = require('../../models/Article');
 const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
-    // Article.findOne({ vlArtNo: req.body.vlArtNo }).then(article => {
-    //     if (article) {
-    //         return res.status(400).json({
-    //             message: fault(0100).message
-    //             //"0100": "Article already exists",
-    //         });
-    //     } else {
-
             const newArticle = new Article({
                 erp: req.body.erp,
                 vlArtNo: req.body.vlArtNo,

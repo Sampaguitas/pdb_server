@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 //Create Schema
 const ProjectSchema = new Schema({
     number: {
-        type: String,
-        required: true
+        type: Number,
     },
     name: {
         type: String,

@@ -107,6 +107,12 @@ const Errors = {
     "1702": "UserSetting has been updated",
     "1703": "UserSetting has been deleted",
     "1704": "No UserSetting match",
+    //18**: "Counter Errors",
+    "1800": "Counter already exists",
+    "1801": "Counter does not exist",
+    "1802": "Counter has been updated",
+    "1803": "Counter has been deleted",
+    "1804": "No Counter match",
 }
 
 module.exports = function generateError(ErrCode) {

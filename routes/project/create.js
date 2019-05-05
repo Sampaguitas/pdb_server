@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Project = require('../../models/Project');
 const fault = require('../../utilities/Errors');
+const common = require('../../middleware/common')
 
 router.post('/', (req, res) => {
     Project.findOne({ name: req.body.name }).then(project => {
@@ -12,7 +13,7 @@ router.post('/', (req, res) => {
             });
         } else {
             const newProject = new Project({
-                number:req.body.number,
+                number: common.getNextSequence("projectNumber"), //req.body.number,
                 name: req.body.name,
                 erpId: req.body.erpId,
                 localeId: req.body.localeId,
@@ -24,32 +25,6 @@ router.post('/', (req, res) => {
                 .save()
                 .then(project => { 
                     res.json(project);
-
-                    // const newField1 = new newField({
-                    //     name: 'netWeight',
-                    //     custom: 'Net Weight',
-                    //     type: 'Number',
-                    //     fromTbl: 'articles',
-                    //     project: project._id,
-                    // });
-                    // newField1
-                    // .save()
-                    // .then(field => res.json(field))
-                    // .catch(err => res.json(err));
-                    
-                    // const newField2 = new newField({
-                    //     name: 'hsCode',
-                    //     custom: 'HS Code',
-                    //     type: 'Number',
-                    //     fromTbl: 'articles',
-                    //     project: project._id,
-                    // });
-                    // newField2
-                    // .save()
-                    // .then(field => res.json(field))
-                    // .catch(err => res.json(err));
-
-
                 })
                 .catch(err => res.json(err));
         }

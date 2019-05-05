@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
             });
         }
         else {
-            return res.json(project);
+            return res.json(counter);
         }
     });
 });

@@ -10,8 +10,8 @@ router.post('/', (req, res) => {
             });
             newCounter
                 .save()
-                .then(project => { 
-                    res.json(project);
+                .then(counter => { 
+                    res.json(counter);
                 })
                 .catch(err => res.json(err));
 });

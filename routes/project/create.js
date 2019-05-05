@@ -13,7 +13,8 @@ router.post('/', (req, res) => {
             });
         } else {
             const newProject = new Project({
-                //number: req.body.number,
+                // _id: req.body._id,
+                // number: req.body.number,
                 name: req.body.name,
                 erpId: req.body.erpId,
                 localeId: req.body.localeId,

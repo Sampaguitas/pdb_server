@@ -4,6 +4,9 @@ const Counter = require('./Counter');
 
 //Create Schema
 const ProjectSchema = new Schema({
+    // _id: {
+    //     type: mongoose.SchemaTypes.ObjectId,
+    // },
     number: {
         type: Number,
     },
@@ -67,7 +70,7 @@ ProjectSchema.pre("save", function (next) {
         self.number = counter.seq;
         next();
     });
-})
+});
 
 ProjectSchema.virtual("pos", {
     ref: "pos",

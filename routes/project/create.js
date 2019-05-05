@@ -4,13 +4,6 @@ const Project = require('../../models/Project');
 const Counter = require('../../models/Counter');
 const fault = require('../../utilities/Errors');
 
-function getNextSequence(name) {
-    var ret = Counter.findByIdAndUpdate(name, { $inc: { seq: 1 }});
-    return ret.seq;
- }
-
-
-
 router.post('/', (req, res) => {
     Project.findOne({ name: req.body.name }).then(project => {
         if (project) {
@@ -20,7 +13,7 @@ router.post('/', (req, res) => {
             });
         } else {
             const newProject = new Project({
-                number: getNextSequence("projectNumber"), //req.body.number,
+                //number: req.body.number,
                 name: req.body.name,
                 erpId: req.body.erpId,
                 localeId: req.body.localeId,

@@ -10,7 +10,6 @@ router.post('/', (req, res) => {
                 forSelect: req.body.forSelect,
                 forShow: req.body.forShow,
                 screen: req.body.screen,
-                projectId: req.body.projectId,
                 fieldId: req.body.fieldId,
                 daveId: req.body.daveId,
             });

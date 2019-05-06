@@ -18,10 +18,6 @@ const FieldNameSchema = new Schema({
     screen: {
         type: Number,
     },
-    projectId: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects'   
-    },
     fieldId:{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'fields'     

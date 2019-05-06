@@ -18,7 +18,6 @@ router.post('/', (req, res) => {
                 row1: req.body.row1,
                 row2: req.body.row2,
                 type: req.body.type,
-                projectId: req.body.projectId,
                 fieldId: req.body.fieldId,
                 daveId: req.body.daveId,
             });

@@ -43,10 +43,6 @@ const DocDefinitionSchema = new Schema({
     type: {
         type: String,
     },
-    projectId: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects'   
-    },
     fieldId:{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'fields'     

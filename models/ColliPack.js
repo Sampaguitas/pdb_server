@@ -7,7 +7,7 @@ const ColliPackSchema = new Schema({
         type: String,
     },
     colliNr: {
-        type: Number,
+        type: String,
     },
     type: {
         type: String,

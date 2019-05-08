@@ -11,6 +11,7 @@ router.post('/', (req, res) => {
                 mtrs: req.body.mtrs,
                 pcs: req.body.pcs,
                 mmt: req.body.mmt,
+                mmtDate: req.body.mmtDate,
                 plDate: req.body.plDate,
                 invTaxNr: req.body.invTaxNr,
                 invTaxDate: req.body.invTaxDate,

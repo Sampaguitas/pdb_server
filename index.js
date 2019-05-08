@@ -40,6 +40,17 @@ const articleFindOne = require('./routes/article/findOne');
 app.get('/article/findOne', passport.authenticate('jwt', { session: false }), articleFindOne);
 const articleUpdate = require('./routes/article/update');
 app.put('/article/update', passport.authenticate('jwt', { session: false }), articleUpdate);
+//certificate
+const certificateCreate = require('./routes/certificate/create');
+app.post('/certificate/create', passport.authenticate('jwt', { session: false }), certificateCreate);
+const certificateDelete = require('./routes/certificate/delete');
+app.delete('/certificate/delete', passport.authenticate('jwt', { session: false }), certificateDelete);
+const certificateFindAll = require('./routes/certificate/findAll');
+app.get('/certificate/findAll', passport.authenticate('jwt', { session: false }), certificateFindAll);
+const certificateFindOne = require('./routes/certificate/findOne');
+app.get('/certificate/findOne', passport.authenticate('jwt', { session: false }), certificateFindOne);
+const certificateUpdate = require('./routes/certificate/update');
+app.put('/certificate/update', passport.authenticate('jwt', { session: false }), certificateUpdate);
 //collipack
 const collipackCreate = require('./routes/collipack/create');
 app.post('/collipack/create', passport.authenticate('jwt', { session: false }), collipackCreate);
@@ -183,6 +194,17 @@ const projectFindOne = require('./routes/project/findOne');
 app.get('/project/findOne', passport.authenticate('jwt', { session: false }), projectFindOne);
 const projectUpdate = require('./routes/project/update');
 app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
+//screen
+// const screenCreate = require('./routes/screen/create');
+// app.post('/screen/create', passport.authenticate('jwt', { session: false }), screenCreate);
+// const screenDelete = require('./routes/screen/delete');
+// app.delete('/screen/delete', passport.authenticate('jwt', { session: false }), screenDelete);
+// const screenFindAll = require('./routes/screen/findAll');
+// app.get('/screen/findAll', passport.authenticate('jwt', { session: false }), screenFindAll);
+// const screenFindOne = require('./routes/screen/findOne');
+// app.get('/screen/findOne', passport.authenticate('jwt', { session: false }), screenFindOne);
+// const screenUpdate = require('./routes/screen/update');
+// app.put('/screen/update', passport.authenticate('jwt', { session: false }), screenUpdate);
 //sub
 const subCreate = require('./routes/sub/create');
 app.post('/sub/create', passport.authenticate('jwt', { session: false }), subCreate);

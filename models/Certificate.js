@@ -2,141 +2,110 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create Schema
-const PackItemSchema = new Schema({
-    plNr: {
+const CertificateSchema = new Schema({
+    cif: {
+        type: String,
+    },
+    heatNr: {
+        type: String,
+    },
+    udfCtX1: {
+        type: String,
+    },
+    udfCtX2: {
+        type: String,
+    },
+    udfCtX3: {
+        type: String,
+    },
+    udfCtX4: {
+        type: String,
+    },
+    udfCtX5: {
+        type: String,
+    },
+    udfCtX6: {
+        type: String,
+    },
+    udfCtX7: {
+        type: String,
+    },
+    udfCtX8: {
+        type: String,
+    },
+    udfCtX9: {
+        type: String,
+    },
+    udfCtX10: {
+        type: String,
+    },
+    udfCt91: {
         type: Number,
     },
-    colliNr: {
-        type: String,
-    },
-    mtrs: {
+    udfCt92: {
         type: Number,
     },
-    pcs: {
+    udfCt93: {
         type: Number,
     },
-    mmt: {
-        type: String,
-    },
-    mmtDate: {
-        type: Date,
-    },
-    plDate: {
-        type: Date,
-    },
-    invTaxNr: {
-        type: String,
-    },
-    invTaxDate: {
-        type: Date,
-    },
-    invCustNr: {
-        type: String,
-    },
-    invCustDate: {
-        type: Date,
-    },
-    udfPiX1: {
-        type: String,
-    },
-    udfPiX2: {
-        type: String,
-    },
-    udfPiX3: {
-        type: String,
-    },
-    udfPiX4: {
-        type: String,
-    },
-    udfPiX5: {
-        type: String,
-    },
-    udfPiX6: {
-        type: String,
-    },
-    udfPiX7: {
-        type: String,
-    },
-    udfPiX8: {
-        type: String,
-    },
-    udfPiX9: {
-        type: String,
-    },
-    udfPiX10: {
-        type: String,
-    },
-    udfPi91: {
+    udfCt94: {
         type: Number,
     },
-    udfPi92: {
+    udfCt95: {
         type: Number,
     },
-    udfPi93: {
+    udfCt96: {
         type: Number,
     },
-    udfPi94: {
+    udfCt97: {
         type: Number,
     },
-    udfPi95: {
+    udfCt98: {
         type: Number,
     },
-    udfPi96: {
+    udfCt99: {
         type: Number,
     },
-    udfPi97: {
+    udfCt910: {
         type: Number,
     },
-    udfPi98: {
-        type: Number,
-    },
-    udfPi99: {
-        type: Number,
-    },
-    udfPi910: {
-        type: Number,
-    },
-    udfPiD1: {
+    udfCtD1: {
         type: Date,
     },
-    udfPiD2: {
+    udfCtD2: {
         type: Date,
     },
-    udfPiD3: {
+    udfCtD3: {
         type: Date,
     },
-    udfPiD4: {
+    udfCtD4: {
         type: Date,
     },
-    udfPiD5: {
+    udfCtD5: {
         type: Date,
     },
-    udfPiD6: {
+    udfCtD6: {
         type: Date,
     },
-    udfPiD7: {
+    udfCtD7: {
         type: Date,
     },
-    udfPiD8: {
+    udfCtD8: {
         type: Date,
     },
-    udfPiD9: {
+    udfCtD9: {
         type: Date,
     },
-    udfPiD10: {
+    udfCtD10: {
         type: Date,
     },
     subId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'subs'  
-    },
-    packId: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'collipacks'  
+        ref: 'subs'
     },
     daveId: {
         type: Number,
     }
 });
 
-module.exports = PackItem = mongoose.model('packitems', PackItemSchema);
+module.exports = Certificate = mongoose.model('certificates', CertificateSchema);

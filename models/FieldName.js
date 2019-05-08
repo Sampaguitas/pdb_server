@@ -5,9 +5,11 @@ const Schema = mongoose.Schema;
 const FieldNameSchema = new Schema({
     align: {
         type: String,
+        default: 'left',
     },
     edit: {
         type: Boolean,
+        default: false,
     },
     forSelect:{
         type: Number,
@@ -16,7 +18,8 @@ const FieldNameSchema = new Schema({
         type: Number,
     },
     screen: {
-        type: Number,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'screens' 
     },
     fieldId:{
         type: mongoose.SchemaTypes.ObjectId,

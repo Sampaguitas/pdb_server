@@ -69,7 +69,7 @@ const PoSchema = new Schema({
     vlArtNo: {
         type: Number,
     },
-    supcontrDate: {
+    supContrDate: {
         type: Date,
     },
     comments: {

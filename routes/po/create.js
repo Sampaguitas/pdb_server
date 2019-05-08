@@ -6,6 +6,7 @@ const fault = require('../../utilities/Errors');
 router.post('/', (req, res) => {
 
             const newPo = new Po({
+                //_id: req.body.id,
                 clPo: req.body.clPo,
                 clPoRev: req.body.clPoRev,
                 clPoItem: req.body.clPoItem,
@@ -27,7 +28,7 @@ router.post('/', (req, res) => {
                 supplier: req.body.supplier,
                 supSo: req.body.supSo,
                 supSoItem: req.body.supSoItem,
-                supcontrDate: req.body.supcontrDate,
+                supContrDate: req.body.supContrDate,
                 comments: req.body.comments,
                 vlDelCondition: req.body.vlDelCondition,
                 supDelCondition: req.body.supDelCondition,

@@ -113,6 +113,18 @@ const Errors = {
     "1802": "Counter has been updated",
     "1803": "Counter has been deleted",
     "1804": "No Counter match",
+    //19**: "Certificate Errors",
+    "1900": "Certificate already exists",
+    "1901": "Certificate does not exist",
+    "1902": "Certificate has been updated",
+    "1903": "Certificate has been deleted",
+    "1904": "No Certificate match",
+    //20**: "Screen Errors",
+    "2000": "Screen already exists",
+    "2001": "Screen does not exist",
+    "2002": "Screen has been updated",
+    "2003": "Screen has been deleted",
+    "2004": "No Screen match",
 }
 
 module.exports = function generateError(ErrCode) {

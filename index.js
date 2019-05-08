@@ -195,16 +195,16 @@ app.get('/project/findOne', passport.authenticate('jwt', { session: false }), pr
 const projectUpdate = require('./routes/project/update');
 app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
 //screen
-// const screenCreate = require('./routes/screen/create');
-// app.post('/screen/create', passport.authenticate('jwt', { session: false }), screenCreate);
-// const screenDelete = require('./routes/screen/delete');
-// app.delete('/screen/delete', passport.authenticate('jwt', { session: false }), screenDelete);
-// const screenFindAll = require('./routes/screen/findAll');
-// app.get('/screen/findAll', passport.authenticate('jwt', { session: false }), screenFindAll);
-// const screenFindOne = require('./routes/screen/findOne');
-// app.get('/screen/findOne', passport.authenticate('jwt', { session: false }), screenFindOne);
-// const screenUpdate = require('./routes/screen/update');
-// app.put('/screen/update', passport.authenticate('jwt', { session: false }), screenUpdate);
+const screenCreate = require('./routes/screen/create');
+app.post('/screen/create', passport.authenticate('jwt', { session: false }), screenCreate);
+const screenDelete = require('./routes/screen/delete');
+app.delete('/screen/delete', passport.authenticate('jwt', { session: false }), screenDelete);
+const screenFindAll = require('./routes/screen/findAll');
+app.get('/screen/findAll', passport.authenticate('jwt', { session: false }), screenFindAll);
+const screenFindOne = require('./routes/screen/findOne');
+app.get('/screen/findOne', passport.authenticate('jwt', { session: false }), screenFindOne);
+const screenUpdate = require('./routes/screen/update');
+app.put('/screen/update', passport.authenticate('jwt', { session: false }), screenUpdate);
 //sub
 const subCreate = require('./routes/sub/create');
 app.post('/sub/create', passport.authenticate('jwt', { session: false }), subCreate);

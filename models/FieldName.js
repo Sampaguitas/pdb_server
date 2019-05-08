@@ -17,7 +17,7 @@ const FieldNameSchema = new Schema({
     forShow: {
         type: Number,
     },
-    screen: {
+    screenId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'screens' 
     },

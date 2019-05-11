@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    Project.find(data).populate('erp')
+    Project.find(data).populate('erp', 'name')
     .exec(function (err, project) {
         if (!project) {
             return res.status(400).json({

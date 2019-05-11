@@ -8,7 +8,8 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    Project.find(data, function (err, project) {
+    Project.find(data).populate('erp')
+    .exec(function (err, project) {
         if (!project) {
             return res.status(400).json({
                 message: fault(1304).message

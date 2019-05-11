@@ -86,6 +86,13 @@ ProjectSchema.virtual("collitypes", {
     justOne: false
 });
 
+ProjectSchema.virtual("erp", {
+    ref: "erps",
+    localField: "erpId",
+    foreignField: "_id",
+    justOne: true
+});
+
 ProjectSchema.set('toJSON', { virtuals: true });
 
 

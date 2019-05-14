@@ -33,6 +33,15 @@ const UserSchema = new Schema({
     }
 });
 
+UserSchema.virtual("opco", {
+    ref: "opcos",
+    localField: "opcoId",
+    foreignField: "_id",
+    justOne: true
+});
+
+UserSchema.set('toJSON', { virtuals: true });
+
 //module.exports = mongoose.model('users', UserSchema);
 module.exports= User = mongoose.model('users', UserSchema);
 

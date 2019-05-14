@@ -8,7 +8,8 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    User.find(data, function (err, user) {
+    User.find(data).populate('opco', 'name')
+    .exec(function (err, user) {
         if (!user) {
             return res.status(400).json({
                 message: fault(1604).message

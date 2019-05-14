@@ -5,7 +5,8 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    User.findById(id, function (err, user) {
+    User.findById(id).populate('opco', 'name')
+    .exec(function (err, user) {
         if (!user) {
             return res.status(404).json({
                 message: fault(1601).message

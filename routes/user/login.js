@@ -9,7 +9,9 @@ const fault = require('../../utilities/Errors');
 router.post('/', (req, res) => {
     const email = req.body.email.toLowerCase();
     const password = req.body.password;
-    User.findOne({ email }, { password:1 , userName:1, name: 1, email: 1, isAdmin:1, opcoId:1 }).then(user => {
+    User.findOne({ email }, { password:1 , userName:1, name: 1, email: 1, isAdmin:1, opcoId:1 })
+    .populate('opco', 'name')
+    .then(user => {
         if (!user) {
             return res.status(404).json({
                 message: fault(1601).message
@@ -18,7 +20,7 @@ router.post('/', (req, res) => {
         }
         bcrypt.compare(password, user.password).then(isMatch => {
             if (isMatch) {                          
-                const payload = { id: user.id, userName: user.userName, name: user.name, email: user.email, isAdmin: user.isAdmin, opcoId: user.opcoId };
+                const payload = { id: user.id, userName: user.userName, name: user.name, email: user.email, isAdmin: user.isAdmin, opcoId: user.opcoId, opco: user.opco.name };
                 jwt.sign(
                     payload,
                     keys.secret,
@@ -32,7 +34,8 @@ router.post('/', (req, res) => {
                             name: payload.name,
                             email: payload.email,
                             isAdmin: payload.isAdmin,
-                            opcoId: payload.opcoId
+                            opcoId: payload.opcoId,
+                            opco: payload.opco
                         });
                     }
                 );

@@ -47,7 +47,7 @@ AccessSchema.virtual("user", {
     justOne: true
 });
 
-UserSchema.set('toJSON', { virtuals: true });
+AccessSchema.set('toJSON', { virtuals: true });
 
 module.exports= Access = mongoose.model('access', AccessSchema);
 

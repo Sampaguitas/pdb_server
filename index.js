@@ -30,16 +30,16 @@ mongoose
 
 // Protected Routes
 //access
-// const accessCreate = require('./routes/access/create');
-// app.post('/access/create', passport.authenticate('jwt', { session: false }), accessCreate);
-// const accessDelete = require('./routes/access/delete');
-// app.delete('/access/delete', passport.authenticate('jwt', { session: false }), accessDelete);
-// const accessFindAll = require('./routes/access/findAll');
-// app.get('/access/findAll', passport.authenticate('jwt', { session: false }), accessFindAll);
-// const accessFindOne = require('./routes/access/findOne');
-// app.get('/access/findOne', passport.authenticate('jwt', { session: false }), accessFindOne);
-// const accessUpdate = require('./routes/access/update');
-// app.put('/access/update', passport.authenticate('jwt', { session: false }), accessUpdate);
+const accessCreate = require('./routes/access/create');
+app.post('/access/create', passport.authenticate('jwt', { session: false }), accessCreate);
+const accessDelete = require('./routes/access/delete');
+app.delete('/access/delete', passport.authenticate('jwt', { session: false }), accessDelete);
+const accessFindAll = require('./routes/access/findAll');
+app.get('/access/findAll', passport.authenticate('jwt', { session: false }), accessFindAll);
+const accessFindOne = require('./routes/access/findOne');
+app.get('/access/findOne', passport.authenticate('jwt', { session: false }), accessFindOne);
+const accessUpdate = require('./routes/access/update');
+app.put('/access/update', passport.authenticate('jwt', { session: false }), accessUpdate);
 //article
 const articleCreate = require('./routes/article/create');
 app.post('/article/create', passport.authenticate('jwt', { session: false }), articleCreate);

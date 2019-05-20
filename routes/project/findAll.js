@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     Project.find(data)
     .populate('erp', 'name')
     .populate({
-        path: 'access',
+        path: 'accesses',
         populate: ('user', 'name')
     }).exec(function (err, project) {
         if (!project) {

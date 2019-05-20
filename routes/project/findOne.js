@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
     const id = req.query.id
     Project.findById(id)
     .populate({
-        path: 'access',
+        path: 'accesses',
         populate: ('user', 'name')
     })
     .populate({

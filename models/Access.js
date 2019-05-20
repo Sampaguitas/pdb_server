@@ -30,6 +30,9 @@ const AccessSchema = new Schema({
     userId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'users'
+    },
+    daveId: {
+        type: Number,
     }
 });
 
@@ -49,6 +52,6 @@ AccessSchema.virtual("user", {
 
 AccessSchema.set('toJSON', { virtuals: true });
 
-module.exports= Access = mongoose.model('access', AccessSchema);
+module.exports= Access = mongoose.model('accesses', AccessSchema);
 
 

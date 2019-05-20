@@ -22,6 +22,7 @@ router.post('/', (req, res) => {
                 isConfiguration: req.body.isConfiguration,
                 projectId: req.body.projectId,
                 userId: req.body.userId,
+                daveId: req.body.daveId
             });
             newAccess
                 .save()

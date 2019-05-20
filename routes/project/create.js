@@ -20,7 +20,6 @@ router.post('/', (req, res) => {
                 localeId: req.body.localeId,
                 opcoId: req.body.opcoId,
                 daveId: req.body.daveId,
-                users: req.body.users,
             });
             newProject
                 .save()

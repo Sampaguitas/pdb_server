@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Project = require('../../models/Project');
+const Access = require('../../models/Access');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
@@ -8,20 +8,16 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    Project.find(data)
-    .populate('erp', 'name')
-    .populate({
-        path: 'access',
-        populate: ('user', 'name')
-    }).exec(function (err, project) {
-        if (!project) {
+
+    Access.find(data, function (err, access) {
+        if (!access) {
             return res.status(400).json({
-                message: fault(1304).message
-                //"1304": "No Project match",
+                message: fault(2104).message
+                //"2104": "No Access match",
             });
         }
         else {
-            return res.json(project);
+            return res.json(access);
         }
     });
 });

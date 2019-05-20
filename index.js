@@ -29,6 +29,17 @@ mongoose
 .catch(err => console.log(err));
 
 // Protected Routes
+//access
+const accessCreate = require('./routes/access/create');
+app.post('/access/create', passport.authenticate('jwt', { session: false }), accessCreate);
+const accessDelete = require('./routes/access/delete');
+app.delete('/access/delete', passport.authenticate('jwt', { session: false }), accessDelete);
+const accessFindAll = require('./routes/access/findAll');
+app.get('/access/findAll', passport.authenticate('jwt', { session: false }), accessFindAll);
+const accessFindOne = require('./routes/access/findOne');
+app.get('/access/findOne', passport.authenticate('jwt', { session: false }), accessFindOne);
+const accessUpdate = require('./routes/access/update');
+app.put('/access/update', passport.authenticate('jwt', { session: false }), accessUpdate);
 //article
 const articleCreate = require('./routes/article/create');
 app.post('/article/create', passport.authenticate('jwt', { session: false }), articleCreate);
@@ -184,16 +195,16 @@ app.get('/po/findOne', passport.authenticate('jwt', { session: false }), poFindO
 const poUpdate = require('./routes/po/update');
 app.put('/po/update', passport.authenticate('jwt', { session: false }), poUpdate);
 //project
-const projectCreate = require('./routes/project/create');
-app.post('/project/create', passport.authenticate('jwt', { session: false }), projectCreate);
-const projectDelete = require('./routes/project/delete');
-app.delete('/project/delete', passport.authenticate('jwt', { session: false }), projectDelete);
-const projectFindAll = require('./routes/project/findAll');
-app.get('/project/findAll', passport.authenticate('jwt', { session: false }), projectFindAll);
-const projectFindOne = require('./routes/project/findOne');
-app.get('/project/findOne', passport.authenticate('jwt', { session: false }), projectFindOne);
-const projectUpdate = require('./routes/project/update');
-app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
+// const projectCreate = require('./routes/project/create');
+// app.post('/project/create', passport.authenticate('jwt', { session: false }), projectCreate);
+// const projectDelete = require('./routes/project/delete');
+// app.delete('/project/delete', passport.authenticate('jwt', { session: false }), projectDelete);
+// const projectFindAll = require('./routes/project/findAll');
+// app.get('/project/findAll', passport.authenticate('jwt', { session: false }), projectFindAll);
+// const projectFindOne = require('./routes/project/findOne');
+// app.get('/project/findOne', passport.authenticate('jwt', { session: false }), projectFindOne);
+// const projectUpdate = require('./routes/project/update');
+// app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
 //screen
 const screenCreate = require('./routes/screen/create');
 app.post('/screen/create', passport.authenticate('jwt', { session: false }), screenCreate);

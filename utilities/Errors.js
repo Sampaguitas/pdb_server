@@ -125,6 +125,12 @@ const Errors = {
     "2002": "Screen has been updated",
     "2003": "Screen has been deleted",
     "2004": "No Screen match",
+    //21**: "Access Errors",
+    "2100": "Access already exists",
+    "2101": "Access does not exist",
+    "2102": "Access has been updated",
+    "2103": "Access has been deleted",
+    "2104": "No Access match",
 }
 
 module.exports = function generateError(ErrCode) {

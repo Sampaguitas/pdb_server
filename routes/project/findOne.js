@@ -5,12 +5,19 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    Project.findById(id).populate({
+    Project.findById(id)
+    .populate({
+        path: 'access',
+        populate: ('user', 'name')
+    })
+    .populate({
         path: 'pos',
         populate: {
             path: 'subs'
         }
-    }).populate('collitypes')
+    })
+    .populate('collitypes')
+    .populate('erp')
     .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({

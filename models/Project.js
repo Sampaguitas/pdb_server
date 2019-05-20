@@ -4,9 +4,9 @@ const Counter = require('./Counter');
 
 //Create Schema
 const ProjectSchema = new Schema({
-    // _id: {
-    //     type: mongoose.SchemaTypes.ObjectId,
-    // },
+    _id: {
+        type: mongoose.SchemaTypes.ObjectId,
+    },
     number: {
         type: Number,
     },
@@ -32,34 +32,6 @@ const ProjectSchema = new Schema({
     daveId: {
         type: Number,
     },
-    users: [{
-        user: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'users'
-        },
-        roles: {
-            expediting: {
-                type: Boolean,
-                default: false
-            },
-            inspection: {
-                type: Boolean,
-                default: false
-            },
-            shipping: {
-                type: Boolean,
-                default: false
-            },
-            warehouse: {
-                type: Boolean,
-                default: false
-            },
-            configuration: {
-                type: Boolean,
-                default: false
-            }
-        }
-    }]
 });
 
 ProjectSchema.pre("save", function (next) {
@@ -70,6 +42,13 @@ ProjectSchema.pre("save", function (next) {
         self.number = counter.seq;
         next();
     });
+});
+
+ProjectSchema.virtual("access", {
+    ref: "access",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
 });
 
 ProjectSchema.virtual("pos", {

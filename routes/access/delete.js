@@ -3,7 +3,6 @@ const router = express.Router();
 const Access = require('../../models/Access');
 const fault = require('../../utilities/Errors');
 
-
 router.delete('/', (req, res) => {
     const id = req.query.id
     Access.findByIdAndRemove(id, function (err, access) {

@@ -34,15 +34,15 @@ const ProjectSchema = new Schema({
     },
 });
 
-ProjectSchema.pre("save", function (next) {
-    var self = this;
-    Counter.findOneAndUpdate({_id: 'projectNumber'}, {$inc: { seq: 1} }, function(error, counter)   {
-        if(error)
-            return next(error);
-        self.number = counter.seq;
-        next();
-    });
-});
+// ProjectSchema.pre("save", function (next) {
+//     var self = this;
+//     Counter.findOneAndUpdate({_id: 'projectNumber'}, {$inc: { seq: 1} }, function(error, counter)   {
+//         if(error)
+//             return next(error);
+//         self.number = counter.seq;
+//         next();
+//     });
+// });
 
 ProjectSchema.virtual("access", {
     ref: "access",

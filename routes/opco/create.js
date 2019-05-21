@@ -14,6 +14,7 @@ router.post('/', (req, res) => {
         } else {
 
             const newOpco = new Opco({
+                _id: req.body._id,
                 code: req.body.code,
                 name: req.body.name,
                 address: req.body.address,

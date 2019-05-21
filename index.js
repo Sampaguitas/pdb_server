@@ -95,6 +95,17 @@ const counterFindOne = require('./routes/counter/findOne');
 app.get('/counter/findOne', passport.authenticate('jwt', { session: false }), counterFindOne);
 const counterUpdate = require('./routes/counter/update');
 app.put('/counter/update', passport.authenticate('jwt', { session: false }), counterUpdate);
+//currency
+const currencyCreate = require('./routes/currency/create');
+app.post('/currency/create', passport.authenticate('jwt', { session: false }), currencyCreate);
+const currencyDelete = require('./routes/currency/delete');
+app.delete('/currency/delete', passport.authenticate('jwt', { session: false }), currencyDelete);
+const currencyFindAll = require('./routes/currency/findAll');
+app.get('/currency/findAll', passport.authenticate('jwt', { session: false }), currencyFindAll);
+const currencyFindOne = require('./routes/currency/findOne');
+app.get('/currency/findOne', passport.authenticate('jwt', { session: false }), currencyFindOne);
+const currencyUpdate = require('./routes/currency/update');
+app.put('/currency/update', passport.authenticate('jwt', { session: false }), currencyUpdate);
 //docdefinition
 const docdefinitionCreate = require('./routes/docdefinition/create');
 app.post('/docdefinition/create', passport.authenticate('jwt', { session: false }), docdefinitionCreate);

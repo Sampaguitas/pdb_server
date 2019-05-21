@@ -23,6 +23,11 @@ const OpcoSchema = new Schema({
     country: {
         type: String,
     },
+    localeId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'locales',
+        required: true
+    },
     daveId: {
         type: Number,
     }
@@ -35,7 +40,12 @@ OpcoSchema.virtual("projects", {
     justOne: false
 });
 
-
+OpcoSchema.virtual("locale", {
+    ref: "locales",
+    localField: "localeId",
+    foreignField: "_id",
+    justOne: false
+});
 
 OpcoSchema.set('toJSON', { virtuals: true });
 

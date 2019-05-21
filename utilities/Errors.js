@@ -131,6 +131,12 @@ const Errors = {
     "2102": "Access has been updated",
     "2103": "Access has been deleted",
     "2104": "No Access match",
+    //22**: "Curreny Errors",
+    "2200": "Curreny already exists",
+    "2201": "Curreny does not exist",
+    "2202": "Curreny has been updated",
+    "2203": "Curreny has been deleted",
+    "2204": "No Curreny match",
 }
 
 module.exports = function generateError(ErrCode) {

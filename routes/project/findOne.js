@@ -8,7 +8,9 @@ router.get('/', (req, res) => {
     Project.findById(id)
     .populate({
         path: 'accesses',
-        populate: ('user', 'name')
+        populate: {
+            path: 'user'
+        }
     })
     .populate({
         path: 'pos',

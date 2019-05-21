@@ -20,6 +20,7 @@ router.post('/', (req, res) => {
                 city: req.body.city,
                 zip: req.body.zip,
                 country: req.body.country,
+                localeId: req.body.localeId,
                 daveId: req.body.daveId,
             });
 

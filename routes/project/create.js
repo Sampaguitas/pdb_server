@@ -17,7 +17,6 @@ router.post('/', (req, res) => {
                 // number: req.body.number,
                 name: req.body.name,
                 erpId: req.body.erpId,
-                localeId: req.body.localeId,
                 opcoId: req.body.opcoId,
                 daveId: req.body.daveId,
             });

@@ -19,11 +19,6 @@ const ProjectSchema = new Schema({
         ref: 'erps',
         required: true
     },
-    localeId: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'locales',
-        required: true
-    },
     opcoId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'opcos',

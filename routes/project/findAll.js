@@ -12,8 +12,11 @@ router.get('/', (req, res) => {
     .populate('erp', 'name')
     .populate({
         path: 'accesses',
-        populate: ('user', 'name')
-    }).exec(function (err, project) {
+        populate: {
+            path: 'user'
+        }
+    })
+    .exec(function (err, project) {
         if (!project) {
             return res.status(400).json({
                 message: fault(1304).message

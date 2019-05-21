@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const OpcoSchema = new Schema({
-    _id: {
-        type: mongoose.SchemaTypes.ObjectId,
-    },    
+    // _id: {
+    //     type: mongoose.SchemaTypes.ObjectId,
+    // },    
     code: {
         type: String,
         required: true

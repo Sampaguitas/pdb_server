@@ -4,9 +4,9 @@ const Counter = require('./Counter');
 
 //Create Schema
 const ProjectSchema = new Schema({
-    // _id: {
-    //     type: mongoose.SchemaTypes.ObjectId,
-    // },
+    _id: {
+        type: mongoose.SchemaTypes.ObjectId,
+    },
     number: {
         type: Number,
     },
@@ -19,6 +19,10 @@ const ProjectSchema = new Schema({
         ref: 'erps',
         required: true
     },
+    currencyId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'currencies',
+    },
     opcoId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'opcos',
@@ -29,15 +33,15 @@ const ProjectSchema = new Schema({
     },
 });
 
-ProjectSchema.pre("save", function (next) {
-    var self = this;
-    Counter.findOneAndUpdate({_id: 'projectNumber'}, {$inc: { seq: 1} }, function(error, counter)   {
-        if(error)
-            return next(error);
-        self.number = counter.seq;
-        next();
-    });
-});
+// ProjectSchema.pre("save", function (next) {
+//     var self = this;
+//     Counter.findOneAndUpdate({_id: 'projectNumber'}, {$inc: { seq: 1} }, function(error, counter)   {
+//         if(error)
+//             return next(error);
+//         self.number = counter.seq;
+//         next();
+//     });
+// });
 
 ProjectSchema.virtual("accesses", {
     ref: "accesses",
@@ -63,6 +67,13 @@ ProjectSchema.virtual("collitypes", {
 ProjectSchema.virtual("erp", {
     ref: "erps",
     localField: "erpId",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("currency", {
+    ref: "currencies",
+    localField: "currencyId",
     foreignField: "_id",
     justOne: true
 });

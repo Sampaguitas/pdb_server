@@ -56,7 +56,4 @@ router.put('/', (req, res) => {
     }
 });
 
-
 module.exports = router;
-
-//https://webapplog.com/express-js-and-mongoose-example-building-hackhall/

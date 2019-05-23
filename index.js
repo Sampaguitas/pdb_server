@@ -260,8 +260,8 @@ const userRegister = require('./routes/user/register');
 app.post('/user/register', passport.authenticate('jwt', { session: false }), userRegister);
 const userUpdate = require('./routes/user/update');
 app.put('/user/update', passport.authenticate('jwt', { session: false }), userUpdate);
-const userChangepwd = require('./routes/user/changepwd');
-app.put('/user/changepwd', passport.authenticate('jwt', { session: false }), userChangepwd);
+const userChangePwd = require('./routes/user/changePwd');
+app.put('/user/changePwd', passport.authenticate('jwt', { session: false }), userChangePwd);
 //usersetting
 const usersettingCreate = require('./routes/usersetting/create');
 app.post('/usersetting/create', passport.authenticate('jwt', { session: false }), usersettingCreate);

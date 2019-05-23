@@ -9,7 +9,9 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    Opco.find(data).populate("projects")
+    Opco.find(data)
+    .populate("projects")
+    .populate("locale")
     .exec( function (err, opco) {
         if (!opco) {
             return res.status(400).json({ 

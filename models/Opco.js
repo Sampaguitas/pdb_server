@@ -47,7 +47,7 @@ OpcoSchema.virtual("locale", {
     ref: "locales",
     localField: "localeId",
     foreignField: "_id",
-    justOne: false
+    justOne: true
 });
 
 OpcoSchema.set('toJSON', { virtuals: true });

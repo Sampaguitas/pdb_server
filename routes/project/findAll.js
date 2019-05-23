@@ -8,6 +8,7 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
+    //console.log('user:',req.user);
     Project.find(data)
     .populate('erp', 'name')
     .populate({

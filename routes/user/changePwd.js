@@ -5,7 +5,7 @@ const User = require('../../models/User');
 const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
-    const _id = req.query.id;
+    const _id = req.user._id;
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
     const confirmPassword = req.body.confirmPassword;
@@ -15,6 +15,11 @@ router.put('/', (req, res) => {
             //"1605": "Password does not match",
         });
 
+    } else if (!_id){
+        return res.status(400).json({
+            message: fault(1601).message
+            //"1601": "User does not exist",
+        });
     } else {
         User.findOne({ _id }, { password:1 }).then(user => {
             if (!user) {
@@ -44,7 +49,7 @@ router.put('/', (req, res) => {
                                 else {
                                     return res.status(200).json({
                                         message: fault(1607).message
-                                        //"1607": "Password has been updated",,
+                                        //"1607": "Password has been updated",
                                     });
                                 }
                             } )

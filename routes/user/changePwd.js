@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const User = require('../../models/User');
 const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
-
     const _id = req.query.id;
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
@@ -34,7 +34,7 @@ router.put('/', (req, res) => {
                                 });
                             }
                             const password = hash;
-                            User.findByIdAndUpdate( {_id}, { $set: password}, function (err, pwd) {
+                            User.findByIdAndUpdate({_id: _id}, { $set: { password: password}} , function (err, pwd) {
                                 if (!pwd) {
                                     return res.status(400).json({
                                         message: fault(1601).message

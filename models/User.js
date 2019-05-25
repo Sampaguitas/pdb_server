@@ -24,6 +24,10 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isSuperAdmin: {
+        type: Boolean,
+        default: false  
+    },
     opcoId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'opcos'

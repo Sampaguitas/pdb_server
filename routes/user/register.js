@@ -24,6 +24,7 @@ router.post('/', (req, res) => {
                     email: req.body.email.toLowerCase(),
                     password: req.body.password,
                     isAdmin: req.body.isAdmin,
+                    isSuperAdmin: req.body.isSuperAdmin,
                     opcoId: req.body.opcoId,
                     daveId: req.body.daveId,
                 });

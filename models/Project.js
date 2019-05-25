@@ -71,6 +71,13 @@ ProjectSchema.virtual("erp", {
     justOne: true
 });
 
+ProjectSchema.virtual("opco", {
+    ref: "opcos",
+    localField: "opcoId",
+    foreignField: "_id",
+    justOne: true
+});
+
 ProjectSchema.virtual("currency", {
     ref: "currencies",
     localField: "currencyId",

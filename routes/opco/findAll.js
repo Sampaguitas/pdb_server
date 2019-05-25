@@ -12,6 +12,7 @@ router.get('/', (req, res) => {
     Opco.find(data)
     .populate("projects")
     .populate("locale")
+    .populate("region")
     .exec( function (err, opco) {
         if (!opco) {
             return res.status(400).json({ 

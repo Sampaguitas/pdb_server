@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const OpcoSchema = new Schema({
-    // _id: {
-    //     type: mongoose.SchemaTypes.ObjectId,
-    // },    
+    _id: {
+        type: mongoose.SchemaTypes.ObjectId,
+    },    
     code: {
         type: String,
         required: true
@@ -31,6 +31,11 @@ const OpcoSchema = new Schema({
         ref: 'locales',
         required: true
     },
+    regionId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'regions',
+        required: true
+    },
     daveId: {
         type: Number,
     }
@@ -46,6 +51,13 @@ OpcoSchema.virtual("projects", {
 OpcoSchema.virtual("locale", {
     ref: "locales",
     localField: "localeId",
+    foreignField: "_id",
+    justOne: true
+});
+
+OpcoSchema.virtual("region", {
+    ref: "regions",
+    localField: "regionId",
     foreignField: "_id",
     justOne: true
 });

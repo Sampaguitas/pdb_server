@@ -138,6 +138,12 @@ const Errors = {
     "2202": "Curreny has been updated",
     "2203": "Curreny has been deleted",
     "2204": "No Curreny match",
+    //23**: "Region Errors",
+    "2300": "Region already exists",
+    "2301": "Region does not exist",
+    "2302": "Region has been updated",
+    "2303": "Region has been deleted",
+    "2304": "No Region match",
 }
 
 module.exports = function generateError(ErrCode) {

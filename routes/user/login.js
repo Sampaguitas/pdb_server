@@ -13,6 +13,12 @@ router.post('/', (req, res) => {
     .populate({
         path:'opco', 
         populate: {
+            path: 'region'
+        }
+    })
+    .populate({
+        path:'opco',
+        populate: {
             path: 'locale'
         }
     })
@@ -23,9 +29,23 @@ router.post('/', (req, res) => {
                 //"1601": "User does not exist",
             });
         }
+        
         bcrypt.compare(password, user.password).then(isMatch => {
-            if (isMatch) {                          
-                const payload = { id: user.id, userName: user.userName, name: user.name, email: user.email, isAdmin: user.isAdmin, isSuperAdmin: user.isSuperAdmin, opcoId: user.opcoId, opco: user.opco.name, localeId: user.opco.localeId, locale: user.opco.locale.name };
+            if (isMatch) {                        
+                const payload = { 
+                    id: user.id,
+                    userName: user.userName,
+                    name: user.name,
+                    email: user.email,
+                    isAdmin: user.isAdmin,
+                    isSuperAdmin: user.isSuperAdmin,
+                    opcoId: user.opcoId,
+                    opco: user.opco.name,
+                    regionId: user.opco.regionId,
+                    region: user.opco.region.name,
+                    localeId: user.opco.localeId,
+                    locale: user.opco.locale.name
+                };
                 jwt.sign(
                     payload,
                     keys.secret,
@@ -42,6 +62,8 @@ router.post('/', (req, res) => {
                             isSuperAdmin: payload.isSuperAdmin,
                             opcoId: payload.opcoId,
                             opco: payload.opco,
+                            regionId: payload.regionId,
+                            region: payload.region,
                             localeId: payload.localeId,
                             locale: payload.locale
                         });

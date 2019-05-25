@@ -17,6 +17,9 @@ router.get('/', (req, res) => {
         path:'opco', 
             populate: {
                 path: 'locale'
+            },
+            populate: {
+                path: 'region'
             }
     })
     .then(foundUser=>{
@@ -32,8 +35,10 @@ router.get('/', (req, res) => {
             path: 'opco',
             populate: {
                 path: 'locale'
+            },
+            populate: {
+                path: 'region'
             }
-    
         })
         .exec(function (err, projects) {
             if (!projects) {
@@ -50,7 +55,7 @@ router.get('/', (req, res) => {
                     projects.forEach(function(project) {
                         if(project.number === 999999){
                             userProjects.push(project);
-                        } else if (_.isEqual(foundUser.opco.localeId, project.opco.localeId)) {
+                        } else if (_.isEqual(foundUser.opco.regionId, project.opco.regionId)) {
                             userProjects.push(project);
                         } else {
                             project.accesses.forEach(function(access) {

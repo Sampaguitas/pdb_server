@@ -14,7 +14,7 @@ router.post('/', (req, res) => {
         } else {
 
             const newOpco = new Opco({
-                // _id: req.body._id,
+                _id: req.body._id,
                 code: req.body.code,
                 name: req.body.name,
                 address: req.body.address,
@@ -22,6 +22,7 @@ router.post('/', (req, res) => {
                 zip: req.body.zip,
                 country: req.body.country,
                 localeId: req.body.localeId,
+                regionId:req.body.regionId,
                 daveId: req.body.daveId,
             });
 

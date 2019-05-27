@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const OpcoSchema = new Schema({
-    _id: {
-        type: mongoose.SchemaTypes.ObjectId,
-    },    
+    // _id: {
+    //     type: mongoose.SchemaTypes.ObjectId,
+    // },    
     code: {
         type: String,
         required: true
@@ -65,8 +65,3 @@ OpcoSchema.virtual("region", {
 OpcoSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('opcos', OpcoSchema);
-//module.exports= User = mongoose.model('users', UserSchema);
-
-// CurrencySchema.virtual('name').get(function () {
-//     return this.code + ' - ' + this.description
-// })

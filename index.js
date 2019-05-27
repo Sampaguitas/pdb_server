@@ -173,16 +173,16 @@ app.get('/locale/findOne', passport.authenticate('jwt', { session: false }), loc
 const localeUpdate = require('./routes/locale/update');
 app.put('/locale/update', passport.authenticate('jwt', { session: false }), localeUpdate);
 //opco
-// const opcoCreate = require('./routes/opco/create');
-// app.post('/opco/create', passport.authenticate('jwt', { session: false }), opcoCreate);
-// const opcoDelete = require('./routes/opco/delete');
-// app.delete('/opco/delete', passport.authenticate('jwt', { session: false }), opcoDelete);
-// const opcoFindAll = require('./routes/opco/findAll');
-// app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
-// const opcoFindOne = require('./routes/opco/findOne');
-// app.get('/opco/findOne', passport.authenticate('jwt', { session: false }), opcoFindOne);
-// const opcoUpdate = require('./routes/opco/update');
-// app.put('/opco/update', passport.authenticate('jwt', { session: false }), opcoUpdate);
+const opcoCreate = require('./routes/opco/create');
+app.post('/opco/create', passport.authenticate('jwt', { session: false }), opcoCreate);
+const opcoDelete = require('./routes/opco/delete');
+app.delete('/opco/delete', passport.authenticate('jwt', { session: false }), opcoDelete);
+const opcoFindAll = require('./routes/opco/findAll');
+app.get('/opco/findAll', passport.authenticate('jwt', { session: false }), opcoFindAll);
+const opcoFindOne = require('./routes/opco/findOne');
+app.get('/opco/findOne', passport.authenticate('jwt', { session: false }), opcoFindOne);
+const opcoUpdate = require('./routes/opco/update');
+app.put('/opco/update', passport.authenticate('jwt', { session: false }), opcoUpdate);
 //packitem
 const packitemCreate = require('./routes/packitem/create');
 app.post('/packitem/create', passport.authenticate('jwt', { session: false }), packitemCreate);

@@ -8,7 +8,12 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    User.find(data).populate('opco', 'name')
+    User.find(data).populate({
+        path: 'opco',
+        populate: {
+            path: 'region'
+        }
+    })
     .exec(function (err, user) {
         if (!user) {
             return res.status(400).json({

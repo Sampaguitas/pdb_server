@@ -262,6 +262,10 @@ const userUpdate = require('./routes/user/update');
 app.put('/user/update', passport.authenticate('jwt', { session: false }), userUpdate);
 const userChangePwd = require('./routes/user/changePwd');
 app.put('/user/changePwd', passport.authenticate('jwt', { session: false }), userChangePwd);
+const userSetAdmin = require('./routes/user/setAdmin');
+app.put('/user/setAdmin', passport.authenticate('jwt', { session: false }), userSetAdmin);
+const userSetSpAdmin = require('./routes/user/setSpAdmin');
+app.put('/user/setSpAdmin', passport.authenticate('jwt', { session: false }), userSetSpAdmin);
 //usersetting
 const usersettingCreate = require('./routes/usersetting/create');
 app.post('/usersetting/create', passport.authenticate('jwt', { session: false }), usersettingCreate);

@@ -5,21 +5,9 @@ const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     var data = {};
-    // var roles = [
-    //     'admin',
-    //     'superUser',
-    //     'expediter',
-    //     'inspector',
-    //     'shipper',
-    //     'warehouse'
-    // ]
 
     Object.keys(req.body).forEach(function (k) {
-        // if (roles.indexOf(k) > -1) {
-        //     data['roles.' + k] = req.body[k];
-        // } else {
             data[k] = req.body[k];
-        // }
     });
 
     const id = req.query.id
@@ -38,7 +26,6 @@ router.put('/', (req, res) => {
             }
     });
 });
-
 
 module.exports = router;
 

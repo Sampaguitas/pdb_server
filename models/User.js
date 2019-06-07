@@ -46,6 +46,21 @@ UserSchema.virtual("opco", {
 
 UserSchema.set('toJSON', { virtuals: true });
 
+// UserSchema.pre("findByIdAndUpdate", function (next) {
+//     console.log('toto');
+//     var self = this;
+//     User.find({ name: self.name}, function(error, user)   {
+//         if(error)
+//             return next(error);
+//         if (!user) {
+//             next();
+//         } else {
+//             console.log ('user already exists');
+//             next(new Error("User exists!"));
+//         }
+//     });
+// });
+
 //module.exports = mongoose.model('users', UserSchema);
 module.exports= User = mongoose.model('users', UserSchema);
 

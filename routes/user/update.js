@@ -11,7 +11,7 @@ router.put('/', (req, res) => {
     });
 
     const id = req.query.id
-    User.findByIdAndUpdate(id, { $set: data }, function (err, user) {
+    User.findOneAndUpdate({_id: id }, { $set: data }, function (err, user) {
             if (!user) {
                 return res.status(400).json({
                     message: fault(1601).message

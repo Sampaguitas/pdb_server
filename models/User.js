@@ -46,17 +46,16 @@ UserSchema.virtual("opco", {
 
 UserSchema.set('toJSON', { virtuals: true });
 
-// UserSchema.pre("findByIdAndUpdate", function (next) {
-//     console.log('toto');
+// UserSchema.pre("findOneAndUpdate", function (next) {
 //     var self = this;
-//     User.find({ name: self.name}, function(error, user)   {
-//         if(error)
-//             return next(error);
-//         if (!user) {
-//             next();
+//     User.find({name: self.name}, function(err, user) {
+//         if(err) {
+//             next(new Error(err));
+//         } else if(user) {
+//             console.log('user already exist');
+//             next(new Error('user already exist'));
 //         } else {
-//             console.log ('user already exists');
-//             next(new Error("User exists!"));
+//             next();
 //         }
 //     });
 // });

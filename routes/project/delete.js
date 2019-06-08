@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../../models/Project');
+const Access = require('../../models/Access');
 const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
@@ -13,6 +14,11 @@ router.delete('/', (req, res) => {
             });
         }
         else {
+            Access.find({ projectId: project._id }).then(access => {
+                access.map(user => {
+                    Access.findByIdAndRemove(user._id);
+                });
+            });
             return res.status(200).json({
                 message: fault(1303).message
                 //"1303": "Project has been deleted",

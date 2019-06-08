@@ -43,6 +43,10 @@ ProjectSchema.pre("save", function (next) {
     });
 });
 
+ProjectSchema.post('save', function(doc) {
+    console.log('%s has been saved', doc._id);
+  });
+
 ProjectSchema.virtual("accesses", {
     ref: "accesses",
     localField: "_id",

@@ -6,11 +6,9 @@ const Access = require('../../models/Access');
 
 const _ =require('lodash');
 
-// function projectUsers(users) {
-//     return users.filter(function(user) {
-//         return user.isExpediting || user.isInspection || user.isShipping || user.isWarehouse || user.isConfiguration;
-//     });
-// }
+function hasRoles(user) {
+        return user.isExpediting || user.isInspection || user.isShipping || user.isWarehouse || user.isConfiguration;
+}
 
 router.put('/', (req, res) => {
     var data = {};
@@ -31,22 +29,48 @@ router.put('/', (req, res) => {
                 newUsers.map(newUser => {
                     let thatUser = existingUsers.find(existingUser => existingUser.userId == newUser.userId);
                     if (thatUser){
-                        if (!newUser.isExpediting && !newUser.isInspection && !newUser.isShipping && !newUser.isWarehouse && !newUser.isConfiguration) {
-                            //if no roles then delete existing user from Access
-                            console.log('%s exists but has no roles: will be deleted', newUser.name);
-
+                        if (!hasRoles(newUser)) {
+                            Access.findByIdAndRemove(thatUser._id, function (err, user){
+                                if(!user) {
+                                    console.log('user does not exisit');
+                                } else {
+                                    console.log('%s has been deleted', user._id); 
+                                }
+                            });
                         } else {
-                            //if role then update exisitng user from Access Table
-                            console.log('%s exisit and has some roles: will be updated', newUser.name);
+                            Access.findByIdAndUpdate(thatUser._id, { 
+                                $set: {
+                                    isExpediting: newUser.isExpediting,
+                                    isInspection: newUser.isInspection,
+                                    isShipping: newUser.isShipping,
+                                    isWarehouse: newUser.isWarehouse,
+                                    isConfiguration: newUser.isConfiguration,
+                                } 
+                            },
+                            { 'new': true }, function (err, user) {
+                                if(!user) {
+                                   console.log('user does not exist'); 
+                                } else {
+                                    console.log('%s has been updated', user._id);
+                                }
+                            });
                         }
-
-                    } else if (newUser.isExpediting || newUser.isInspection || newUser.isShipping || newUser.isWarehouse || newUser.isConfiguration) {
-                        //if no existing user in Access table then create one
-                        console.log('%s does not exist and has some roles: will be created', newUser.name);
+                    } else if (hasRoles(newUser)) {
+                        const newAccess = new Access({
+                            isExpediting: newUser.isExpediting,
+                            isInspection: newUser.isInspection,
+                            isShipping: newUser.isShipping,
+                            isWarehouse: newUser.isWarehouse,
+                            isConfiguration: newUser.isConfiguration,
+                            projectId: id,
+                            userId: newUser.userId      
+                        });
+                        newAccess
+                        .save()
+                        .then(user => console.log('%s has been created', user._id));
                     }
                 });
             });
-            //console.log(req.body.projectUsers);
             return res.status(200).json({
                 message: fault(1302).message
                 //"1302": "Project has been updated",

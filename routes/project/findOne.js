@@ -20,6 +20,7 @@ router.get('/', (req, res) => {
     })
     .populate('collitypes')
     .populate('erp')
+    .populate('suppliers')
     .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({

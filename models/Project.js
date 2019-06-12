@@ -89,6 +89,13 @@ ProjectSchema.virtual("currency", {
     justOne: true
 });
 
+ProjectSchema.virtual("suppliers", {
+    ref: "suppliers",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
 ProjectSchema.set('toJSON', { virtuals: true });
 
 

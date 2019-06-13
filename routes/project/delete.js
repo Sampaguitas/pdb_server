@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Project = require('../../models/Project');
 const Access = require('../../models/Access');
+const Supplier = require('../../models/Supplier');
 const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
@@ -17,6 +18,11 @@ router.delete('/', (req, res) => {
             Access.find({ projectId: project._id }).then(access => {
                 access.map(user => {
                     Access.findByIdAndRemove(user._id);
+                });
+            });
+            Supplier.find({ projectId: project._id }).then(suppliers => {
+                suppliers.map(supplier => {
+                    Supplier.findByIdAndRemove(supplier._id);
                 });
             });
             return res.status(200).json({

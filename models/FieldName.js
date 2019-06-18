@@ -3,6 +3,9 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const FieldNameSchema = new Schema({
+    _id: {
+        type: mongoose.SchemaTypes.ObjectId
+    },
     align: {
         type: String,
         default: 'left',
@@ -24,6 +27,10 @@ const FieldNameSchema = new Schema({
     fieldId:{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'fields'     
+    },
+    projectId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'projects'         
     },
     daveId: {
         type: Number,

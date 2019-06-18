@@ -15,10 +15,11 @@ router.post('/', (req, res) => {
                 param: req.body.param,
                 worksheet1: req.body.worksheet1,
                 worksheet2: req.body.worksheet2,
-                row1: req.body.row1,
                 row2: req.body.row2,
+                col2: req.body.col2,
                 type: req.body.type,
                 fieldId: req.body.fieldId,
+                projectId: req.body.projectId,
                 daveId: req.body.daveId,
             });
 

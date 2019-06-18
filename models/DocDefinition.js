@@ -17,13 +17,13 @@ const DocDefinitionSchema = new Schema({
         type: String,
     },
     row: {
-        type: Number,
+        type: String,
     },
     col: {
-        type: Number,
+        type: String,
     },
     grid: {
-        type: Boolean,
+        type: String,
     },
     param: {
         type: String,
@@ -34,10 +34,10 @@ const DocDefinitionSchema = new Schema({
     worksheet2: {
         type: String,
     },
-    row1: {
+    row2: {
         type: String,
     },
-    row2: {
+    col2: {
         type: String,
     },
     type: {
@@ -46,6 +46,10 @@ const DocDefinitionSchema = new Schema({
     fieldId:{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'fields'     
+    },
+    projectId:{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'projects'     
     },
     daveId: {
         type: Number,

@@ -96,6 +96,13 @@ ProjectSchema.virtual("suppliers", {
     justOne: false
 });
 
+ProjectSchema.virtual("fields", {
+    ref: "fields",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
 ProjectSchema.set('toJSON', { virtuals: true });
 
 

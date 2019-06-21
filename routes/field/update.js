@@ -10,7 +10,7 @@ router.put('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    const id = req.query.id
+    const id = req.query.id;
     Field.findByIdAndUpdate(id, { $set: data }, function (err, field) {
         if (!field) {
             return res.status(400).json({

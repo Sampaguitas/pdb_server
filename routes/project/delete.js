@@ -3,10 +3,12 @@ const router = express.Router();
 const Project = require('../../models/Project');
 const Access = require('../../models/Access');
 const Supplier = require('../../models/Supplier');
+const Field = require('../../models/Field');
 const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
     const id = req.query.id
+
     Project.findByIdAndRemove(id, function (err, project) {
         if (!project) {
             return res.status(400).json({
@@ -15,14 +17,37 @@ router.delete('/', (req, res) => {
             });
         }
         else {
-            Access.find({ projectId: project._id }).then(access => {
-                access.map(user => {
-                    Access.findByIdAndRemove(user._id);
+            Access.find({ projectId: project._id }).then(acss => {
+                acss.forEach(acs => {
+                    Access.findByIdAndRemove(acs._id, function(err, a) {
+                        if (!a) {
+                            console.log('access does not exist');
+                        } else {
+                            console.log('access has been deleted')
+                        }
+                    });
                 });
-            });
-            Supplier.find({ projectId: project._id }).then(suppliers => {
-                suppliers.map(supplier => {
-                    Supplier.findByIdAndRemove(supplier._id);
+            }); 
+            Supplier.find({ projectId: project._id }).then(spls => {
+                spls.forEach(spl => {
+                    Supplier.findByIdAndRemove(spl._id, function(err, s) {
+                        if (!s) {
+                            console.log('supplier does not exist');
+                        } else {
+                            console.log('supplier has been deleted')
+                        }
+                    });
+                });
+            });            
+            Field.find({ projectId: project._id }).then(flds => {
+                flds.forEach(fld => {
+                    Field.findByIdAndRemove(fld._id, function(err, f) {
+                        if (!f) {
+                            console.log('document does not exist');
+                        } else {
+                            console.log('document has been deleted')
+                        }
+                    });
                 });
             });
             return res.status(200).json({

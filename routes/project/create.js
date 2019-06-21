@@ -4,6 +4,7 @@ const Project = require('../../models/Project');
 const Counter = require('../../models/Counter');
 const Access = require('../../models/Access');
 const Supplier = require('../../models/Supplier');
+const Field = require('../../models/Field');
 const fault = require('../../utilities/Errors');
 
 function projectUsers(users) {
@@ -90,6 +91,18 @@ router.post('/', (req, res) => {
                                 projectId: project._id
                             });
                             newSupplier.save();
+                        });
+                    });
+                    Field.find({projectId: req.body.copyId}).then(fields => {
+                        fields.map(field => {
+                            const newField = new Field({
+                                name: field.name,
+                                custom: field.custom,
+                                type: field.type,
+                                fromTbl: field.fromTbl,
+                                projectId: project._id
+                            });
+                            newField.save(); 
                         });
                     });
                     res.json(project);

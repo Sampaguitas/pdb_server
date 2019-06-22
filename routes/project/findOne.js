@@ -22,6 +22,13 @@ router.get('/', (req, res) => {
     .populate('erp')
     .populate('suppliers')
     .populate('fields')
+    .populate({
+        path: 'fieldnames',
+        populate: {
+            path: 'fields', 
+            select:'custom'
+        }
+    })
     .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({

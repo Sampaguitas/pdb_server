@@ -37,4 +37,13 @@ const FieldNameSchema = new Schema({
     }
 });
 
+FieldNameSchema.virtual("fields", {
+    ref: "fields",
+    localField: "fieldId",
+    foreignField: "_id",
+    justOne: true
+});
+
+FieldNameSchema.set('toJSON', { virtuals: true });
+
 module.exports = FieldName = mongoose.model('fieldnames',FieldNameSchema);

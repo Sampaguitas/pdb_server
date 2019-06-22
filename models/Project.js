@@ -103,6 +103,13 @@ ProjectSchema.virtual("fields", {
     justOne: false
 });
 
+ProjectSchema.virtual("fieldnames", {
+    ref: "fieldnames",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
 ProjectSchema.set('toJSON', { virtuals: true });
 
 

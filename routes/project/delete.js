@@ -4,6 +4,7 @@ const Project = require('../../models/Project');
 const Access = require('../../models/Access');
 const Supplier = require('../../models/Supplier');
 const Field = require('../../models/Field');
+const FieldName = require('../../models/FieldName');
 const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
@@ -17,7 +18,7 @@ router.delete('/', (req, res) => {
             });
         }
         else {
-            Access.find({ projectId: project._id }).then(acss => {
+            Access.find({ projectId: id }).then(acss => {
                 acss.forEach(acs => {
                     Access.findByIdAndRemove(acs._id, function(err, a) {
                         if (!a) {
@@ -28,7 +29,7 @@ router.delete('/', (req, res) => {
                     });
                 });
             }); 
-            Supplier.find({ projectId: project._id }).then(spls => {
+            Supplier.find({ projectId: id }).then(spls => {
                 spls.forEach(spl => {
                     Supplier.findByIdAndRemove(spl._id, function(err, s) {
                         if (!s) {
@@ -39,13 +40,24 @@ router.delete('/', (req, res) => {
                     });
                 });
             });            
-            Field.find({ projectId: project._id }).then(flds => {
+            Field.find({ projectId: id }).then(flds => {
                 flds.forEach(fld => {
                     Field.findByIdAndRemove(fld._id, function(err, f) {
                         if (!f) {
-                            console.log('document does not exist');
+                            console.log('field does not exist');
                         } else {
-                            console.log('document has been deleted')
+                            console.log('field has been deleted')
+                        }
+                    });
+                });
+            });
+            FieldName.find({ projectId: id }).then(fldNs => {
+                fldNs.forEach(fldN => {
+                    FieldName.findByIdAndRemove(fldN._id, function(err, f) {
+                        if (!f) {
+                            console.log('fieldName does not exist');
+                        } else {
+                            console.log('fieldName has been deleted')
                         }
                     });
                 });

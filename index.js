@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false);
 const glob = require('glob');
 const _ =require('lodash');
 const bodyParser = require('body-parser');

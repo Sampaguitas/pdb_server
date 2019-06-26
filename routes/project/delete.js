@@ -62,6 +62,27 @@ router.delete('/', (req, res) => {
                     });
                 });
             });
+
+            // const Path = path.join('files','templates');
+            // const projectDir = project.number;
+
+            // //check if the project directory exists
+            // if (!fs.existsSync(path.join(Path,projectDir))){
+            //     //if it does, list all the files in the directory
+            //     fs.readdir(path.join(Path,oldDir), function (err, files) {
+            //         //loop trough each of the files and delete
+            //         files.map((file) => {
+            //             fs.unlink(path.join(Path,projectDir, file), function(err, f) {
+
+            //             });
+            //         });
+            //         //then delete the directory once empty
+            //         fs.rmdir(path, function(err, d) {
+            //             console.log(`${d} ${err ? "did not get deleted" : "was deleted"`)
+            //         })
+            //     });
+            // }  
+
             return res.status(200).json({
                 message: fault(1303).message
                 //"1303": "Project has been deleted",

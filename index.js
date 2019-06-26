@@ -9,7 +9,7 @@ const passport = require('passport');
 const cors = require('cors');
 //const bcrypt = require('bcryptjs');
 const fs = require('fs');
-
+var path = require('path');
 app.use(cors());
 //bodyParser middleware
 app.use(bodyParser.urlencoded({extended:false}));
@@ -278,10 +278,19 @@ const usersettingFindOne = require('./routes/usersetting/findOne');
 app.get('/usersetting/findOne', passport.authenticate('jwt', { session: false }), usersettingFindOne);
 const usersettingUpdate = require('./routes/usersetting/update');
 app.put('/usersetting/update', passport.authenticate('jwt', { session: false }), usersettingUpdate);
+//template
+const templateDownload = require('./routes/template/download');
+app.get('/template/findAll', passport.authenticate('jwt', { session: false }), templateDownload);
+const templateUpload = require('./routes/template/upload');
+app.get('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
 
 // Listen on port
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running on ${port}`));
+
+// app.get('/toto', function (req, res) {
+
+// });
 
 // Compile all routers   
 var routeFolders = [],     

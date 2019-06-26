@@ -129,8 +129,8 @@ router.post('/', (req, res) => {
                 Project.findOne({_id: req.body.copyId}).then(oldProject => {
                     if(oldProject) {
                         const Path = path.join('files','templates');
-                        const oldDir = oldProject.number;
-                        const newDir = project.number;
+                        const oldDir = String(oldProject.number);
+                        const newDir = String(project.number);
                         
                         //check if the new dir does not exists
                         if (!fs.existsSync(path.join(Path,newDir))){

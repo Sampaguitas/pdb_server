@@ -290,6 +290,31 @@ app.listen(port, () => console.log(`Server running on ${port}`));
 
 // app.get('/toto', function (req, res) {
 
+//     const Path = path.join('files','templates');
+//     const projectDir = String(151);
+
+//     //check if the project directory exists
+//     if (fs.existsSync(path.join(Path,projectDir))){
+//         //if it does, list all the files in the directory
+//         fs.readdir(path.join(Path,projectDir), function (err, files) {
+//             if (err) {
+//                 console.log('could not read the directory');
+//             }
+//             //loop trough each of the files and delete
+//             files.map((file) => {
+//                 fs.unlink(path.join(Path,projectDir, file), function(err, fl) {
+//                     console.log(`file ${fl} ${err ? 'could not be deleted' : 'has been deleted'}`);
+//                 });
+//             });
+//             //then delete the directory once empty
+//             fs.rmdir(path.join(Path,projectDir), function(err) {
+//                 console.log(`directory ${err ? 'could not be deleted' : 'has been deleted'}`)
+//             });
+//         });
+//     } 
+    
+//     res.json('done')
+
 // });
 
 // Compile all routers   

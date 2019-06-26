@@ -6,6 +6,8 @@ const Supplier = require('../../models/Supplier');
 const Field = require('../../models/Field');
 const FieldName = require('../../models/FieldName');
 const fault = require('../../utilities/Errors');
+const fs = require('fs');
+var path = require('path');
 
 router.delete('/', (req, res) => {
     const id = req.query.id
@@ -42,8 +44,8 @@ router.delete('/', (req, res) => {
             });            
             Field.find({ projectId: id }).then(flds => {
                 flds.forEach(fld => {
-                    Field.findByIdAndRemove(fld._id, function(err, f) {
-                        if (!f) {
+                    Field.findByIdAndRemove(fld._id, function(err, fi) {
+                        if (!fi) {
                             console.log('field does not exist');
                         } else {
                             console.log('field has been deleted')
@@ -53,8 +55,8 @@ router.delete('/', (req, res) => {
             });
             FieldName.find({ projectId: id }).then(fldNs => {
                 fldNs.forEach(fldN => {
-                    FieldName.findByIdAndRemove(fldN._id, function(err, f) {
-                        if (!f) {
+                    FieldName.findByIdAndRemove(fldN._id, function(err, fn) {
+                        if (!fn) {
                             console.log('fieldName does not exist');
                         } else {
                             console.log('fieldName has been deleted')
@@ -63,25 +65,7 @@ router.delete('/', (req, res) => {
                 });
             });
 
-            // const Path = path.join('files','templates');
-            // const projectDir = project.number;
-
-            // //check if the project directory exists
-            // if (!fs.existsSync(path.join(Path,projectDir))){
-            //     //if it does, list all the files in the directory
-            //     fs.readdir(path.join(Path,oldDir), function (err, files) {
-            //         //loop trough each of the files and delete
-            //         files.map((file) => {
-            //             fs.unlink(path.join(Path,projectDir, file), function(err, f) {
-
-            //             });
-            //         });
-            //         //then delete the directory once empty
-            //         fs.rmdir(path, function(err, d) {
-            //             console.log(`${d} ${err ? "did not get deleted" : "was deleted"`)
-            //         })
-            //     });
-            // }  
+            deleteFolderRecursive(path.join('files','templates', String(project.number)));
 
             return res.status(200).json({
                 message: fault(1303).message
@@ -90,5 +74,19 @@ router.delete('/', (req, res) => {
         }
     });
 });
+
+var deleteFolderRecursive = function(path) {
+    if( fs.existsSync(path) ) {
+      fs.readdirSync(path).forEach(function(file,index){
+        var curPath = path + "/" + file;
+        if(fs.lstatSync(curPath).isDirectory()) {
+          deleteFolderRecursive(curPath);
+        } else {
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(path);
+    }
+  };
 
 module.exports = router;

@@ -8,16 +8,7 @@ const app = express();
 const passport = require('passport');
 const cors = require('cors');
 //const bcrypt = require('bcryptjs');
-
-// //Multer
-// var multer = require('multer');
-// var multerS3 = require('multer-s3')
-
-//AWS
-// const AWS = require('aws-sdk');
 const fs = require('fs');
-const path = require('path');
-
 
 app.use(cors());
 //bodyParser middleware
@@ -37,45 +28,6 @@ mongoose
 .connect(db,{useNewUrlParser:true})
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
-
-// //configuring the AWS environment
-// const accessKeyId = require('./config/keys').accessKeyId;
-// const secretAccessKey = require('./config/keys').secretAccessKey;
-
-// AWS.config.update({
-//     accessKeyId: accessKeyId,
-//     secretAccessKey: secretAccessKey
-// });
-
-// var s3 = new AWS.S3();
-// var filePath = "./data/file.txt";
-
-//configuring parameters
-// var params = {
-//     Bucket: 'vanleeuwenpdb',
-//     Body : fs.createReadStream(filePath),
-//     Key : "folder/"+Date.now()+"_"+path.basename(filePath)
-// };
-
-// s3.upload(params, function (err, data) {
-//     //handle error
-//     if (err) {
-//       console.log("Error", err);
-//     }
-
-//     //success
-//     if (data) {
-//     console.log("Uploaded in:", data.Location);
-//     }
-// });
-
-
-
-
-
-
-
-
 
 // Protected Routes
 //access
@@ -328,37 +280,13 @@ const usersettingUpdate = require('./routes/usersetting/update');
 app.put('/usersetting/update', passport.authenticate('jwt', { session: false }), usersettingUpdate);
 //template
 const templateDownload = require('./routes/template/download');
-app.get('/template/findAll', passport.authenticate('jwt', { session: false }), templateDownload);
+app.get('/template/download', passport.authenticate('jwt', { session: false }), templateDownload);
 const templateUpload = require('./routes/template/upload');
 app.get('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
 
 // Listen on port
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running on ${port}`));
-
-
-  // testing multer
-
-
-
-
-//   app.post('/upload', upload.array('upl',1), function (req, res, next) {
-//     res.send("Uploaded!");
-// });
-
-  // testing multer
-
-
-
-// app.get('/toto', function (req, res) {
-
-//     const Path = path.join('files','templates');
-//     const projectDir = String(151);
-
-    
-//     res.json('done')
-
-// });
 
 // Compile all routers   
 var routeFolders = [],     

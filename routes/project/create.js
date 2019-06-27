@@ -126,37 +126,37 @@ router.post('/', (req, res) => {
                         }); 
                     });
                 });
-                Project.findOne({_id: req.body.copyId}).then(oldProject => {
-                    if(oldProject) {
-                        const Path = path.join('files','templates');
-                        const oldDir = String(oldProject.number);
-                        const newDir = String(project.number);
+                // Project.findOne({_id: req.body.copyId}).then(oldProject => {
+                //     if(oldProject) {
+                //         const Path = path.join('files','templates');
+                //         const oldDir = String(oldProject.number);
+                //         const newDir = String(project.number);
                         
-                        //check if the new dir does not exists
-                        if (!fs.existsSync(path.join(Path,newDir))){
-                            //if not create the new dir
-                            fs.mkdirSync(path.join(Path,newDir));
-                        }                        
+                //         //check if the new dir does not exists
+                //         if (!fs.existsSync(path.join(Path,newDir))){
+                //             //if not create the new dir
+                //             fs.mkdirSync(path.join(Path,newDir));
+                //         }                        
 
-                        //list all the files from the old dir
-                        fs.readdir(path.join(Path,oldDir), function (err, files) {
-                            if (err) {
-                                console.log('could not list the directory', err);
-                            } else {
-                                //loop trhough all files from the old dir
-                                files.map((file) => {
-                                    // If file does not exist already
-                                    if (!fs.existsSync(path.join(Path,newDir,file))){
-                                        // Copy file to the new destination.  
-                                        fs.copyFile(path.join(Path,oldDir,file),path.join(Path,newDir,file), (err) => {
-                                            console.log(`${file} ${err ? 'did not get copied' : 'success'}`);
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+                //         //list all the files from the old dir
+                //         fs.readdir(path.join(Path,oldDir), function (err, files) {
+                //             if (err) {
+                //                 console.log('could not list the directory', err);
+                //             } else {
+                //                 //loop trhough all files from the old dir
+                //                 files.map((file) => {
+                //                     // If file does not exist already
+                //                     if (!fs.existsSync(path.join(Path,newDir,file))){
+                //                         // Copy file to the new destination.  
+                //                         fs.copyFile(path.join(Path,oldDir,file),path.join(Path,newDir,file), (err) => {
+                //                             console.log(`${file} ${err ? 'did not get copied' : 'success'}`);
+                //                         });
+                //                     }
+                //                 });
+                //             }
+                //         });
+                //     }
+                // });
                 
                 res.json(project);
             }).catch(err => res.json(err));

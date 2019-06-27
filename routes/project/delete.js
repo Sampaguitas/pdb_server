@@ -65,28 +65,28 @@ router.delete('/', (req, res) => {
                 });
             });
 
-            deleteFolderRecursive(path.join('files','templates', String(project.number)));
+            // deleteFolderRecursive(path.join('files','templates', String(project.number)));
 
-            return res.status(200).json({
-                message: fault(1303).message
-                //"1303": "Project has been deleted",
-            });
+            // return res.status(200).json({
+            //     message: fault(1303).message
+            //     //"1303": "Project has been deleted",
+            // });
         }
     });
 });
 
-var deleteFolderRecursive = function(path) {
-    if( fs.existsSync(path) ) {
-      fs.readdirSync(path).forEach(function(file,index){
-        var curPath = path + "/" + file;
-        if(fs.lstatSync(curPath).isDirectory()) {
-          deleteFolderRecursive(curPath);
-        } else {
-          fs.unlinkSync(curPath);
-        }
-      });
-      fs.rmdirSync(path);
-    }
-  };
+// var deleteFolderRecursive = function(path) {
+//     if( fs.existsSync(path) ) {
+//       fs.readdirSync(path).forEach(function(file,index){
+//         var curPath = path + "/" + file;
+//         if(fs.lstatSync(curPath).isDirectory()) {
+//           deleteFolderRecursive(curPath);
+//         } else {
+//           fs.unlinkSync(curPath);
+//         }
+//       });
+//       fs.rmdirSync(path);
+//     }
+//   };
 
 module.exports = router;

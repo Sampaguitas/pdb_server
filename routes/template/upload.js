@@ -7,6 +7,7 @@ var multer = require('multer');
 var path = require('path');
 var storage = multer.memoryStorage();
 var upload = multer({ storage: storage });
+const fault = require('../../utilities/Errors');
 
 //configuring the AWS environment
 const accessKeyId = require('../../config/keys').accessKeyId;

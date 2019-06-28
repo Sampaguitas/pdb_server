@@ -2,6 +2,7 @@ var express = require('express');
 const router = express.Router();
 var aws = require('aws-sdk');
 var path = require('path');
+const fault = require('../../utilities/Errors');
 
 //configuring the AWS environment
 const accessKeyId = require('../../config/keys').accessKeyId;

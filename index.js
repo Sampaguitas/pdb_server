@@ -282,7 +282,7 @@ app.put('/usersetting/update', passport.authenticate('jwt', { session: false }),
 const templateDownload = require('./routes/template/download');
 app.get('/template/download', passport.authenticate('jwt', { session: false }), templateDownload);
 const templateUpload = require('./routes/template/upload');
-app.get('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
+app.post('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
 
 // Listen on port
 const port = process.env.PORT || 5000;

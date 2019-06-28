@@ -144,6 +144,9 @@ const Errors = {
     "2302": "Region has been updated",
     "2303": "Region has been deleted",
     "2304": "No Region match",
+    //24**: "Template Errors",
+    "2400": "No Project selected",
+    "2401": "No file selected",
 }
 
 module.exports = function generateError(ErrCode) {

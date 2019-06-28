@@ -1,20 +1,48 @@
-const express = require('express');
+var express = require('express');
 const router = express.Router();
-const fs = require('fs');
+var aws = require('aws-sdk');
 var path = require('path');
 
-router.get('/download', function (req, res) {
-    // const dr = path.join('files','templates');
-    // const project = req.body.project;
-    // const file = req.body.file;
+//configuring the AWS environment
+const accessKeyId = require('../../config/keys').accessKeyId;
+const secretAccessKey = require('../../config/keys').secretAccessKey;
+const region = require('../../config/keys').region;
+const awsBucketName = require('../../config/keys').awsBucketName;
 
-    // //check if the file exist
-    // if (!fs.existsSync(path.join(dr,project,file))){
-    //     //if not create the new dir
-    //     res.json('file does not exist')
-    // } else {
-    //     res.download(path.join(dr,project,file));
-    // } 
+aws.config.update({
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
+    region: region
+});
+
+router.get('/', function (req, res) {
+
+    const project = req.body.project;
+    const file = req.body.file;
+
+    if (!project) {
+      return res.status(400).json({
+        message: fault(2400).message
+        //"2400": "No Project selected",
+      });      
+    } else if (!file) {
+      return res.status(400).json({
+        message: fault(2401).message
+        //"2401": "No file selected",
+      });         
+    } else {
+      var s3 = new aws.S3();
+
+      var params = {
+          Bucket: awsBucketName,
+          Key: path.join('templates', project, file),
+      };
+
+      res.attachment(file);
+      var fileStream = s3.getObject(params).createReadStream();
+      fileStream.pipe(res);
+
+    }
     
 });
 

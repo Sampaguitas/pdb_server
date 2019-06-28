@@ -147,6 +147,10 @@ const Errors = {
     //24**: "Template Errors",
     "2400": "No Project selected",
     "2401": "No file selected",
+    "2402": "Template has been uploaded",
+    "2403": "Template has been deleted",
+    "2404": "Project folder has been deleted",
+    "2405": "An error occurred",
 }
 
 module.exports = function generateError(ErrCode) {

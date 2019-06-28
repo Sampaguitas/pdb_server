@@ -283,6 +283,8 @@ const templateDownload = require('./routes/template/download');
 app.get('/template/download', passport.authenticate('jwt', { session: false }), templateDownload);
 const templateUpload = require('./routes/template/upload');
 app.post('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
+const templateDeleteFile = require('./routes/template/deleteFile');
+app.post('/template/deleteFile', passport.authenticate('jwt', { session: false }), templateDeleteFile);
 
 // Listen on port
 const port = process.env.PORT || 5000;

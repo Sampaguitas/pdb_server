@@ -1,12 +1,7 @@
-//https://medium.com/@paulrohan/file-upload-to-aws-s3-bucket-in-a-node-react-mongo-app-and-using-multer-72884322aada
-
 var express = require('express');
 const router = express.Router();
 var aws = require('aws-sdk');
-var multer = require('multer');
 var path = require('path');
-var storage = multer.memoryStorage();
-var upload = multer({ storage: storage });
 
 //configuring the AWS environment
 const accessKeyId = require('../../config/keys').accessKeyId;
@@ -20,9 +15,11 @@ aws.config.update({
     region: region
 });
 
-router.post('/', upload.single('file'), function (req, res) {
+router.delete('/', function (req, res) {
+
     const project = req.body.project;
-    const file = req.file;
+    const file = req.body.file;
+
     if (!project) {
       return res.status(400).json({
         message: fault(2400).message
@@ -38,21 +35,25 @@ router.post('/', upload.single('file'), function (req, res) {
 
       var params = {
           Bucket: awsBucketName,
-          Body: file.buffer,
-          Key: path.join('templates', project, file.originalname),
+          Key: path.join('templates', project, file),
       };
 
-      s3.upload(params, function(err, data) {
-          if (err) {
+      s3.deleteObject(params, function(err, data) {
+        if (err) {
             return res.status(400).json({
-              message: fault(2405).message
-              //"2405": "An error occurred",
-            });
-          } else {
-            res.send({ data });
-          }
+                message: fault(2405).message
+                //"2405": "An error occurred",
+              });              
+        } else {
+            return res.status(200).json({
+                message: fault(2403).message
+                //"2403": "Template has been deleted",
+              });            
+        }
       });
+
     }
+    
 });
 
 module.exports = router;

@@ -151,6 +151,8 @@ const Errors = {
     "2403": "Template has been deleted",
     "2404": "Project folder has been deleted",
     "2405": "An error occurred",
+    "2406": "The Project folder is already empty",
+    "2407": "Templates have been copied to the new Project"
 }
 
 module.exports = function generateError(ErrCode) {

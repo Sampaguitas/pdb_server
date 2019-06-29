@@ -9,7 +9,7 @@ const FieldName = require('../../models/FieldName');
 const fault = require('../../utilities/Errors');
 const fs = require('fs');
 var path = require('path');
-//https://stackoverflow.com/questions/51862545/javascript-copy-file-from-one-directory-to-another
+var s3bucket = require('../../middleware/s3bucket');
 
 function projectUsers(users) {
     return users.filter(function(user) {
@@ -96,69 +96,41 @@ router.post('/', (req, res) => {
                         });
                         newSupplier.save();
                     });
-                });
-                Field.find({projectId: req.body.copyId}).then(flds => {
-                    flds.map(fld => {
-                        const newField = new Field({
-                            name: fld.name,
-                            custom: fld.custom,
-                            type: fld.type,
-                            fromTbl: fld.fromTbl,
-                            projectId: project._id
-                        });
-                        newField
-                        .save()
-                        .then(field => {
-                            FieldName.find({fieldId: fld._id}).then(fldNs => {
-                                fldNs.map(fldN => {
-                                    const newFieldName = new FieldName({
-                                        align: fldN.align,
-                                        edit: fldN.edit,
-                                        forSelect: fldN.forSelect,
-                                        forShow: fldN.forShow,
-                                        screenId: fldN.screenId,
-                                        fieldId: field._id,
-                                        projectId: project._id
-                                    });
-                                    newFieldName.save();
-                                });
+                    Field.find({projectId: req.body.copyId}).then(flds => {
+                        flds.map(fld => {
+                            const newField = new Field({
+                                name: fld.name,
+                                custom: fld.custom,
+                                type: fld.type,
+                                fromTbl: fld.fromTbl,
+                                projectId: project._id
                             });
-                        }); 
+                            newField
+                            .save()
+                            .then(field => {
+                                FieldName.find({fieldId: fld._id}).then(fldNs => {
+                                    fldNs.map(fldN => {
+                                        const newFieldName = new FieldName({
+                                            align: fldN.align,
+                                            edit: fldN.edit,
+                                            forSelect: fldN.forSelect,
+                                            forShow: fldN.forShow,
+                                            screenId: fldN.screenId,
+                                            fieldId: field._id,
+                                            projectId: project._id
+                                        });
+                                        newFieldName.save();
+                                    });
+                                });
+                            }); 
+                        });
+                        Project.findOne({_id: req.body.copyId}).then(oldProject => {
+                            s3bucket.duplicateProject(String(oldProject.number), String(project.number))
+                            .then( () => res.json(project))
+                            .catch(error => res.status(400).json({ message: error}));
+                        });
                     });
-                });
-                // Project.findOne({_id: req.body.copyId}).then(oldProject => {
-                //     if(oldProject) {
-                //         const Path = path.join('files','templates');
-                //         const oldDir = String(oldProject.number);
-                //         const newDir = String(project.number);
-                        
-                //         //check if the new dir does not exists
-                //         if (!fs.existsSync(path.join(Path,newDir))){
-                //             //if not create the new dir
-                //             fs.mkdirSync(path.join(Path,newDir));
-                //         }                        
-
-                //         //list all the files from the old dir
-                //         fs.readdir(path.join(Path,oldDir), function (err, files) {
-                //             if (err) {
-                //                 console.log('could not list the directory', err);
-                //             } else {
-                //                 //loop trhough all files from the old dir
-                //                 files.map((file) => {
-                //                     // If file does not exist already
-                //                     if (!fs.existsSync(path.join(Path,newDir,file))){
-                //                         // Copy file to the new destination.  
-                //                         fs.copyFile(path.join(Path,oldDir,file),path.join(Path,newDir,file), (err) => {
-                //                             console.log(`${file} ${err ? 'did not get copied' : 'success'}`);
-                //                         });
-                //                     }
-                //                 });
-                //             }
-                //         });
-                //     }
-                // });
-                
-                res.json(project);
+                });   
             }).catch(err => res.json(err));
         }
     });

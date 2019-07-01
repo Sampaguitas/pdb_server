@@ -1,21 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const Field = require('../../models/Field');
+const DocField = require('../../models/DocField');
 const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
     const id = req.query.id
-    Field.findByIdAndRemove(id, function (err, field) {
-        if (!field) {
+    DocField.findByIdAndRemove(id, function (err, docfield) {
+        if (!docfield) {
             return res.status(400).json({
-                message: fault(0701).message
-                //"0701": "Field does not exist",
+                message: fault(2601).message
+                //"2601": "DocField does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(0703).message,
-                //"0703": "Field has been deleted",
+                message: fault(2603).message,
+                //"2603": "DocField has been deleted",
             });
         }
     });

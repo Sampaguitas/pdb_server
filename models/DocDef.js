@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create Schema
-const DocDefinitionSchema = new Schema({
+const DocDefSchema = new Schema({
+    // _id: {
+    //     type: mongoose.SchemaTypes.ObjectId,
+    // },
     code: {
         type: String,
         required: true
@@ -16,17 +19,14 @@ const DocDefinitionSchema = new Schema({
     description: {
         type: String,
     },
-    row: {
-        type: String,
+    row1: {
+        type: Number,
     },
-    col: {
-        type: String,
+    col1: {
+        type: Number,
     },
     grid: {
-        type: String,
-    },
-    param: {
-        type: String,
+        type: Boolean,
     },
     worksheet1: {
         type: String,
@@ -35,17 +35,14 @@ const DocDefinitionSchema = new Schema({
         type: String,
     },
     row2: {
-        type: String,
+        type: Number,
     },
     col2: {
-        type: String,
+        type: Number,
     },
-    type: {
-        type: String,
-    },
-    fieldId:{
+    doctypeId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'fields'     
+        ref: 'doctypes'
     },
     projectId:{
         type: mongoose.SchemaTypes.ObjectId,
@@ -56,4 +53,4 @@ const DocDefinitionSchema = new Schema({
     }
 });
 
-module.exports = DocDefinition = mongoose.model('docdefinitions',DocDefinitionSchema);
+module.exports = DocDef = mongoose.model('docdefs',DocDefSchema);

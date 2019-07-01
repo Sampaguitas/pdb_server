@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const DocDefinition = require('../../models/DocDefinition');
+const DocField = require('../../models/DocField');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
@@ -9,15 +9,15 @@ router.get('/', (req, res) => {
         data[k] = req.body[k];
     });
 
-    DocDefinition.find(data, function (err, docdefinition) {
-        if (!docdefinition) {
+    DocField.find(data, function (err, docfield) {
+        if (!docfield) {
             return res.status(400).json({
-                message: fault(0404).message
-                //"0404": "No DocDefinition match",
+                message: fault(2604).message
+                //"2604": "No DocField match",
             });
         }
         else {
-            return res.json(docdefinition);
+            return res.json(docfield);
         }
     });
 });

@@ -107,17 +107,28 @@ const currencyFindOne = require('./routes/currency/findOne');
 app.get('/currency/findOne', passport.authenticate('jwt', { session: false }), currencyFindOne);
 const currencyUpdate = require('./routes/currency/update');
 app.put('/currency/update', passport.authenticate('jwt', { session: false }), currencyUpdate);
-//docdefinition
-const docdefinitionCreate = require('./routes/docdefinition/create');
-app.post('/docdefinition/create', passport.authenticate('jwt', { session: false }), docdefinitionCreate);
-const docdefinitionDelete = require('./routes/docdefinition/delete');
-app.delete('/docdefinition/delete', passport.authenticate('jwt', { session: false }), docdefinitionDelete);
-const docdefinitionFindAll = require('./routes/docdefinition/findAll');
-app.get('/docdefinition/findAll', passport.authenticate('jwt', { session: false }), docdefinitionFindAll);
-const docdefinitionFindOne = require('./routes/docdefinition/findOne');
-app.get('/docdefinition/findOne', passport.authenticate('jwt', { session: false }), docdefinitionFindOne);
-const docdefinitionUpdate = require('./routes/docdefinition/update');
-app.put('/docdefinition/update', passport.authenticate('jwt', { session: false }), docdefinitionUpdate);
+//docdef
+const docdefCreate = require('./routes/docdef/create');
+app.post('/docdef/create', passport.authenticate('jwt', { session: false }), docdefCreate);
+const docdefDelete = require('./routes/docdef/delete');
+app.delete('/docdef/delete', passport.authenticate('jwt', { session: false }), docdefDelete);
+const docdefFindAll = require('./routes/docdef/findAll');
+app.get('/docdef/findAll', passport.authenticate('jwt', { session: false }), docdefFindAll);
+const docdefFindOne = require('./routes/docdef/findOne');
+app.get('/docdef/findOne', passport.authenticate('jwt', { session: false }), docdefFindOne);
+const docdefUpdate = require('./routes/docdef/update');
+app.put('/docdef/update', passport.authenticate('jwt', { session: false }), docdefUpdate);
+//docfield
+const docfieldCreate = require('./routes/docfield/create');
+app.post('/docfield/create', passport.authenticate('jwt', { session: false }), docfieldCreate);
+const docfieldDelete = require('./routes/docfield/delete');
+app.delete('/docfield/delete', passport.authenticate('jwt', { session: false }), docfieldDelete);
+const docfieldFindAll = require('./routes/docfield/findAll');
+app.get('/docfield/findAll', passport.authenticate('jwt', { session: false }), docfieldFindAll);
+const docfieldFindOne = require('./routes/docfield/findOne');
+app.get('/docfield/findOne', passport.authenticate('jwt', { session: false }), docfieldFindOne);
+const docfieldUpdate = require('./routes/docfield/update');
+app.put('/docfield/update', passport.authenticate('jwt', { session: false }), docfieldUpdate);
 //docflow
 const docflowCreate = require('./routes/docflow/create');
 app.post('/docflow/create', passport.authenticate('jwt', { session: false }), docflowCreate);
@@ -129,6 +140,17 @@ const docflowFindOne = require('./routes/docflow/findOne');
 app.get('/docflow/findOne', passport.authenticate('jwt', { session: false }), docflowFindOne);
 const docflowUpdate = require('./routes/docflow/update');
 app.put('/docflow/update', passport.authenticate('jwt', { session: false }), docflowUpdate);
+//docfield
+const doctypeCreate = require('./routes/doctype/create');
+app.post('/doctype/create', passport.authenticate('jwt', { session: false }), doctypeCreate);
+const doctypeDelete = require('./routes/doctype/delete');
+app.delete('/doctype/delete', passport.authenticate('jwt', { session: false }), doctypeDelete);
+const doctypeFindAll = require('./routes/doctype/findAll');
+app.get('/doctype/findAll', passport.authenticate('jwt', { session: false }), doctypeFindAll);
+const doctypeFindOne = require('./routes/doctype/findOne');
+app.get('/doctype/findOne', passport.authenticate('jwt', { session: false }), doctypeFindOne);
+const doctypeUpdate = require('./routes/doctype/update');
+app.put('/doctype/update', passport.authenticate('jwt', { session: false }), doctypeUpdate);
 //erp
 const erpCreate = require('./routes/erp/create');
 app.post('/erp/create', passport.authenticate('jwt', { session: false }), erpCreate);

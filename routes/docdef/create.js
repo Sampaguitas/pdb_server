@@ -1,31 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const DocDefinition = require('../../models/DocDefinition');
+const DocDef = require('../../models/DocDef');
 const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
-            const newDocDefinition = new DocDefinition({
+            const newDocDef = new DocDef({
+                // _id: req.body._id,
                 code: req.body.code,
                 location: req.body.location,
                 field: req.body.field,
                 description: req.body.description,
-                row: req.body.row,
-                col: req.body.col,
+                row1: req.body.row1,
+                col1: req.body.col1,
                 grid: req.body.grid,
-                param: req.body.param,
                 worksheet1: req.body.worksheet1,
                 worksheet2: req.body.worksheet2,
                 row2: req.body.row2,
                 col2: req.body.col2,
-                type: req.body.type,
-                fieldId: req.body.fieldId,
+                doctypeId: req.body.doctypeId,
                 projectId: req.body.projectId,
                 daveId: req.body.daveId,
             });
 
-            newDocDefinition
+            newDocDef
                 .save()
-                .then(docdefinition => res.json(docdefinition))
+                .then(docdef => res.json(docdef))
                 .catch(err => res.json(err));
 });
 module.exports = router;

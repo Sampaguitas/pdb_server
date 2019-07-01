@@ -152,7 +152,19 @@ const Errors = {
     "2404": "Project folder has been deleted",
     "2405": "An error occurred",
     "2406": "The Project folder is already empty",
-    "2407": "Templates have been copied to the new Project"
+    "2407": "Templates have been copied to the new Project",
+    //25**: "DocType Errors",
+    "2500": "DocType already exists",
+    "2501": "DocType does not exist",
+    "2502": "DocType has been updated",
+    "2503": "DocType has been deleted",
+    "2504": "No DocType match",
+    //26**: "DocField Errors",
+    "2600": "DocField already exists",
+    "2601": "DocField does not exist",
+    "2602": "DocField has been updated",
+    "2603": "DocField has been deleted",
+    "2604": "No DocField match",
 }
 
 module.exports = function generateError(ErrCode) {

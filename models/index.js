@@ -1,10 +1,15 @@
 'use strict'
-
+require('./Access');
 require('./Article');
+require('./Certificate');
 require('./ColliPack');
-require('./ColliType')
-require('./DocDefinition');
+require('./ColliType');
+require('./Counter');
+require('./Currency');
+require('./DocDef');
+require('./DocField');
 require('./DocFlow');
+require('./DocType');
 require('./Erp');
 require('./Field');
 require('./FieldName');
@@ -13,6 +18,8 @@ require('./Opco');
 require('./PackItem');
 require('./Po');
 require('./Project');
+require('./Region');
+require('./Screen');
 require('./Sub');
 require('./Supplier');
 require('./User');

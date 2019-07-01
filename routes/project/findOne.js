@@ -36,7 +36,7 @@ router.get('/', (req, res) => {
                 path:'fields',
                 select: 'custom'
             }
-        }        
+        }
     })
     .exec(function (err, project) {
             if (!project) {

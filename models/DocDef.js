@@ -53,4 +53,20 @@ const DocDefSchema = new Schema({
     }
 });
 
+DocDefSchema.virtual("docfields", {
+    ref: "docfields",
+    localField: "_id",
+    foreignField: "docdefId",
+    justOne: false
+});
+
+DocDefSchema.virtual("doctypes", {
+    ref: "doctypeId",
+    localField: "doctypeId",
+    foreignField: "_id",
+    justOne: true
+});
+
+DocDefSchema.set('toJSON', { virtuals: true });
+
 module.exports = DocDef = mongoose.model('docdefs',DocDefSchema);

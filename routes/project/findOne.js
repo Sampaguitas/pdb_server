@@ -28,6 +28,15 @@ router.get('/', (req, res) => {
             path: 'fields', 
             select:'custom'
         }
+    }).populate({
+        path: 'docdefs',
+        populate: {
+            path: 'docfields',
+            populate: {
+                path:'fields',
+                select: 'custom'
+            }
+        }        
     })
     .exec(function (err, project) {
             if (!project) {

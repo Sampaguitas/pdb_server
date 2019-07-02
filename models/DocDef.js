@@ -53,12 +53,12 @@ const DocDefSchema = new Schema({
     }
 });
 
-DocDefSchema.virtual("docfields", {
-    ref: "docfields",
-    localField: "_id",
-    foreignField: "docdefId",
-    justOne: false
-});
+// DocDefSchema.virtual("docfields", {
+//     ref: "docfields",
+//     localField: "_id",
+//     foreignField: "docdefId",
+//     justOne: false
+// });
 
 DocDefSchema.virtual("doctypes", {
     ref: "doctypeId",
@@ -66,6 +66,10 @@ DocDefSchema.virtual("doctypes", {
     foreignField: "_id",
     justOne: true
 });
+
+DocDefSchema.virtual("name").get(function (){
+    return this.description + ' (' + this.code + ')'; 
+})
 
 DocDefSchema.set('toJSON', { virtuals: true });
 

@@ -19,8 +19,6 @@ aws.config.update({
 router.get('/', function (req, res) {
   const project = req.query.project;
   const file = req.query.file;
-  console.log('project:', project);
-  console.log('file:', file);
   if (!project) {
     return res.status(400).json({message: fault(2400).message}); //"2400": "No Project selected",
   } else if (!file) {

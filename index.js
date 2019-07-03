@@ -301,18 +301,18 @@ app.get('/usersetting/findOne', passport.authenticate('jwt', { session: false })
 const usersettingUpdate = require('./routes/usersetting/update');
 app.put('/usersetting/update', passport.authenticate('jwt', { session: false }), usersettingUpdate);
 //template
-const templateDeleteFile = require('./routes/template/deleteFile');
-app.delete('/template/deleteFile', passport.authenticate('jwt', { session: false }), templateDeleteFile);
-const templateDeleteProject = require('./routes/template/deleteProject');
-app.delete('/template/deleteProject', passport.authenticate('jwt', { session: false }), templateDeleteProject);
-const templateDownload = require('./routes/template/download');
-app.get('/template/download', passport.authenticate('jwt', { session: false }), templateDownload);
-const templateDuplicateProject = require('./routes/template/duplicateProject');
-app.post('/template/duplicateProject', passport.authenticate('jwt', { session: false }), templateDuplicateProject);
-const templateFindAll = require('./routes/template/findAll');
-app.get('/template/findAll', passport.authenticate('jwt', { session: false }), templateFindAll);
-const templateUpload = require('./routes/template/upload');
-app.post('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
+// const templateDeleteFile = require('./routes/template/deleteFile');
+// app.delete('/template/deleteFile', passport.authenticate('jwt', { session: false }), templateDeleteFile);
+// const templateDeleteProject = require('./routes/template/deleteProject');
+// app.delete('/template/deleteProject', passport.authenticate('jwt', { session: false }), templateDeleteProject);
+// const templateDownload = require('./routes/template/download');
+// app.get('/template/download', passport.authenticate('jwt', { session: false }), templateDownload);
+// const templateDuplicateProject = require('./routes/template/duplicateProject');
+// app.post('/template/duplicateProject', passport.authenticate('jwt', { session: false }), templateDuplicateProject);
+// const templateFindAll = require('./routes/template/findAll');
+// app.get('/template/findAll', passport.authenticate('jwt', { session: false }), templateFindAll);
+// const templateUpload = require('./routes/template/upload');
+// app.post('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
 
 
 // Listen on port

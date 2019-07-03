@@ -99,30 +99,30 @@ function deleteProject(project) {
   );   
 }
 
-function download(req, res) {
-  const project = req.body.project;
-  const file = req.body.file;
-  if (!project) {
-    return res.status(400).json({
-      message: fault(2400).message
-      //"2400": "No Project selected",
-    });      
-  } else if (!file) {
-    return res.status(400).json({
-      message: fault(2401).message
-      //"2401": "No file selected",
-    });         
-  } else {
-    var s3 = new aws.S3();
-    var params = {
-        Bucket: awsBucketName,
-        Key: path.join('templates', project, file),
-    };
-    res.attachment(file);
-    var fileStream = s3.getObject(params).createReadStream();
-    fileStream.pipe(res);
-  } 
-}
+// function download(req, res) {
+//   const project = req.body.project;
+//   const file = req.body.file;
+//   if (!project) {
+//     return res.status(400).json({
+//       message: fault(2400).message
+//       //"2400": "No Project selected",
+//     });      
+//   } else if (!file) {
+//     return res.status(400).json({
+//       message: fault(2401).message
+//       //"2401": "No file selected",
+//     });         
+//   } else {
+//     var s3 = new aws.S3();
+//     var params = {
+//         Bucket: awsBucketName,
+//         Key: path.join('templates', project, file),
+//     };
+//     res.attachment(file);
+//     var fileStream = s3.getObject(params).createReadStream();
+//     fileStream.pipe(res);
+//   } 
+// }
 
 function duplicateProject(oldProject, newProject) {
   return new Promise(
@@ -227,7 +227,7 @@ function uploadFile(req, res) {
 module.exports = {
   deleteProject,
   deleteFile,
-  download,
+  // download,
   duplicateProject,
   findAll,
   uploadFile,

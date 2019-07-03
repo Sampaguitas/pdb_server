@@ -5,7 +5,6 @@ const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     var data = {};
-    console.log('body:', req.body);
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });

@@ -7,14 +7,11 @@ router.delete('/', (req, res) => {
     //req.query.id: [%225d186291760cd9328dfa4ccd%22,%225d186290760cd9328dfa4c5f%22]
     const parsedId = JSON.parse(req.query.id);
     //parsedId: ["5d186291760cd9328dfa4ccd","5d186290760cd9328dfa4c5f"]
-    console.log(parsedId);
     parsedId.map(id => {
-        console.log(id);
         FieldName.findByIdAndRemove({_id: String(id)}, function(err, fn){
             if (err) {
                 return res.status(400).json({message: fault(0801).message});
             }
-            console.log(fn);
         });
     }, () => {
         return res.status(200).json({message: fault(0803).message});

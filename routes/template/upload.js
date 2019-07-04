@@ -13,6 +13,7 @@ router.post('/', upload.single('file'), function (req, res) {
   console.log('file:', file);
   console.log('documentId:', documentId);
   console.log('project:', project);
+  console.log('fileName:', file.name);
   DocDef.findOneAndUpdate({_id: documentId}, {field: file.name}, function(err, doc) {
     if (err) {
       console.log('err:', err)

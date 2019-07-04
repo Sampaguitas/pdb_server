@@ -189,37 +189,61 @@ function findAll(req, res) {
 }
 
 function uploadFile(req, res) {
-  const project = req.body.project;
-  const file = req.file;
-  if (!project) {
-    return res.status(400).json({
-      message: fault(2400).message
-      //"2400": "No Project selected",
-    });      
-  } else if (!file) {
-    return res.status(400).json({
-      message: fault(2401).message
-      //"2401": "No file selected",
-    });         
-  } else {
-    var s3 = new aws.S3();
-    var params = {
-      Bucket: awsBucketName,
-      Body: file.buffer,
-      Key: path.join('templates', project, file.originalname),
-    };
-    s3.upload(params, function(err, data) {
-      if (err) {
-        return res.status(400).json({
-          message: fault(2405).message
-          //"2405": "An error occurred",
-        });
+  return new Promise(
+    function (resolve, reject) {
+      if (!project){
+        reject(fault(2400).message); //"2400": "No Project selected",
+      } else if (!file) {
+        reject(fault(2401).message); //"2401": "No file selected",
       } else {
-        res.send({ data });
+        var s3 = new aws.S3();
+        var params = {
+          Bucket: awsBucketName,
+          Body: file.buffer,
+          Key: path.join('templates', project, file.originalname),
+        }; 
+        s3.upload(params, function(err, data) {
+          if (err) {
+            reject(fault(2405).message); //"2405": "An error occurred",
+          } else {
+            resolve(data);
+          }      
+        });
       }
-    });
-  }  
+    }
+  );
 }
+//   const project = req.body.project;
+//   const file = req.file;
+//   if (!project) {
+//     return res.status(400).json({
+//       message: fault(2400).message
+//       //"2400": "No Project selected",
+//     });      
+//   } else if (!file) {
+//     return res.status(400).json({
+//       message: fault(2401).message
+//       //"2401": "No file selected",
+//     });         
+//   } else {
+//     var s3 = new aws.S3();
+//     var params = {
+//       Bucket: awsBucketName,
+//       Body: file.buffer,
+//       Key: path.join('templates', project, file.originalname),
+//     };
+//     s3.upload(params, function(err, data) {
+//       if (err) {
+//         return res.status(400).json({
+//           message: fault(2405).message
+//           //"2405": "An error occurred",
+//         });
+//       } else {
+//         res.send({ data });
+//       }
+//     });
+//   }  
+// }
 
 
 

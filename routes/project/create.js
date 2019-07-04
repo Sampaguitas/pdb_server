@@ -6,6 +6,8 @@ const Access = require('../../models/Access');
 const Supplier = require('../../models/Supplier');
 const Field = require('../../models/Field');
 const FieldName = require('../../models/FieldName');
+const DocDef = require('../../models/DocDef');
+const DocField = require('../../models/DocField');
 const fault = require('../../utilities/Errors');
 const fs = require('fs');
 var path = require('path');
@@ -96,44 +98,87 @@ router.post('/', (req, res) => {
                         });
                         newSupplier.save();
                     });
-                    Field.find({projectId: req.body.copyId}).then(flds => {
-                        flds.map(fld => {
-                            const newField = new Field({
-                                name: fld.name,
-                                custom: fld.custom,
-                                type: fld.type,
-                                fromTbl: fld.fromTbl,
+                    DocDef.find({projectId: req.body.copyId}).then(ddfs => {
+                        ddfs.map(ddf => {
+                            const newDocDef = new DocDef({
+                                code: ddf.code,
+                                location: ddf.location,
+                                field: ddf.field,
+                                description: ddf.description,
+                                row1: ddf.row1,
+                                col1: ddf.col1,
+                                grid: ddf.grid,
+                                worksheet1: ddf.worksheet1,
+                                worksheet2: ddf.worksheet2,
+                                row2: ddf.row2,
+                                col2: ddf.col2,
+                                doctypeId: ddf.doctypeId,
                                 projectId: project._id
                             });
-                            newField
-                            .save()
-                            .then(field => {
-                                FieldName.find({fieldId: fld._id}).then(fldNs => {
-                                    fldNs.map(fldN => {
-                                        const newFieldName = new FieldName({
-                                            align: fldN.align,
-                                            edit: fldN.edit,
-                                            forSelect: fldN.forSelect,
-                                            forShow: fldN.forShow,
-                                            screenId: fldN.screenId,
-                                            fieldId: field._id,
-                                            projectId: project._id
-                                        });
-                                        newFieldName.save();
-                                    });
-                                });
-                            }); 
+                            newDocDef.save();
                         });
-                        Project.findOne({_id: req.body.copyId}).then(oldProject => {
-                            s3bucket.duplicateProject(String(oldProject.number), String(project.number))
-                            .then( () => res.json(project))
-                            .catch(error => res.status(400).json({ message: error}));
+                        Field.find({projectId: req.body.copyId}).then(flds => {
+                            flds.map(fld => {
+                                const newField = new Field({
+                                    name: fld.name,
+                                    custom: fld.custom,
+                                    type: fld.type,
+                                    fromTbl: fld.fromTbl,
+                                    projectId: project._id
+                                });
+                                newField
+                                .save()
+                                .then(field => {
+                                    FieldName.find({fieldId: fld._id}).then(fldNs => {
+                                        fldNs.map(fldN => {
+                                            const newFieldName = new FieldName({
+                                                align: fldN.align,
+                                                edit: fldN.edit,
+                                                forSelect: fldN.forSelect,
+                                                forShow: fldN.forShow,
+                                                screenId: fldN.screenId,
+                                                fieldId: field._id,
+                                                projectId: project._id
+                                            });
+                                            newFieldName
+                                            .save();
+                                        });
+                                        DocField.find({fieldId: fld._id}).then(dflds =>{
+                                            dflds.map( dfld => {
+                                                DocDef.findOne({ _id: dfld.docdefId}).then(odd => {
+                                                    DocDef.findOne({code: odd.code, projectId: project._id}).then(ndd =>{
+                                                        const newDocField = new DocField({
+                                                            location: dfld.location,
+                                                            row: dfld.row,
+                                                            col: dfld.col,
+                                                            grid: dfld.grid,
+                                                            param: dfld.param,
+                                                            worksheet: dfld.worksheet,
+                                                            docdefId: ndd._id,
+                                                            fieldId: field._id,
+                                                            projectId: project._id
+                                                        });
+                                                        newDocField.save();
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                }).catch(err => res.json(err));
+
+                            });
                         });
                     });
-                });   
+                });
+                Project.findOne({_id: req.body.copyId}).then(oldProject => {
+                    s3bucket.duplicateProject(String(oldProject.number), String(project.number))
+                    .then( () => res.json(project))
+                    .catch(error => res.status(400).json({ message: error}));
+                });
             }).catch(err => res.json(err));
         }
     });
 });
 
 module.exports = router;
+

@@ -5,6 +5,8 @@ const Access = require('../../models/Access');
 const Supplier = require('../../models/Supplier');
 const Field = require('../../models/Field');
 const FieldName = require('../../models/FieldName');
+const DocDef = require('../../models/DocDef');
+const DocField = require('../../models/DocField');
 const fault = require('../../utilities/Errors');
 const fs = require('fs');
 var path = require('path');
@@ -14,13 +16,17 @@ router.delete('/', (req, res) => {
     const id = req.query.id
 
     Project.findByIdAndRemove(id, function (err, project) {
-        if (!project) {
+        if (err) {
+            return res.status(400).json({
+                message: err
+                //"1301": "An error occured",
+            });
+        } else if (!project) {
             return res.status(400).json({
                 message: fault(1301).message
                 //"1301": "Project does not exist",
             });
-        }
-        else {
+        } else {
             Access.find({ projectId: id }).then(acss => {
                 acss.forEach(acs => {
                     Access.findByIdAndRemove(acs._id, function(err, a) {
@@ -61,13 +67,35 @@ router.delete('/', (req, res) => {
                                     }
                                 });
                             });
-                            s3bucket.deleteProject(String(project.number))
-                            .then( () => res.status(200).json({ message: fault(1303).message })) //"1303": "Project has been deleted",
-                            .catch(error => res.status(400).json({ message: error}));
-                        });
-                    });
-                });
-            }); 
+                            DocDef.find({ projectId: id }).then(ddfs => {
+                                ddfs.forEach(ddf => {
+                                    DocDef.findOneAndRemove(ddf._id, function(err, dd) {
+                                        if (!dd) {
+                                            console.log('DocDef does not exist');
+                                        } else {
+                                            console.log('DocDef has been deleted');
+                                        }
+                                    });
+                                });
+                                DocField.find({ projectId: id }).then(dfls => {
+                                    dfls.forEach(dfl => {
+                                        DocField.findOneAndRemove(dfl._id, function(err, df) {
+                                            if (!df) {
+                                                console.log('DocField does not exist');
+                                            } else {
+                                                console.log('DocField has been deleted');
+                                            }
+                                        });
+                                    });
+                                    s3bucket.deleteProject(String(project.number))
+                                    .then( () => res.status(200).json({ message: fault(1303).message })) //"1303": "Project has been deleted",
+                                    .catch(error => res.status(400).json({ message: error}));
+                                }).catch(err => res.status(400).json({ message: err}));
+                            }).catch(err => res.status(400).json({ message: err}));
+                        }).catch(err => res.status(400).json({ message: err}));
+                    }).catch(err => res.status(400).json({ message: err}));
+                }).catch(err => res.status(400).json({ message: err}));
+            }).catch(err => res.status(400).json({ message: err})); 
         }
     });
 });

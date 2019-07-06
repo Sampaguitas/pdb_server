@@ -188,7 +188,7 @@ function findAll(req, res) {
   }
 }
 
-function uploadFile(req, res) {
+function uploadFile(file, project) {
   return new Promise(
     function (resolve, reject) {
       if (!project){

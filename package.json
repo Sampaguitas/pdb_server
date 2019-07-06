@@ -19,15 +19,19 @@
   "dependencies": {
     "aws-sdk": "^2.483.0",
     "bcrypt": "^3.0.6",
+    "bluebird": "^3.5.5",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "file-type": "^12.0.1",
+    "fs": "0.0.1-security",
     "glob": "^7.1.4",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "mongoose": "^5.5.14",
     "multer": "^1.4.1",
     "multer-s3": "^2.9.0",
+    "multiparty": "^4.2.1",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0"
   }

@@ -3,7 +3,6 @@ const router = express.Router();
 var aws = require('aws-sdk');
 var path = require('path');
 var multer = require('multer');
-var multerS3 = require('multer-s3') ////
 var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
 const DocDef = require('../../models/DocDef');

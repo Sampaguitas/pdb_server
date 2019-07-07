@@ -10,7 +10,7 @@ const cors = require('cors');
 //const bcrypt = require('bcryptjs');
 const fs = require('fs');
 
-var whitelist = ['http://www.vanleeuwenpdb.com/', 'localhost:8080']
+var whitelist = ['http://www.vanleeuwenpdb.com/', 'http://localhost:8080']
 
 
 var corsOptions = {

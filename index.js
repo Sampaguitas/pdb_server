@@ -23,6 +23,7 @@ var corsOptions = {
     }
 }
 app.use(cors(corsOptions));
+
 // app.use(cors());
 //bodyParser middleware
 app.use(bodyParser.urlencoded({extended:false}));
@@ -120,6 +121,105 @@ const currencyFindOne = require('./routes/currency/findOne');
 app.get('/currency/findOne', passport.authenticate('jwt', { session: false }), currencyFindOne);
 const currencyUpdate = require('./routes/currency/update');
 app.put('/currency/update', passport.authenticate('jwt', { session: false }), currencyUpdate);
+//doccountesr
+const doccountesrCreate = require('./routes/doccountesr/create');
+app.post('/doccountesr/create', passport.authenticate('jwt', { session: false }), doccountesrCreate);
+const doccountesrDelete = require('./routes/doccountesr/delete');
+app.delete('/doccountesr/delete', passport.authenticate('jwt', { session: false }), doccountesrDelete);
+const doccountesrFindAll = require('./routes/doccountesr/findAll');
+app.get('/doccountesr/findAll', passport.authenticate('jwt', { session: false }), doccountesrFindAll);
+const doccountesrFindOne = require('./routes/doccountesr/findOne');
+app.get('/doccountesr/findOne', passport.authenticate('jwt', { session: false }), doccountesrFindOne);
+const doccountesrUpdate = require('./routes/doccountesr/update');
+app.put('/doccountesr/update', passport.authenticate('jwt', { session: false }), doccountesrUpdate);
+//doccountinspect
+const doccountinspectCreate = require('./routes/doccountinspect/create');
+app.post('/doccountinspect/create', passport.authenticate('jwt', { session: false }), doccountinspectCreate);
+const doccountinspectDelete = require('./routes/doccountinspect/delete');
+app.delete('/doccountinspect/delete', passport.authenticate('jwt', { session: false }), doccountinspectDelete);
+const doccountinspectFindAll = require('./routes/doccountinspect/findAll');
+app.get('/doccountinspect/findAll', passport.authenticate('jwt', { session: false }), doccountinspectFindAll);
+const doccountinspectFindOne = require('./routes/doccountinspect/findOne');
+app.get('/doccountinspect/findOne', passport.authenticate('jwt', { session: false }), doccountinspectFindOne);
+const doccountinspectUpdate = require('./routes/doccountinspect/update');
+app.put('/doccountinspect/update', passport.authenticate('jwt', { session: false }), doccountinspectUpdate);
+//doccountinsprel
+const doccountinsprelCreate = require('./routes/doccountinsprel/create');
+app.post('/doccountinsprel/create', passport.authenticate('jwt', { session: false }), doccountinsprelCreate);
+const doccountinsprelDelete = require('./routes/doccountinsprel/delete');
+app.delete('/doccountinsprel/delete', passport.authenticate('jwt', { session: false }), doccountinsprelDelete);
+const doccountinsprelFindAll = require('./routes/doccountinsprel/findAll');
+app.get('/doccountinsprel/findAll', passport.authenticate('jwt', { session: false }), doccountinsprelFindAll);
+const doccountinsprelFindOne = require('./routes/doccountinsprel/findOne');
+app.get('/doccountinsprel/findOne', passport.authenticate('jwt', { session: false }), doccountinsprelFindOne);
+const doccountinsprelUpdate = require('./routes/doccountinsprel/update');
+app.put('/doccountinsprel/update', passport.authenticate('jwt', { session: false }), doccountinsprelUpdate);
+//doccountnfi
+const doccountnfiCreate = require('./routes/doccountnfi/create');
+app.post('/doccountnfi/create', passport.authenticate('jwt', { session: false }), doccountnfiCreate);
+const doccountnfiDelete = require('./routes/doccountnfi/delete');
+app.delete('/doccountnfi/delete', passport.authenticate('jwt', { session: false }), doccountnfiDelete);
+const doccountnfiFindAll = require('./routes/doccountnfi/findAll');
+app.get('/doccountnfi/findAll', passport.authenticate('jwt', { session: false }), doccountnfiFindAll);
+const doccountnfiFindOne = require('./routes/doccountnfi/findOne');
+app.get('/doccountnfi/findOne', passport.authenticate('jwt', { session: false }), doccountnfiFindOne);
+const doccountnfiUpdate = require('./routes/doccountnfi/update');
+app.put('/doccountnfi/update', passport.authenticate('jwt', { session: false }), doccountnfiUpdate);
+//doccountpf
+const doccountpfCreate = require('./routes/doccountpf/create');
+app.post('/doccountpf/create', passport.authenticate('jwt', { session: false }), doccountpfCreate);
+const doccountpfDelete = require('./routes/doccountpf/delete');
+app.delete('/doccountpf/delete', passport.authenticate('jwt', { session: false }), doccountpfDelete);
+const doccountpfFindAll = require('./routes/doccountpf/findAll');
+app.get('/doccountpf/findAll', passport.authenticate('jwt', { session: false }), doccountpfFindAll);
+const doccountpfFindOne = require('./routes/doccountpf/findOne');
+app.get('/doccountpf/findOne', passport.authenticate('jwt', { session: false }), doccountpfFindOne);
+const doccountpfUpdate = require('./routes/doccountpf/update');
+app.put('/doccountpf/update', passport.authenticate('jwt', { session: false }), doccountpfUpdate);
+//doccountpl
+const doccountplCreate = require('./routes/doccountpl/create');
+app.post('/doccountpl/create', passport.authenticate('jwt', { session: false }), doccountplCreate);
+const doccountplDelete = require('./routes/doccountpl/delete');
+app.delete('/doccountpl/delete', passport.authenticate('jwt', { session: false }), doccountplDelete);
+const doccountplFindAll = require('./routes/doccountpl/findAll');
+app.get('/doccountpl/findAll', passport.authenticate('jwt', { session: false }), doccountplFindAll);
+const doccountplFindOne = require('./routes/doccountpl/findOne');
+app.get('/doccountpl/findOne', passport.authenticate('jwt', { session: false }), doccountplFindOne);
+const doccountplUpdate = require('./routes/doccountpl/update');
+app.put('/doccountpl/update', passport.authenticate('jwt', { session: false }), doccountplUpdate);
+//doccountpn
+const doccountpnCreate = require('./routes/doccountpn/create');
+app.post('/doccountpn/create', passport.authenticate('jwt', { session: false }), doccountpnCreate);
+const doccountpnDelete = require('./routes/doccountpn/delete');
+app.delete('/doccountpn/delete', passport.authenticate('jwt', { session: false }), doccountpnDelete);
+const doccountpnFindAll = require('./routes/doccountpn/findAll');
+app.get('/doccountpn/findAll', passport.authenticate('jwt', { session: false }), doccountpnFindAll);
+const doccountpnFindOne = require('./routes/doccountpn/findOne');
+app.get('/doccountpn/findOne', passport.authenticate('jwt', { session: false }), doccountpnFindOne);
+const doccountpnUpdate = require('./routes/doccountpn/update');
+app.put('/doccountpn/update', passport.authenticate('jwt', { session: false }), doccountpnUpdate);
+//doccountsi
+const doccountsiCreate = require('./routes/doccountsi/create');
+app.post('/doccountsi/create', passport.authenticate('jwt', { session: false }), doccountsiCreate);
+const doccountsiDelete = require('./routes/doccountsi/delete');
+app.delete('/doccountsi/delete', passport.authenticate('jwt', { session: false }), doccountsiDelete);
+const doccountsiFindAll = require('./routes/doccountsi/findAll');
+app.get('/doccountsi/findAll', passport.authenticate('jwt', { session: false }), doccountsiFindAll);
+const doccountsiFindOne = require('./routes/doccountsi/findOne');
+app.get('/doccountsi/findOne', passport.authenticate('jwt', { session: false }), doccountsiFindOne);
+const doccountsiUpdate = require('./routes/doccountsi/update');
+app.put('/doccountsi/update', passport.authenticate('jwt', { session: false }), doccountsiUpdate);
+//doccountsm
+const doccountsmCreate = require('./routes/doccountsm/create');
+app.post('/doccountsm/create', passport.authenticate('jwt', { session: false }), doccountsmCreate);
+const doccountsmDelete = require('./routes/doccountsm/delete');
+app.delete('/doccountsm/delete', passport.authenticate('jwt', { session: false }), doccountsmDelete);
+const doccountsmFindAll = require('./routes/doccountsm/findAll');
+app.get('/doccountsm/findAll', passport.authenticate('jwt', { session: false }), doccountsmFindAll);
+const doccountsmFindOne = require('./routes/doccountsm/findOne');
+app.get('/doccountsm/findOne', passport.authenticate('jwt', { session: false }), doccountsmFindOne);
+const doccountsmUpdate = require('./routes/doccountsm/update');
+app.put('/doccountsm/update', passport.authenticate('jwt', { session: false }), doccountsmUpdate);
 //docdef
 const docdefCreate = require('./routes/docdef/create');
 app.post('/docdef/create', passport.authenticate('jwt', { session: false }), docdefCreate);
@@ -314,18 +414,18 @@ app.get('/usersetting/findOne', passport.authenticate('jwt', { session: false })
 const usersettingUpdate = require('./routes/usersetting/update');
 app.put('/usersetting/update', passport.authenticate('jwt', { session: false }), usersettingUpdate);
 //template
-// const templateDeleteFile = require('./routes/template/deleteFile');
-// app.delete('/template/deleteFile', passport.authenticate('jwt', { session: false }), templateDeleteFile);
-// const templateDeleteProject = require('./routes/template/deleteProject');
-// app.delete('/template/deleteProject', passport.authenticate('jwt', { session: false }), templateDeleteProject);
-// const templateDownload = require('./routes/template/download');
-// app.get('/template/download', passport.authenticate('jwt', { session: false }), templateDownload);
-// const templateDuplicateProject = require('./routes/template/duplicateProject');
-// app.post('/template/duplicateProject', passport.authenticate('jwt', { session: false }), templateDuplicateProject);
-// const templateFindAll = require('./routes/template/findAll');
-// app.get('/template/findAll', passport.authenticate('jwt', { session: false }), templateFindAll);
-// const templateUpload = require('./routes/template/upload');
-// app.post('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
+const templateDeleteFile = require('./routes/template/deleteFile');
+app.delete('/template/deleteFile', passport.authenticate('jwt', { session: false }), templateDeleteFile);
+const templateDeleteProject = require('./routes/template/deleteProject');
+app.delete('/template/deleteProject', passport.authenticate('jwt', { session: false }), templateDeleteProject);
+const templateDownload = require('./routes/template/download');
+app.get('/template/download', passport.authenticate('jwt', { session: false }), templateDownload);
+const templateDuplicateProject = require('./routes/template/duplicateProject');
+app.post('/template/duplicateProject', passport.authenticate('jwt', { session: false }), templateDuplicateProject);
+const templateFindAll = require('./routes/template/findAll');
+app.get('/template/findAll', passport.authenticate('jwt', { session: false }), templateFindAll);
+const templateUpload = require('./routes/template/upload');
+app.post('/template/upload', passport.authenticate('jwt', { session: false }), templateUpload);
 
 
 // Listen on port

@@ -6,7 +6,7 @@ const fault = require('../../utilities/Errors');
 router.post('/', (req, res) => {
             const newDocDef = new DocDef({
                 // _id: req.body._id,
-                code: req.body.code,
+                //code: req.body.code,
                 location: req.body.location,
                 field: req.body.field,
                 description: req.body.description,
@@ -21,10 +21,10 @@ router.post('/', (req, res) => {
                 projectId: req.body.projectId,
                 daveId: req.body.daveId,
             });
-
             newDocDef
                 .save()
                 .then(docdef => res.json(docdef))
                 .catch(err => res.json(err));
 });
+
 module.exports = router;

@@ -8,6 +8,17 @@ const Field = require('../../models/Field');
 const FieldName = require('../../models/FieldName');
 const DocDef = require('../../models/DocDef');
 const DocField = require('../../models/DocField');
+
+const DocCountEsr = require('../../models/DocCountEsr');
+const DocCountInspect = require('../../models/DocCountInspect');
+const DocCountInsprel = require('../../models/DocCountInsprel');
+const DocCountNfi = require('../../models/DocCountNfi');
+const DocCountPf = require('../../models/DocCountPf');
+const DocCountPl = require('../../models/DocCountPl');
+const DocCountPn = require('../../models/DocCountPn');
+const DocCountSi = require('../../models/DocCountSi');
+const DocCountSm = require('../../models/DocCountSm');
+
 const fault = require('../../utilities/Errors');
 const fs = require('fs');
 var path = require('path');
@@ -161,13 +172,75 @@ router.post('/', (req, res) => {
                                                         newDocField.save();
                                                     });
                                                 });
-                                            });
+                                            }); //map                                                                                           
                                         });
                                     });
-                                }).catch(err => res.json(err));
-
-                            });
-                        });
+                                });
+                            }); //map
+                            DocCountEsr.findOne({_id: req.body.copyId}).then(oldDocCountEsr => {
+                                const newDocCountEsr = new DocCountEsr({
+                                   _id:  project._id,
+                                   seq: oldDocCountEsr.seq
+                                });
+                                newDocCountEsr.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountInspect.findOne({_id: req.body.copyId}).then(oldDocCountInspect => {
+                                const newDocCountInspect = new DocCountInspect({
+                                   _id:  project._id,
+                                   seq: oldDocCountInspect.seq
+                                });
+                                newDocCountInspect.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountInsprel.findOne({_id: req.body.copyId}).then(oldDocCountInsprel => {
+                                const newDocCountInsprel = new DocCountInsprel({
+                                   _id:  project._id,
+                                   seq: oldDocCountInsprel.seq
+                                });
+                                newDocCountInsprel.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountNfi.findOne({_id: req.body.copyId}).then(oldDocCountNfi => {
+                                const newDocCountNfi = new DocCountNfi({
+                                   _id:  project._id,
+                                   seq: oldDocCountNfi.seq
+                                });
+                                newDocCountNfi.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountPf.findOne({_id: req.body.copyId}).then(oldDocCountPf => {
+                                const newDocCountPf = new DocCountPf({
+                                   _id:  project._id,
+                                   seq: oldDocCountPf.seq
+                                });
+                                newDocCountPf.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountPl.findOne({_id: req.body.copyId}).then(oldDocCountPl => {
+                                const newDocCountPl = new DocCountPl({
+                                   _id:  project._id,
+                                   seq: oldDocCountPl.seq
+                                });
+                                newDocCountPl.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountPn.findOne({_id: req.body.copyId}).then(oldDocCountPn => {
+                                const newDocCountPn = new DocCountPn({
+                                   _id:  project._id,
+                                   seq: oldDocCountPn.seq
+                                });
+                                newDocCountPn.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountSi.findOne({_id: req.body.copyId}).then(oldDocCountSi => {
+                                const newDocCountSi = new DocCountSi({
+                                   _id:  project._id,
+                                   seq: oldDocCountSi.seq
+                                });
+                                newDocCountSi.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                            DocCountSm.findOne({_id: req.body.copyId}).then(oldDocCountSm => {
+                                const newDocCountSm = new DocCountSm({
+                                   _id:  project._id,
+                                   seq: oldDocCountSm.seq
+                                });
+                                newDocCountSm.save()
+                            }).catch(err => res.status(400).json({ message: err}));
+                        }).catch(err => res.status(400).json({ message: err}));
                     });
                 });
                 Project.findOne({_id: req.body.copyId}).then(oldProject => {

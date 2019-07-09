@@ -253,7 +253,7 @@ const docflowFindOne = require('./routes/docflow/findOne');
 app.get('/docflow/findOne', passport.authenticate('jwt', { session: false }), docflowFindOne);
 const docflowUpdate = require('./routes/docflow/update');
 app.put('/docflow/update', passport.authenticate('jwt', { session: false }), docflowUpdate);
-//docfield
+//doctype
 const doctypeCreate = require('./routes/doctype/create');
 app.post('/doctype/create', passport.authenticate('jwt', { session: false }), doctypeCreate);
 const doctypeDelete = require('./routes/doctype/delete');

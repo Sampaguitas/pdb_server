@@ -15,6 +15,7 @@ const DocCountSm = require('../../models/DocCountSm');
 const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
+            console.log('req.body:', req.body);
             const newDocDef = new DocDef({
                 // _id: req.body._id,
                 code: getDocDefCode(req.body.projectId,req.body.doctypeId),
@@ -24,10 +25,10 @@ router.post('/', (req, res) => {
                 row1: req.body.row1,
                 col1: req.body.col1,
                 grid: req.body.grid,
-                worksheet1: req.body.detail && req.body.doctypeId == '5d1927131424114e3884ac80' && req.body.worksheet1,
-                worksheet2: req.body.detail && req.body.doctypeId == '5d1927131424114e3884ac80' && req.body.worksheet2,
-                row2: req.body.detail && req.body.doctypeId == '5d1927131424114e3884ac80' && req.body.row2,
-                col2: req.body.detail && req.body.doctypeId == '5d1927131424114e3884ac80' && req.body.col2,
+                worksheet1: req.body.worksheet1, //req.body.detail && req.body.doctypeId == '5d1927131424114e3884ac80' &&
+                worksheet2: req.body.worksheet2,
+                row2: req.body.row2,
+                col2: req.body.col2,
                 doctypeId: req.body.doctypeId,
                 projectId: req.body.projectId,
                 daveId: req.body.daveId,

@@ -29,9 +29,14 @@ router.get('/', function (req, res) {
         Bucket: awsBucketName,
         Key: path.join('templates', project, file),
     };
-    res.attachment(file);
-    var fileStream = s3.getObject(params).createReadStream();
-    fileStream.pipe(res);
+    //res.attachment(file);
+    // var fileStream = s3.getObject(params).createReadStream();
+    // fileStream.pipe(res);
+      res.attachment(file);
+      s3.getObject(params).createReadStream()
+      .on('error', () => {
+        res.status(400).json({message: "File could not be located, upload a new one"});
+      }).pipe(res);
   }
 });
 

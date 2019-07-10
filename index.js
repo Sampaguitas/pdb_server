@@ -9,7 +9,7 @@ const passport = require('passport');
 const cors = require('cors');
 //const bcrypt = require('bcryptjs');
 const fs = require('fs');
- 
+  
 var whitelist = ['http://www.vanleeuwenpdb.com', 'http://localhost:8080']
 
 

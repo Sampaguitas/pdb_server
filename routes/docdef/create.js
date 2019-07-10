@@ -14,8 +14,31 @@ const DocCountSm = require('../../models/DocCountSm');
 
 const fault = require('../../utilities/Errors');
 
-router.post('/', (req, res) => {
-            console.log('req.body:', req.body);
+router.post('/', async (req, res) => {
+    console.log('req.body:', req.body);
+    if (req.body.code) {
+            const newDocDef = new DocDef({
+                // _id: req.body._id,
+                code: req.body.code,
+                location: req.body.location,
+                field: req.body.field,
+                description: req.body.description,
+                row1: req.body.row1,
+                col1: req.body.col1,
+                grid: req.body.grid,
+                worksheet1: req.body.worksheet1, //req.body.detail && req.body.doctypeId == '5d1927131424114e3884ac80' &&
+                worksheet2: req.body.worksheet2,
+                row2: req.body.row2,
+                col2: req.body.col2,
+                doctypeId: req.body.doctypeId,
+                projectId: req.body.projectId,
+                daveId: req.body.daveId,
+            });
+            newDocDef
+                .save()
+                .then(docdef => res.json(docdef))
+                .catch(err => res.json(err));
+    } else {
             const newDocDef = new DocDef({
                 // _id: req.body._id,
                 code: getDocDefCode(req.body.projectId,req.body.doctypeId),
@@ -37,6 +60,7 @@ router.post('/', (req, res) => {
                 .save()
                 .then(docdef => res.json(docdef))
                 .catch(err => res.json(err));
+    }
 });
 
 function baseTen(number) {
@@ -46,95 +70,95 @@ function baseTen(number) {
 function getDocDefCode(projectId, doctypeId) {
     switch(doctypeId){
         case '5d1927121424114e3884ac7e': //ESR01
-            DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountesr)   {
                 if(error) {
                     return 'ESR00';
-                } else if (!counter) {
+                } else if (!doccountesr) {
                     return 'ESR00';
                 } else {
-                    return 'ESR' + baseTen(counter.seq);
+                    return String('ESR' + baseTen(doccountesr.seq));
                 } 
             });
             break;
         case '5d1927131424114e3884ac7f': //NFI01
-            DocCountNfi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountNfi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountnfi)   {
                 if(error) {
                     return 'NFI00';
-                } else if (!counter) {
+                } else if (!doccountnfi) {
                     return 'NFI00';
                 } else {
-                    return 'NFI' + baseTen(counter.seq);
+                    return 'NFI' + baseTen(doccountnfi.seq);
                 } 
             });
             break;
         case '5d1927131424114e3884ac80': //PL01
-            DocCountPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountpl)   {
                 if(error) {
                     return 'PL00';
-                } else if (!counter) {
+                } else if (!doccountpl) {
                     return 'PL00';
                 } else {
-                    return 'PL' + baseTen(counter.seq);
+                    return 'PL' + baseTen(doccountpl.seq);
                 }
             });
             break; 
         case '5d1927131424114e3884ac81': //PN01
-            DocCountPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountpn)   {
                 if(error) {
                     return 'PN00';
-                } else if (!counter) {
+                } else if (!doccountpn) {
                     return 'PN00';
                 } else {
-                    return 'PN' + baseTen(counter.seq);
+                    return 'PN' + baseTen(doccountpn.seq);
                 }
             });
             break;
         case '5d1927141424114e3884ac82': //PF01
-            DocCountPf.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountPf.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountpf)   {
                 if(error) {
                     return 'PF00';
-                } else if (!counter) {
+                } else if (!doccountpf) {
                     return 'PF00';
                 } else {
-                    return 'PF' + baseTen(counter.seq);
+                    return 'PF' + baseTen(doccountpf.seq);
                 }
             });
             break;
         case '5d1927141424114e3884ac83': //SI01
-            DocCountSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountsi)   {
                 if(error) {
                     return 'SI00';
-                } else if (!counter) {
+                } else if (!doccountsi) {
                     return 'SI00';
                 } else {
-                    return 'SI' + baseTen(counter.seq);
+                    return 'SI' + baseTen(doccountsi.seq);
                 }
             });
             break;
         case '5d1927141424114e3884ac84': //SM01
-            DocCountSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountsm)   {
                 if(error) {
                     return 'SM00';
-                } else if (!counter) {
+                } else if (!doccountsm) {
                     return 'SM00';
                 } else {
-                    return 'SM' + baseTen(counter.seq);
+                    return 'SM' + baseTen(doccountsm.seq);
                 }
             });
             break;
         case '5d1928de1424114e3884ac85': //INSPECT01
-            DocCountInspect.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountInspect.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, Docountinspect)   {
                 if(error) {
                     return 'INSPECT00';
-                } else if (!counter) {
+                } else if (!Docountinspect) {
                     return 'INSPECT00';
                 } else {
-                    return 'INSPECT' + baseTen(counter.seq);
+                    return 'INSPECT' + baseTen(Docountinspect.seq);
                 }
             });
             break;
         case '5d1928de1424114e3884ac86': //ESR00
-            DocCountEsr.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountEsr.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, counter)   {
                 if(error) {
                     return 'ESR00';
                 } else if (!counter) {
@@ -145,7 +169,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
             break;
         case '5d1928df1424114e3884ac87': //INSPREL01
-            DocCountInsprel.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+            return DocCountInsprel.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, counter)   {
                 if(error) {
                     return 'INSPREL00';
                 } else if (!counter) {

@@ -35,7 +35,7 @@ router.get('/', function (req, res) {
       res.attachment(file);
       s3.getObject(params).createReadStream()
       .on('error', () => {
-        res.status(400).json({message: "File could not be located, upload a new one"});
+        res.status(400).json({message: "File could not be located - Please upload a new one"});
       }).pipe(res);
   }
 });

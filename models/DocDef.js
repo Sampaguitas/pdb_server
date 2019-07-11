@@ -27,6 +27,7 @@ const DocDefSchema = new Schema({
     },
     grid: {
         type: Boolean,
+        default: false,
     },
     worksheet1: {
         type: String,

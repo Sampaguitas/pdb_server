@@ -16,19 +16,33 @@ router.post('/', upload.single('file'), function (req, res) {
     if (err){
       return res.status(400).json({message: 'unexpected error'});
     } else if(oldDoc) {
-      s3bucket.deleteFile(oldDoc.field, String(project))
-      .then( () => {
-        DocDef.findOneAndUpdate({_id: documentId}, {field: file.originalname}, function(err, doc) {
-          if (err) {
-            return res.status(400).json({message: 'unexpected error'});
-          } else if (doc) {
-            s3bucket.uploadFile(file, String(project))
-            .then(fulfilled => res.send(fulfilled))
-            .catch(error => res.status(400).json({ message: error}));
-          }
-        });
-      })
-      .catch(error => res.status(400).json({ message: error}));      
+        if(!oldDoc.field) {
+          DocDef.findOneAndUpdate({_id: documentId}, {field: file.originalname}, function(err, doc) {
+            if (err) {
+              return res.status(400).json({message: 'unexpected error'});
+            } else if (doc) {
+              s3bucket.uploadFile(file, String(project))
+              .then(fulfilled => res.send(fulfilled))
+              .catch(error => res.status(400).json({ message: error}));
+            }
+          });
+        } else {
+          s3bucket.deleteFile(oldDoc.field, String(project))
+          .then( () => {
+            DocDef.findOneAndUpdate({_id: documentId}, {field: file.originalname}, function(err, doc) {
+              if (err) {
+                return res.status(400).json({message: 'unexpected error'});
+              } else if (doc) {
+                s3bucket.uploadFile(file, String(project))
+                .then(fulfilled => res.send(fulfilled))
+                .catch(error => res.status(400).json({ message: error}));
+              }
+            });
+          })
+          .catch(error => res.status(400).json({ message: error}));
+        }     
+    } else {
+      return res.status(400).json({message: 'Document could not be found'});
     }
   });
 

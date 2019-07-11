@@ -97,121 +97,121 @@ function getDocDefCode(projectId, doctypeId) {
     switch(doctypeId){
         case '5d1927121424114e3884ac7e': //ESR01
             return new Promise(function(resolve, reject) {
-                DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountesr)   {
+                DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('ESR' + baseTen(doccountesr.seq));
+                        resolve('ESR' + baseTen(doc.seq));
                     }
                 });
             })
         case '5d1927131424114e3884ac7f': //NFI01
             return new Promise(function(resolve, reject) {
-                DocCountNfi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountnfi)   {
+                DocCountNfi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('NFI' + baseTen(doccountesr.seq));
+                        resolve('NFI' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1927131424114e3884ac80': //PL01
             return new Promise(function(resolve, reject) {
-                DocCountPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountpl)   {
+                DocCountPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('PL' + baseTen(doccountesr.seq));
+                        resolve('PL' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1927131424114e3884ac81': //PN01
             return new Promise(function(resolve, reject) {
-                DocCountPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountpn)   {
+                DocCountPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('PN' + baseTen(doccountesr.seq));
+                        resolve('PN' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1927141424114e3884ac82': //PF01
             return new Promise(function(resolve, reject) {
-                DocCountPf.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountpf)   {
+                DocCountPf.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('PF' + baseTen(doccountesr.seq));
+                        resolve('PF' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1927141424114e3884ac83': //SI01
             return new Promise(function(resolve, reject) {
-                DocCountSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountsi)   {
+                DocCountSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('SI' + baseTen(doccountesr.seq));
+                        resolve('SI' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1927141424114e3884ac84': //SM01
             return new Promise(function(resolve, reject) {
-                DocCountSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountsm)   {
+                DocCountSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('SM' + baseTen(doccountesr.seq));
+                        resolve('SM' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1928de1424114e3884ac85': //INSPECT01
             return new Promise(function(resolve, reject) {
-                DocCountInspect.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, Docountinspect)   {
+                DocCountInspect.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('INSPECT' + baseTen(doccountesr.seq));
+                        resolve('INSPECT' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1928de1424114e3884ac86': //ESR00
             return new Promise(function(resolve, reject) {
-                DocCountEsr.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+                DocCountEsr.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('ESR' + baseTen(doccountesr.seq));
+                        resolve('ESR' + baseTen(doc.seq));
                     }
                 });
             });
         case '5d1928df1424114e3884ac87': //INSPREL01
             return new Promise(function(resolve, reject) {
-                DocCountInsprel.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, counter)   {
+                DocCountInsprel.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
                         reject(error);
-                    } else if (!doccountesr) {
+                    } else if (!doc) {
                         reject('no document was return from the callback');
                     } else {
-                        resolve('INSPREL' + baseTen(doccountesr.seq));
+                        resolve('INSPREL' + baseTen(doc.seq));
                     }
                 });
             });

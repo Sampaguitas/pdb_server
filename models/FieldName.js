@@ -22,15 +22,18 @@ const FieldNameSchema = new Schema({
     },
     screenId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'screens' 
+        ref: 'screens',
+        required: true
     },
     fieldId:{
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'fields'     
+        ref: 'fields',
+        required: true  
     },
     projectId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects'         
+        ref: 'projects',
+        required: true        
     },
     daveId: {
         type: Number,

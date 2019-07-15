@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
         path: 'fieldnames',
         populate: {
             path: 'fields', 
-            select:'custom'
+            //select:'custom'
         }
     })
     .populate('docdefs')

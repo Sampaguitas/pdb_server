@@ -216,4 +216,13 @@ const SubSchema = new Schema({
     }
 });
 
+// SubSchema.virtual("pos", {
+//     ref: "pos",
+//     localField: "poId",
+//     foreignField: "_id",
+//     justOne: true
+// });
+
+// SubSchema.set('toJSON', { virtuals: true });
+
 module.exports = Sub = mongoose.model('subs', SubSchema);

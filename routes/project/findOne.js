@@ -18,6 +18,12 @@ router.get('/', (req, res) => {
             path: 'subs'
         }
     })
+    // .populate({
+    //     path: 'subs',
+    //     populate:{
+    //         path: 'po'
+    //     }
+    // })
     .populate('collitypes')
     .populate('erp')
     .populate('suppliers')

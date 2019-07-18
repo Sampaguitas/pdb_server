@@ -6,9 +6,9 @@ const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     const _id = req.user._id;
-    const oldPassword = req.body.oldPassword;
-    const newPassword = req.body.newPassword;
-    const confirmPassword = req.body.confirmPassword;
+    const oldPassword = decodeURI(req.body.oldPassword);
+    const newPassword = decodeURI(req.body.newPassword);
+    const confirmPassword = decodeURI(req.body.confirmPassword);
     if (newPassword !== confirmPassword) {
         return res.status(400).json({
             message: fault(1605).message

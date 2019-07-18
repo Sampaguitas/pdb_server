@@ -8,7 +8,7 @@ const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
     const email = req.body.email.toLowerCase();
-    const password = req.body.password;
+    const password = decodeURI(req.body.password);
     User.findOne({ email }, { password:1 , userName:1, name: 1, email: 1, isAdmin:1, isSuperAdmin: 1, opcoId:1 })
     .populate({
         path:'opco', 

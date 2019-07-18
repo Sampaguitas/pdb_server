@@ -13,7 +13,7 @@ function hasRoles(user) {
 router.put('/', (req, res) => {
     var data = {};
     Object.keys(req.body).forEach(function (k) {
-        data[k] = req.body[k];
+        data[k] = decodeURI(req.body[k]);
     });
     const id = req.query.id;
     const newUsers = req.body.projectUsers

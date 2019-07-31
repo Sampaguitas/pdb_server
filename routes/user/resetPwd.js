@@ -6,7 +6,18 @@ const fault = require('../../utilities/Errors');
 const crypto = require('crypto');
 const moment = require('moment');
 const bcrypt = require('bcrypt');
-const nodeMailer = require('nodemailer');
+const nodemailer = require("nodemailer");
+const keys = require('../../config/keys');
+
+let transporter = nodemailer.createTransport({
+    host: keys.mailerHost,
+    port: keys.mailerPort,
+    secure: false,
+    auth: {
+      user: keys.mailerAuthUser, 
+      pass: keys.mailerAuthPass
+    }
+  });
 
 router.post('/', (req, res) => {
     const email = req.body.email.toLowerCase();
@@ -52,30 +63,34 @@ router.post('/', (req, res) => {
                                     } else {
                                         console.log('item:', item);
                                         let mailOptions = {
-                                            from: 'Van Leeuwen PDB <timothee.desurmont@sampaguitas.com>',
+                                            from: keys.myName + ' <' + keys.mailerAuthUser + '>',
                                             to: user.email,
                                             subject: 'Reset your account password',
                                             html: '<h4><b>Reset Password</b></h4>' +
                                             '<p>To reset your password, complete this form:</p>' +
                                             '<a href=https://www.vanleeuwenpdb.com/reset?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/reset?id=' + user._id + '&token=' + token + '<a/>' +
                                             '<br><br>' +
-                                            '<p>Timothee Desurmont</p>' +
-                                            '<p>Business Development</p>' +
-                                            '<p>+971 55 7916161</p>'
+                                            '<p>' + keys.myName + '</p>' +
+                                            '<p>' + keys.myPosition + '</p>' +
+                                            '<p>'+ keys.myPhone + '</p>'
                                         };
-                                        let mailSent = sendMail(mailOptions)
-                                        if (mailSent) {
-                                            return res.status(200).json({
-                                                message: fault(1608).message
-                                                    //"1606": "Check your email to reset your password",
-                                            });
-                                        } else {
-                                            return res.status(404).json({
-                                                message: fault(1609).message
-                                                    //"1609": "Unable to send the email verification",
-                                            });
-                                        }
-
+                                        transporter.sendMail(mailOptions, (err, info) => {
+                                            if (err) {
+                                                return res.status(404).json({
+                                                    message: JSON.stringify('err')
+                                                });                                            
+                                            } else if(info) {
+                                                return res.status(200).json({
+                                                    message: fault(1608).message
+                                                        //"1606": "Check your email to reset your password",
+                                                });
+                                            } else {
+                                                return res.status(404).json({
+                                                    message: fault(1609).message
+                                                        //"1609": "Unable to send the email verification",
+                                                });
+                                            }
+                                        })
                                     }
                                 })
                                 .catch(error => {

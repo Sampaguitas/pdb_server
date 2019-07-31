@@ -102,6 +102,8 @@ const Errors = {
     "1605": "Password does not match",    
     "1606": "Error generating hashed token",
     "1607": "Password has been updated",
+    "1608": "Check your email to reset your password",
+    "1609": "Unable to send the email verification",
     //17**: "UserSetting Errors",
     "1700": "UserSetting already exists",
     "1701": "UserSetting does not exist",

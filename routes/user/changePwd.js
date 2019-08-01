@@ -40,7 +40,11 @@ router.put('/', (req, res) => {
                             }
                             const password = hash;
                             User.findByIdAndUpdate({_id: _id}, { $set: { password: password}} , function (err, pwd) {
-                                if (!pwd) {
+                                if (err) {
+                                    return res.status(400).json({
+                                        message: JSON.stringify(err)
+                                    });
+                                } else if (!pwd) {
                                     return res.status(400).json({
                                         message: fault(1601).message
                                         //"1601": "User does not exist",
@@ -52,7 +56,7 @@ router.put('/', (req, res) => {
                                         //"1607": "Password has been updated",
                                     });
                                 }
-                            } )
+                            });
                         });
                     });
                 }

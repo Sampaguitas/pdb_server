@@ -67,7 +67,7 @@ router.post('/', (req, res) => {
                                             subject: 'Reset your account password',
                                             html: '<h4><b>Reset Password</b></h4>' +
                                             '<p>To reset your password, complete this form:</p>' +
-                                            '<a href=https://www.vanleeuwenpdb.com/reset?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/reset?id=' + user._id + '&token=' + token + '<a/>' +
+                                            '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
                                             '<br><br>' +
                                             '<p>' + keys.myName + '</p>' +
                                             '<p>' + keys.myPosition + '</p>' +

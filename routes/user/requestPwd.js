@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
                         });
                     } else {
                         let mailOptions = {
-                            from: keys.myName + ' <' + keys.mailerAuthUser + '>',
+                            from: 'Project Database (PDB)' + ' <' + keys.mailerAuthUser + '>',
                             to: user.email,
                             subject: 'Reset your account password',
                             html: '<h4><b>Reset Password</b></h4>' +

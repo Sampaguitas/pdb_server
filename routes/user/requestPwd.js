@@ -32,62 +32,68 @@ router.post('/', (req, res) => {
             ResetPassword.findOne({ userId: user._id, status: 0 })
             .then(function (resetPassword) {
                 if (resetPassword) {
-                    ResetPassword.findByIdAndRemove(resetPassword._id);
-                } else {
-                    token = crypto.randomBytes(32).toString('hex');
-                    const newResetPassword = new ResetPassword({
-                        userId: user._id,
-                        token: token,
-                        expire: moment.utc().add(3600, 'seconds'),
-                        status: 0
-                    });
-                    newResetPassword
-                    .save()
-                    .then(function (item) {
-                        if (!item) {
-                            return res.status(404).json({
-                                message: fault(1606).message
-                                    //"1606": "Error generating hashed token",
-                            });
-                        } else {
-                            let mailOptions = {
-                                from: keys.myName + ' <' + keys.mailerAuthUser + '>',
-                                to: user.email,
-                                subject: 'Reset your account password',
-                                html: '<h4><b>Reset Password</b></h4>' +
-                                '<p>To reset your password, complete this form:</p>' +
-                                '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
-                                '<br><br>' +
-                                '<p>' + keys.myName + '</p>' +
-                                '<p>' + keys.myPosition + '</p>' +
-                                '<p>'+ keys.myPhone + '</p>'
-                            };
-                            //https://www.vanleeuwenpdb.com/resetpwd?id=
-                            transporter.sendMail(mailOptions, (err, info) => {
-                                if (err) {
-                                    return res.status(404).json({
-                                        message: JSON.stringify('err')
-                                    });                                            
-                                } else if(info) {
-                                    return res.status(200).json({
-                                        message: fault(1608).message
-                                            //"1606": "Check your email to reset your password",
-                                    });
-                                } else {
-                                    return res.status(404).json({
-                                        message: fault(1609).message
-                                            //"1609": "Unable to send the email verification",
-                                    });
-                                }
-                            })
+                    console.log('position 2');
+                    ResetPassword.findByIdAndRemove(resetPassword._id, function (err, result) {
+                        if (err) {
+                            console.log('there was not other tokens for this user');
+                        } else if (result) {
+                            console.log('old tokens have been removed');
                         }
-                    })
-                    .catch(error => {
-                        return res.status(404).json({
-                            message: JSON.stringify(error)
-                        });                            
                     });
-                }
+                } 
+                token = crypto.randomBytes(32).toString('hex');
+                const newResetPassword = new ResetPassword({
+                    userId: user._id,
+                    token: token,
+                    expire: moment.utc().add(3600, 'seconds'),
+                    status: 0
+                });
+                newResetPassword
+                .save()
+                .then(function (item) {
+                    if (!item) {
+                        return res.status(404).json({
+                            message: fault(1606).message
+                                //"1606": "Error generating hashed token",
+                        });
+                    } else {
+                        let mailOptions = {
+                            from: keys.myName + ' <' + keys.mailerAuthUser + '>',
+                            to: user.email,
+                            subject: 'Reset your account password',
+                            html: '<h4><b>Reset Password</b></h4>' +
+                            '<p>To reset your password, complete this form:</p>' +
+                            '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
+                            '<br><br>' +
+                            '<p>' + keys.myName + '</p>' +
+                            '<p>' + keys.myPosition + '</p>' +
+                            '<p>'+ keys.myPhone + '</p>'
+                        };
+                        //https://www.vanleeuwenpdb.com/resetpwd?id=
+                        transporter.sendMail(mailOptions, (err, info) => {
+                            if (err) {
+                                return res.status(404).json({
+                                    message: JSON.stringify('err')
+                                });                                            
+                            } else if(info) {
+                                return res.status(200).json({
+                                    message: fault(1608).message
+                                        //"1606": "Check your email to reset your password",
+                                });
+                            } else {
+                                return res.status(404).json({
+                                    message: fault(1609).message
+                                        //"1609": "Unable to send the email verification",
+                                });
+                            }
+                        })
+                    }
+                })
+                .catch(error => {
+                    return res.status(404).json({
+                        message: JSON.stringify(error)
+                    });                            
+                });
             })
             .catch(error => {
                 return res.status(404).json({

@@ -61,9 +61,10 @@ router.post('/', (req, res) => {
                             from: 'Project Database (PDB)' + ' <' + keys.mailerAuthUser + '>',
                             to: user.email,
                             subject: 'Reset your account password',
-                            html: '<h4><b>Reset Password</b></h4>' +
-                            '<p>To reset your password, complete this form:</p>' +
+                            html: '<p>Hi,</p>' +
+                            '<p>Please click on the link below to reset your password:</p>' +
                             '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
+                            '<p>Thanks,</p>' +
                             '<br><br>' +
                             '<p>' + keys.myName + '</p>' +
                             '<p>' + keys.myPosition + '</p>' +

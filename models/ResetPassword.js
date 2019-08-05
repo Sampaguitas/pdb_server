@@ -7,14 +7,15 @@ const ResetPasswordSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'users'
     },
-    resetPasswordToken: {
+    token: {
         type: String,
     },
     expire:{
         type: Date,
     },
     status:{
-        type: Boolean,
+        type: Number,
+        default: 0,
     }
 });
 

@@ -35,70 +35,57 @@ router.post('/', (req, res) => {
                     ResetPassword.findByIdAndRemove(resetPassword._id);
                 } else {
                     token = crypto.randomBytes(32).toString('hex');
-                    bcrypt.genSalt(10, (err, salt) => {
-                        bcrypt.hash(token, salt, function (err, hash) {
-                            if (err) {
-                                return res.status(404).json({
-                                    message: JSON.stringify('err')
-                                });
-                            } else if (!hash) {
-                                return res.status(404).json({
-                                    message: fault(1606).message
-                                        //"1606": "Error generating hashed token",
-                                });
-                            } else {
-                                const newResetPassword = new ResetPassword({
-                                    userId: user._id,
-                                    resetPasswordToken: hash,
-                                    expire: moment.utc().add(3600, 'seconds'),
-                                });
-                                newResetPassword
-                                .save()
-                                .then(function (item) {
-                                    if (!item) {
-                                        return res.status(404).json({
-                                            message: fault(1606).message
-                                                //"1606": "Error generating hashed token",
-                                        });
-                                    } else {
-                                        let mailOptions = {
-                                            from: keys.myName + ' <' + keys.mailerAuthUser + '>',
-                                            to: user.email,
-                                            subject: 'Reset your account password',
-                                            html: '<h4><b>Reset Password</b></h4>' +
-                                            '<p>To reset your password, complete this form:</p>' +
-                                            '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
-                                            '<br><br>' +
-                                            '<p>' + keys.myName + '</p>' +
-                                            '<p>' + keys.myPosition + '</p>' +
-                                            '<p>'+ keys.myPhone + '</p>'
-                                        };
-                                        transporter.sendMail(mailOptions, (err, info) => {
-                                            if (err) {
-                                                return res.status(404).json({
-                                                    message: JSON.stringify('err')
-                                                });                                            
-                                            } else if(info) {
-                                                return res.status(200).json({
-                                                    message: fault(1608).message
-                                                        //"1606": "Check your email to reset your password",
-                                                });
-                                            } else {
-                                                return res.status(404).json({
-                                                    message: fault(1609).message
-                                                        //"1609": "Unable to send the email verification",
-                                                });
-                                            }
-                                        })
-                                    }
-                                })
-                                .catch(error => {
+                    const newResetPassword = new ResetPassword({
+                        userId: user._id,
+                        token: token,
+                        expire: moment.utc().add(3600, 'seconds'),
+                        status: 0
+                    });
+                    newResetPassword
+                    .save()
+                    .then(function (item) {
+                        if (!item) {
+                            return res.status(404).json({
+                                message: fault(1606).message
+                                    //"1606": "Error generating hashed token",
+                            });
+                        } else {
+                            let mailOptions = {
+                                from: keys.myName + ' <' + keys.mailerAuthUser + '>',
+                                to: user.email,
+                                subject: 'Reset your account password',
+                                html: '<h4><b>Reset Password</b></h4>' +
+                                '<p>To reset your password, complete this form:</p>' +
+                                '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
+                                '<br><br>' +
+                                '<p>' + keys.myName + '</p>' +
+                                '<p>' + keys.myPosition + '</p>' +
+                                '<p>'+ keys.myPhone + '</p>'
+                            };
+                            //https://www.vanleeuwenpdb.com/resetpwd?id=
+                            transporter.sendMail(mailOptions, (err, info) => {
+                                if (err) {
                                     return res.status(404).json({
-                                        message: JSON.stringify(error)
-                                    });                            
-                                });
-                            }
-                        });
+                                        message: JSON.stringify('err')
+                                    });                                            
+                                } else if(info) {
+                                    return res.status(200).json({
+                                        message: fault(1608).message
+                                            //"1606": "Check your email to reset your password",
+                                    });
+                                } else {
+                                    return res.status(404).json({
+                                        message: fault(1609).message
+                                            //"1609": "Unable to send the email verification",
+                                    });
+                                }
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        return res.status(404).json({
+                            message: JSON.stringify(error)
+                        });                            
                     });
                 }
             })

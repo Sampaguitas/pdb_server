@@ -64,11 +64,12 @@ router.post('/', (req, res) => {
                             html: '<p>Hi,</p>' +
                             '<p>Please click on the link below to reset your password:</p>' +
                             '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
+                            '<p>If you have not requested for a new password, call me on the follwoing number: ' + keys.myPhone +'</p>' +
                             '<p>Thanks,</p>' +
                             '<br><br>' +
                             '<p>' + keys.myName + '</p>' +
                             '<p>' + keys.myPosition + '</p>' +
-                            '<p>'+ keys.myPhone + '</p>'
+                            '<p>Van Leeuwen Pipe and Tube</p>'
                         };
                         //https://www.vanleeuwenpdb.com/resetpwd?id=
                         transporter.sendMail(mailOptions, (err, info) => {

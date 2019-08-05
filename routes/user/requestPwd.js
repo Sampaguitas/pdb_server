@@ -58,16 +58,18 @@ router.post('/', (req, res) => {
                         });
                     } else {
                         let mailOptions = {
-                            from: 'Project Database (PDB)' + ' <' + keys.mailerAuthUser + '>',
+                            from: keys.myName + ' <' + keys.mailerAuthUser + '>',
                             to: user.email,
                             subject: 'Reset your account password',
-                            html: '<p>Hi,</p>' +
-                            '<p>Please click on the link below to reset your password:</p>' +
-                            '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
-                            '<p>If you have not requested for a new password, call me on the follwoing number: ' + keys.myPhone +'</p>' +
+                            html: '<h2>Project Database (PDB)</h2>' +
+                            '<p>Hi,</p>' +
+                            '<p>Please click on the following <a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '>link<a/> to reset your password,</p>' +
+                            '<p>If you have not requested for a new password, call me on the follwoing number: <a href="tel:' + keys.myPhone + '">' + keys.myPhone +'</a></p>' +
                             '<p>Thanks,</p>' +
+                            '<br/>' +
                             '<p>' + keys.myName + '</p>' +
-                            '<p>Van Leeuwen Pipe and Tube</p>'
+                            '<p>' + keys.myPosition + '</p>' +
+                            '<b>Van Leeuwen Pipe and Tube</b>'
                         };
                         //https://www.vanleeuwenpdb.com/resetpwd?id=
                         transporter.sendMail(mailOptions, (err, info) => {

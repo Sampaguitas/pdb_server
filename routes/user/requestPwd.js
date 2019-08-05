@@ -67,7 +67,6 @@ router.post('/', (req, res) => {
                             '<p>If you have not requested for a new password, call me on the follwoing number: ' + keys.myPhone +'</p>' +
                             '<p>Thanks,</p>' +
                             '<p>' + keys.myName + '</p>' +
-                            '<p>' + keys.myPosition + '</p>' +
                             '<p>Van Leeuwen Pipe and Tube</p>'
                         };
                         //https://www.vanleeuwenpdb.com/resetpwd?id=

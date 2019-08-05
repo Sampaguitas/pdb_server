@@ -66,7 +66,6 @@ router.post('/', (req, res) => {
                             '<a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '> https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + token + '<a/>' +
                             '<p>If you have not requested for a new password, call me on the follwoing number: ' + keys.myPhone +'</p>' +
                             '<p>Thanks,</p>' +
-                            '<br><br>' +
                             '<p>' + keys.myName + '</p>' +
                             '<p>' + keys.myPosition + '</p>' +
                             '<p>Van Leeuwen Pipe and Tube</p>'

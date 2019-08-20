@@ -15,7 +15,10 @@ router.get('/', (req, res) => {
     .populate({
         path: 'pos',
         populate: {
-            path: 'subs'
+            path: 'subs',
+            populate: {
+                path: 'certificates'
+            }
         }
     })
     // .populate({

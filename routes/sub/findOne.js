@@ -5,7 +5,8 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     const id = req.query.id
-    Sub.findById(id, function (err, sub) {
+    Sub.findById(id).populate("certificates")
+        .exec(function (err, sub) {
         if (!sub) {
             return res.status(400).json({ 
                 message: fault(1401).message

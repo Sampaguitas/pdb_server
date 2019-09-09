@@ -77,7 +77,7 @@ router.get('/', function (req, res) {
                     fill = {
                       'type': 'pattern',
                       'pattern':'solid',
-                      'fgColor': {'argb':'FFED1C24'}
+                      'fgColor': {argb:'FFED1C24'}
                     };
                   }
                 });

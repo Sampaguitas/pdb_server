@@ -27,6 +27,8 @@ router.get('/', function (req, res) {
   const project = req.query.project;
   const docDef = req.query.docDef;
   //const file = req.query.file;
+
+
   if (!project){
     return res.status(400).json({message: fault(2400).message}); //"2400": "No Project selected",
   } else if (!docDef){
@@ -56,7 +58,8 @@ router.get('/', function (req, res) {
               Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
                 fields.map(field => {
                   const worksheet = getWorksheet(field.worksheet, workbook);
-                  with(worksheet.getCell(`${field.address}`)){
+                  var cell = worksheet.getCell(`${field.address}`); 
+                  with(cell){
                     value = {
                       'richText': [
                         {
@@ -66,14 +69,15 @@ router.get('/', function (req, res) {
                             'name': 'Arial',
                             'scheme': 'minor'
                           },
-                          'text': field.text
+                          'text': `${field.text}`
                         },
                       ]
                     };
+                    style = Object.create(cell.style); //shallow-clone the style, break references
                     fill = {
-                      type: 'pattern',
-                      pattern:'solid',
-                      fgColor:{argb:'FFED1C24'},
+                      'type': 'pattern',
+                      'pattern':'solid',
+                      'fgColor': {'argb':'FFED1C24'}
                     };
                   }
                 });

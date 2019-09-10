@@ -5,33 +5,39 @@ const Schema = mongoose.Schema;
 const DocFieldSchema = new Schema({
     location: {
         type: String,
+        required: true,
     },
     row: {
         type: Number,
+        required: true
     },
     col: {
         type: Number,
+        required: true
     },
     grid: {
-        type: Boolean,
+        type: Boolean
     },
     param: {
-        type: String, 
+        type: String 
     },
     worksheet: {
-        type: String,
+        type: String
     },
     docdefId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'docdefs'
+        ref: 'docdefs',
+        required: true
     },
     fieldId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'fields'
+        ref: 'fields',
+        required: true
     },
     projectId:{
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects'     
+        ref: 'projects',
+        required: true    
     },
     daveId: {
         type: Number,

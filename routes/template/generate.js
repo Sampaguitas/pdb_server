@@ -14,7 +14,6 @@ var Excel = require('exceljs');
 fs = require('fs');
 const stream = require('stream');
 
-
 aws.config.update({
   accessKeyId: accessKeyId,
   secretAccessKey: secretAccessKey,
@@ -55,7 +54,6 @@ router.get('/', function (req, res) {
             } else {
               workbook.properties.date1904 = true;
               Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
-                fields.filter(n => n);
                 fields.map(field => {
                   const worksheet = getWorksheet(field.worksheet, workbook);
                   var cell = worksheet.getCell(`${field.address}`); 

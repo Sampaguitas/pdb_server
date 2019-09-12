@@ -10,6 +10,7 @@ const awsBucketName = require('../../config/keys').awsBucketName;
 const DocDef = require('../../models/DocDef');
 const DocField = require('../../models/DocField');
 const Field = require('../../models/Field');
+const Project = require('../../models/Project');
 var Excel = require('exceljs');
 fs = require('fs');
 const stream = require('stream');
@@ -23,72 +24,69 @@ aws.config.update({
 
 router.get('/', function (req, res) {
   
-  const project = req.query.project;
   const docDef = req.query.docDef;
-  //const file = req.query.file;
 
-
-  if (!project){
-    return res.status(400).json({message: fault(2400).message}); //"2400": "No Project selected",
-  } else if (!docDef){
-    return res.status(400).json({message: fault(2401).message}); //"2401": "No file selected",
-  } else {
     DocDef.findById(docDef, function(errDocField, resDocDef){
       if (errDocField) {
         return res.status(400).json({message: errDocField});
       } else if (!resDocDef) {
         return res.status(400).json({message: 'an error occured'});
       } else {
-
-        var s3 = new aws.S3();
-        var params = {
-            Bucket: awsBucketName,
-            Key: path.join('templates', project, resDocDef.field),
-        };
-
-        var wb = new Excel.Workbook();
-        wb.xlsx.read(s3.getObject(params).createReadStream())
-        .then(workbook => {
-          DocField.find({docdefId: docDef}, function(errDocField, resDocField){
-            if (errDocField){
-              return res.status(400).json({message: 'an error occured'});
-            } else {
-              workbook.properties.date1904 = true;
-              Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
-                fields.filter(n => n);
-                fields.map(field => {
-                  const worksheet = getWorksheet(field.worksheet, workbook);
-                  var cell = worksheet.getCell(`${field.address}`); 
-                  with(cell){
-                    value = {
-                      'richText': [
-                        {
-                          'font': {
-                            'size': 12,
-                            'color': {'argb': 'FFFFFFFF'},
-                            'name': 'Arial',
-                            'scheme': 'minor'
-                          },
-                          'text': `${field.text}`
-                        },
-                      ]
-                    };
-                    style = Object.create(cell.style); //shallow-clone the style, break references
-                    fill = {
-                      'type': 'pattern',
-                      'pattern':'solid',
-                      'fgColor': {argb:'FFED1C24'}
-                    };
-                  }
-                });
-                workbook.xlsx.write(res);
+        Project.findById(resDocDef.projectId, function (errProject, resProject) {
+          if (errProject) {
+            return res.status(400).json({message: errProject});
+          } else if (!resProject) {
+            return res.status(400).json({message: 'an error occured'});
+          } else {
+            var s3 = new aws.S3();
+            var params = {
+                Bucket: awsBucketName,
+                Key: path.join('templates', String(resProject.number), resDocDef.field),
+            };
+            var wb = new Excel.Workbook();
+            wb.xlsx.read(s3.getObject(params).createReadStream())
+            .then(workbook => {
+              DocField.find({docdefId: docDef}, function(errDocField, resDocField){
+                if (errDocField){
+                  return res.status(400).json({message: 'an error occured'});
+                } else {
+                  workbook.properties.date1904 = true;
+                  Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
+                    fields.filter(n => n);
+                    fields.map(field => {
+                      const worksheet = getWorksheet(field.worksheet, workbook);
+                      var cell = worksheet.getCell(`${field.address}`); 
+                      with(cell){
+                        value = {
+                          'richText': [
+                            {
+                              'font': {
+                                'size': 12,
+                                'color': {'argb': 'FFFFFFFF'},
+                                'name': 'Arial',
+                                'scheme': 'minor'
+                              },
+                              'text': `${field.text}`
+                            },
+                          ]
+                        };
+                        style = Object.create(cell.style); //shallow-clone the style, break references
+                        fill = {
+                          'type': 'pattern',
+                          'pattern':'solid',
+                          'fgColor': {argb:'FFED1C24'}
+                        };
+                      }
+                    });
+                    workbook.xlsx.write(res);
+                  });
+                }
               });
-            }
-          });
+            });
+          }
         });
-      }
+        }
     });
-  }
 });
 
 function promeses(resDocDef, resDocField) {

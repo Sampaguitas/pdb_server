@@ -121,12 +121,23 @@ function getWorksheet(worksheet, workbook) {
 
 function getFieldAddress (docField, resDocDef) {
   if (docField.location === 'Header') {
-    return String.fromCharCode(96 + docField.col).toUpperCase() + docField.row;
+    return alphabet(docField.col) + docField.row;
   } else if (docField.worksheet !== 'Sheet2') {
-    return String.fromCharCode(96 + docField.col).toUpperCase() + resDocDef.row1;
+    return alphabet(docField.col) + resDocDef.row1;
   } else {
-    return String.fromCharCode(96 + docField.col).toUpperCase() + resDocDef.row2;
+    return alphabet(docField.col) + resDocDef.row2;
   }
+}
+
+function alphabet(num){
+  var s = '', t;
+
+  while (num > 0) {
+    t = (num - 1) % 26;
+    s = String.fromCharCode(65 + t) + s;
+    num = (num - t)/26 | 0;
+  }
+  return s || undefined;
 }
 
 module.exports = router;

@@ -62,37 +62,49 @@ router.get('/', function (req, res) {
                   return res.status(400).json({message: 'an error occured'});
                 } else {
                   workbook.properties.date1904 = true;
-                  // const wsOne = workbook.getWorksheet(1);
 
-                  const docFieldSol = filterDocFiled(resDocField, 'Sheet1', 'Line')
+                  const docFieldSol = filterDocFiled(resDocField, 'Sheet1', 'Line');
                   const firstColSol = getColumnFirst(docFieldSol);
                   const lastColSol = getColumnLast(docFieldSol);
-                  const colSol = getColumns(resDocDef.row1, workbook.getWorksheet(1), firstColSol, lastColSol);
-                  const rowSol = getRows(resProject, docFieldSol, firstColSol,lastColSol);
+
+                  const docFieldStl = filterDocFiled(resDocField, 'Sheet2', 'Line');
+                  const firstColStl = getColumnFirst(docFieldStl);
+                  const lastColStl = getColumnLast(docFieldStl);
+
+                  // const docFieldHeader = filterDocHeader(resDocField);
+
                   workbook.eachSheet(function(worksheet, sheetId) {
-                    console.log('sheetId:', sheetId);
-                  });
-                  workbook.getWorksheet(1).addTable({
-                    name: 'TableOne',
-                    ref: alphabet(firstColSol) + (resDocDef.row1 - 1),
-                    headerRow: false,
-                    totalsRow: false,
-                    columns: colSol,
-                    rows: rowSol
+
+                    if (sheetId === 1) {
+                      
+                      if (!!firstColSol && !!lastColSol && !!resDocDef.row1) {
+                        worksheet.addTable({
+                          name: 'TableOne',
+                          ref: alphabet(firstColSol) + (resDocDef.row1 - 1),
+                          headerRow: false,
+                          totalsRow: false,
+                          columns: getColumns(resDocDef.row1, worksheet, firstColSol, lastColSol),
+                          rows: getRows(resProject, docFieldSol, firstColSol,lastColSol)
+                        });
+                      }
+
+                    } else if (sheetId === 2) {
+                      
+                      if (!!firstColStl && !!lastColStl && !!resDocDef.row2) {
+                        worksheet.addTable({
+                          name: 'TableTwo',
+                          ref: alphabet(firstColStl) + (resDocDef.row2 - 1),
+                          headerRow: false,
+                          totalsRow: false,
+                          columns: getColumns(resDocDef.row2, worksheet, firstColStl, lastColStl),
+                          rows: getRows(resProject, docFieldStl, firstColStl,lastColStl)
+                        });
+                      }
+                      
+                    }
+                    
                   });
 
-                  // workbook.getWorksheet(2).addTable({
-                  //   name: 'TableTwo',
-                  //   ref: alphabet(firstColSol) + (resDocDef.row1 - 1),
-                  //   headerRow: false,
-                  //   totalsRow: false,
-                  //   columns: colSol,
-                  //   rows: rowSol
-                  // });
-
-                  // const table = ws.getTable('MyTable');
-                  // table.style = Object.create(table.style);
-                  // table.commit();
                   workbook.xlsx.write(res);
                   // Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
                   //   fields.filter(n => n);
@@ -172,34 +184,8 @@ function getRows (resProject, docField, firstCol, lastCol) {
             arrayRow.push('');
           } else if (filtered.fields.fromTbl == 'po') {
             arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
-            // switch(filtered.fields.type) {
-            //   case "String":
-            //     arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
-            //     break;
-            //   case "Number":
-            //     arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
-            //     break;
-            //   case "Date":
-            //     arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
-            //     break;
-            //   default:
-            //   arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);  
-            // }
           } else if (filtered.fields.fromTbl == 'sub') {
             arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
-            // switch(filtered.fields.type) {
-            //   case "String":
-            //     arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
-            //     break;
-            //   case "Number":
-            //     arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
-            //     break;
-            //   case "Date":
-            //     arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
-            //     break;
-            //   default:
-            //   arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);  
-            // }
           } else {
             arrayRow.push('');
           }
@@ -236,6 +222,12 @@ function filterDocFiled(resDocField, sheet, location) {
     }
   });
 }
+
+// function filterDocHeader(resDocField) {
+//   return resDocField.filter(f => {
+//       return f.worksheet === 'Sheet2' && f.location === 'Header';
+//   });
+// }
 
 function getFieldSheet(docField) {
   if (docField.worksheet !== 'Sheet2') {

@@ -55,154 +55,41 @@ router.get('/', function (req, res) {
             var wb = new Excel.Workbook();
             wb.xlsx.read(s3.getObject(params).createReadStream())
             .then(workbook => {
-              DocField.find({docdefId: docDef}, function(errDocField, resDocField){
+              DocField.find({docdefId: docDef})
+              .populate('fields')
+              .exec(function(errDocField, resDocField){
                 if (errDocField){
                   return res.status(400).json({message: 'an error occured'});
                 } else {
                   workbook.properties.date1904 = true;
-                  const ws = workbook.getWorksheet(1);
-                  // ws.style = Object.create(ws.style);
-                  console.log('alphabet:', alphabet(28));
-                  ws.addTable({
-                    name: 'MyTable',
-                    ref: 'A7',
+                  // const wsOne = workbook.getWorksheet(1);
+
+                  const docFieldSol = filterDocFiled(resDocField, 'Sheet1', 'Line')
+                  const firstColSol = getColumnFirst(docFieldSol);
+                  const lastColSol = getColumnLast(docFieldSol);
+                  const colSol = getColumns(resDocDef.row1, workbook.getWorksheet(1), firstColSol, lastColSol);
+                  const rowSol = getRows(resProject, docFieldSol, firstColSol,lastColSol);
+                  workbook.eachSheet(function(worksheet, sheetId) {
+                    console.log('sheetId:', sheetId);
+                  });
+                  workbook.getWorksheet(1).addTable({
+                    name: 'TableOne',
+                    ref: alphabet(firstColSol) + (resDocDef.row1 - 1),
                     headerRow: false,
                     totalsRow: false,
-                    columns: [
-                      {
-                        name: 'Client PO',
-                        filterButton: true,
-                        style: ws.getCell('A8').style
-                      },
-                      {
-                        name: 'Rev',
-                        filterButton: true,
-                        style: ws.getCell('B8').style
-                      },
-                      {
-                        name: 'Item',
-                        filterButton: true,
-                        style: ws.getCell('C8').style
-                      },
-                      {
-                        name: 'Material code',
-                        filterButton: true,
-                        style: ws.getCell('D8').style
-                      },
-                      {
-                        name: 'PO Quantity',
-                        filterButton: true,
-                        style: ws.getCell('E8').style
-                      },
-                      {
-                        name: 'Qty Unit',
-                        filterButton: true,
-                        style: ws.getCell('F8').style
-                      },
-                      {
-                        name: 'Size',
-                        filterButton: true,
-                        style: ws.getCell('G8').style
-                      },
-                      {
-                        name: 'Sch/WT',
-                        filterButton: true,
-                        style: ws.getCell('H8').style
-                      },
-                      {
-                        name: 'Description',
-                        filterButton: true,
-                        style: ws.getCell('I8').style
-                      },
-                      {
-                        name: 'Material',
-                        filterButton: true,
-                        style: ws.getCell('J8').style
-                      },
-                      {
-                        name: 'Remarks',
-                        filterButton: true,
-                        style: ws.getCell('K8').style
-                      },
-                      {
-                        name: 'Contr Del Date',
-                        filterButton: true,
-                        style: ws.getCell('L8').style
-                      },
-                      {
-                        name: 'Contr Del Condition',
-                        filterButton: true,
-                        style: ws.getCell('M8').style
-                      },
-                      {
-                        name: 'VL SO',
-                        filterButton: true,
-                        style: ws.getCell('N8').style
-                      },
-                      {
-                        name: 'VL SO Item',
-                        filterButton: true,
-                        style: ws.getCell('O8').style
-                      },
-                      {
-                        name: 'Supplier',
-                        filterButton: true,
-                        style: ws.getCell('P8').style
-                      },
-                      {
-                        name: 'Exp Ready/Del date',
-                        filterButton: true,
-                        style: ws.getCell('Q8').style
-                      },
-                      {
-                        name: '(Split) PO Qty',
-                        filterButton: true,
-                        style: ws.getCell('R8').style
-                      },
-                      {
-                        name: 'NFI No',
-                        filterButton: true,
-                        style: ws.getCell('S8').style
-                      },
-                      {
-                        name: 'RFI Qty',
-                        filterButton: true,
-                        style: ws.getCell('T8').style
-                      },
-                      {
-                        name: 'Act RFI Date',
-                        filterButton: true,
-                        style: ws.getCell('U8').style
-                      },
-                      {
-                        name: 'Released Qty',
-                        filterButton: true,
-                        style: ws.getCell('V8').style
-                      },
-                      {
-                        name: 'Insp Rel Date',
-                        filterButton: true,
-                        style: ws.getCell('W8').style
-                      },
-                      {
-                        name: 'PL No',
-                        filterButton: true,
-                        style: ws.getCell('X8').style
-                      },
-                      {
-                        name: 'PL Date',
-                        filterButton: true,
-                        style: ws.getCell('Y8').style
-                      },
-                    ],
-                    rows: [
-                      ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',  '', '', '', '', '' ],
-                      ['PO-1234', 'Rev 1', 1, 'mtlCode', 1000, 'MTR', '12"', 'S40', 'Pipe SMLS', 'A106 B', '', new Date('2019-09-15'), new Date('2019-09-15'), 'SO-123', 1, 'Vallourec', new Date('2019-09-15'), 250, 1, 250,  new Date('2019-09-15'), 250, new Date('2019-09-15'), 2, new Date('2019-09-15') ], 
-                      ['PO-1234', 'Rev 1', 1, 'mtlCode', 1000, 'MTR', '12"', 'S40', 'Pipe SMLS', 'A106 B', '', new Date('2019-09-15'), new Date('2019-09-15'), 'SO-123', 1, 'Vallourec', new Date('2019-09-15'), 250, 1, 250,  new Date('2019-09-15'), 250, new Date('2019-09-15'), 2, new Date('2019-09-15') ],
-                      ['PO-1234', 'Rev 1', 1, 'mtlCode', 1000, 'MTR', '12"', 'S40', 'Pipe SMLS', 'A106 B', '', new Date('2019-09-15'), new Date('2019-09-15'), 'SO-123', 1, 'Vallourec', new Date('2019-09-15'), 250, 1, 250,  new Date('2019-09-15'), 250, new Date('2019-09-15'), 2, new Date('2019-09-15') ],
-                      ['PO-1234', 'Rev 1', 1, 'mtlCode', 1000, 'MTR', '12"', 'S40', 'Pipe SMLS', 'A106 B', '', new Date('2019-09-15'), new Date('2019-09-15'), 'SO-123', 1, 'Vallourec', new Date('2019-09-15'), 250, 1, 250,  new Date('2019-09-15'), 250, new Date('2019-09-15'), 2, new Date('2019-09-15') ],                     
-                    ],
+                    columns: colSol,
+                    rows: rowSol
                   });
+
+                  // workbook.getWorksheet(2).addTable({
+                  //   name: 'TableTwo',
+                  //   ref: alphabet(firstColSol) + (resDocDef.row1 - 1),
+                  //   headerRow: false,
+                  //   totalsRow: false,
+                  //   columns: colSol,
+                  //   rows: rowSol
+                  // });
+
                   // const table = ws.getTable('MyTable');
                   // table.style = Object.create(table.style);
                   // table.commit();
@@ -259,92 +146,96 @@ function promeses(resDocDef, resDocField) {
   });
 }
 
-// function fieldsFiltered(resDocField) {
-//   resDocField.filter(field => {
-//     field.location === 'Line'
-//   })
-// }
+function getColumns(firstRow, ws, firstCol, lastCol) {
+  const arr = [];
+  for (var i = firstCol; i < lastCol + 1 ; i++) {
+    var obj = {
+      name: alphabet(i) + firstRow,
+      filterButton: true,
+      style: ws.getCell(alphabet(i) + firstRow).style      
+    }
+    arr.push(obj);
+  };
+  return arr;
+}
 
-// function lines(resProject, resDocField) {
-//   return resProject.pos.map(async po => {
-//     if (po.subs) {
-//       po.subs.map(async sub => {
-//         resDocField.map(async docField => {
-//           const resField = await Field.findById(docField.fieldId);
-//           if (resField.fromTbl === 'po') {
-//             switch (resField.type) {
-//               case "String":
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//               break;
-//               case "Number":
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//               break;
-//               case "Date":
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//               break;
-//               default:
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//             }
-//           } else if (resField.fromTbl === 'sub') {
-//             switch (resField.type) {
-//               case "String":
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//               break;
-//               case "Number":
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//               break;
-//               case "Date":
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//               break;
-//               default:
-//                 var obj = {
-//                   text: resField.custom,
-//                   address: getFieldAddress(docField, resDocDef),
-//                   worksheet: getFieldSheet(docField)
-//                 }
-//                 return obj;
-//             }            
-//           }
-//         });
-//       });
-//     }
-//   });
-// }
+function getRows (resProject, docField, firstCol, lastCol) {
+  const arrayBody = [];
+  arrayBody.push(Array.from( {length: lastCol-firstCol+1} , () => ''));
+  arraySorted(resProject.pos, 'clPo', 'clPoRev', 'clPoItem').map(po => {
+    if (po.subs) {
+      po.subs.map(sub => {
+        let arrayRow = [];
+        for (var i = firstCol; i < lastCol + 1; i++){
+          var filtered = docField.find(f => f.col === i);
+          if (!filtered){
+            arrayRow.push('');
+          } else if (filtered.fields.fromTbl == 'po') {
+            arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
+            // switch(filtered.fields.type) {
+            //   case "String":
+            //     arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
+            //     break;
+            //   case "Number":
+            //     arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
+            //     break;
+            //   case "Date":
+            //     arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);
+            //     break;
+            //   default:
+            //   arrayRow.push(po[filtered.fields.name] === undefined ? '' : po[filtered.fields.name]);  
+            // }
+          } else if (filtered.fields.fromTbl == 'sub') {
+            arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
+            // switch(filtered.fields.type) {
+            //   case "String":
+            //     arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
+            //     break;
+            //   case "Number":
+            //     arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
+            //     break;
+            //   case "Date":
+            //     arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);
+            //     break;
+            //   default:
+            //   arrayRow.push(sub[filtered.fields.name] === undefined ? '' : sub[filtered.fields.name]);  
+            // }
+          } else {
+            arrayRow.push('');
+          }
+        }
+        arrayBody.push(arrayRow);
+      });
+    }
+  });
+  return arrayBody;
+}
+
+function getColumnFirst (array) {
+  if (array.length === 0) {
+    return 0;
+  } else {
+    return array.reduce( (min, r) => r.col < min ? r.col : min, array[0].col);
+  }
+}
+
+function getColumnLast(array){
+  if (array.length === 0) {
+    return 0;
+  } else {
+    return array.reduce( (min, r) => r.col > min ? r.col : min, array[0].col);
+  }
+}
+
+function filterDocFiled(resDocField, sheet, location) {
+  return resDocField.filter(f => {
+    if (sheet === 'Sheet2') {
+      return f.worksheet === 'Sheet2' && f.location === location;
+    } else {
+      return !f.worksheet != 'Sheet2' && f.location === location;
+    }
+  });
+}
 
 function getFieldSheet(docField) {
   if (docField.worksheet !== 'Sheet2') {
@@ -381,6 +272,36 @@ function alphabet(num){
     num = (num - t)/26 | 0;
   }
   return s || undefined;
+}
+
+function resolve(path, obj) {
+  return path.split('.').reduce(function(prev, curr) {
+      return prev ? prev[curr] : null
+  }, obj || self)
+}
+
+function arraySorted(array, fieldOne, fieldTwo, fieldThree) {
+  if (array) {
+      const newArray = array
+      newArray.sort(function(a,b){
+          if (resolve(fieldOne, a) < resolve(fieldOne, b)) {
+              return -1;
+          } else if (resolve(fieldOne, a) > resolve(fieldOne, b)) {
+              return 1;
+          } else if (fieldTwo && resolve(fieldTwo, a) < resolve(fieldTwo, b)) {
+              return -1;
+          } else if (fieldTwo && resolve(fieldTwo, a) > resolve(fieldTwo, b)) {
+              return 1;
+          } else if (fieldThree && resolve(fieldThree, a) < resolve(fieldThree, b)) {
+              return -1;
+          } else if (fieldThree && resolve(fieldThree, a) > resolve(fieldThree, b)) {
+              return 1;
+          } else {
+              return 0;
+          }
+      });
+      return newArray;             
+  }
 }
 
 

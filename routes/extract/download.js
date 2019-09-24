@@ -1,10 +1,8 @@
 var express = require('express');
 const router = express.Router();
 const fault = require('../../utilities/Errors'); //../utilities/Errors
-const Field = require('../../models/Field');
 const FieldName = require('../../models/FieldName');
 const Project = require('../../models/Project');
-const Po = require('../../models/Po');
 var Excel = require('exceljs');
 fs = require('fs');
 
@@ -26,7 +24,7 @@ router.get('/', function (req, res) {
     } else if (!resProject) {
       return res.status(400).json({message: 'the project does not exist or is empty'});
     } else {
-      FieldName.find({screenId: screenId, projectId: projectId})
+      FieldName.find({ screenId: screenId, projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
       .populate('fields')
       .sort({forShow:'asc'})
       .exec(function (errFieldNames, resFieldNames) {
@@ -47,7 +45,7 @@ router.get('/', function (req, res) {
               columns: getColumns(resFieldNames),
               rows: getRows(resProject, resFieldNames)
             });
-            for (var i = 1; i < resFieldNames.length + 1; i++) {
+            for (var i = 1; i < resFieldNames.length + 3; i++) {
               let cell = worksheet.getCell(`${alphabet(i) + 1}`);
               with (cell) {
                 style = Object.create(cell.style), //shallow-clone the style, break references
@@ -80,8 +78,39 @@ router.get('/', function (req, res) {
 
 function getColumns(resFieldNames) {
   const arr = [];
+    arr.push({
+      name: 'PO ID',
+      filterButton: true,
+      style: {
+        border: {
+          top: {style:'thin'},
+          left: {style:'thin'},
+          bottom: {style:'thin'},
+          right: {style:'thin'}
+        },
+        alignment: {
+          vertical: 'middle',
+          horizontal: 'left'
+        }
+      }
+    },{
+      name: 'SUB ID',
+      filterButton: true,
+      style: {
+        border: {
+          top: {style:'thin'},
+          left: {style:'thin'},
+          bottom: {style:'thin'},
+          right: {style:'thin'}
+        },
+        alignment: {
+          vertical: 'middle',
+          horizontal: 'left'
+        }
+      }
+    });
     resFieldNames.map(fieldName => {
-      var obj = {
+      arr.push({
         name: fieldName.fields.custom,
         filterButton: true,
         style: {
@@ -95,9 +124,8 @@ function getColumns(resFieldNames) {
             vertical: 'middle',
             horizontal: fieldName.align
           }
-        }      
-      }
-      arr.push(obj);
+        }         
+      });
     });
   return arr;
 }
@@ -109,6 +137,7 @@ function getRows (resProject, resFieldNames) {
     if (po.subs) {
       po.subs.map(sub => {
         let arrayRow = [];
+        arrayRow.push(po._id, sub._id);
         resFieldNames.map(fieldname => {
           if(!fieldname) {
             arrayRow.push('');

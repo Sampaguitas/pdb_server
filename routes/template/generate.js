@@ -71,13 +71,17 @@ router.get('/', function (req, res) {
                   const firstColStl = getColumnFirst(docFieldStl);
                   const lastColStl = getColumnLast(docFieldStl);
 
-                  // const docFieldHeader = filterDocHeader(resDocField);
+                  // console.log('firstColSol:', firstColSol);
+                  // console.log('lastColSol:', lastColSol);
+                  // console.log('firstColStl:', firstColStl);
+                  // console.log('lastColStl:', lastColStl);
 
                   workbook.eachSheet(function(worksheet, sheetId) {
 
                     if (sheetId === 1) {
                       
                       if (!!firstColSol && !!lastColSol && !!resDocDef.row1) {
+                        // console.log('case1');
                         worksheet.addTable({
                           name: 'TableOne',
                           ref: alphabet(firstColSol) + (resDocDef.row1 - 1),
@@ -91,6 +95,7 @@ router.get('/', function (req, res) {
                     } else if (sheetId === 2) {
                       
                       if (!!firstColStl && !!lastColStl && !!resDocDef.row2) {
+                        // console.log('case2');
                         worksheet.addTable({
                           name: 'TableTwo',
                           ref: alphabet(firstColStl) + (resDocDef.row2 - 1),

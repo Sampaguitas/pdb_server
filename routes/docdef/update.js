@@ -7,10 +7,11 @@ router.put('/', (req, res) => {
     var data = {};
 
     Object.keys(req.body).forEach(function (k) {
-        data[k] = decodeURI(req.body[k]);
+        data[k] = req.body[k];
     });
 
-    const id = req.query.id
+    const id = req.query.id;
+    console.log('data:', data);
     DocDef.findByIdAndUpdate(id, { $set: data }, function (err, docdef) {
         if (!docdef) {
             return res.status(400).json({

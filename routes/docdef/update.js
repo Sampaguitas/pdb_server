@@ -10,6 +10,7 @@ router.put('/', (req, res) => {
         data[k] = req.body[k];
     });
 
+    
     const id = req.query.id;
     console.log('data:', data);
     DocDef.findByIdAndUpdate(id, { $set: data }, function (err, docdef) {

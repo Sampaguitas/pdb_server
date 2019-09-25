@@ -201,7 +201,7 @@ function getColumns(firstRow, ws, firstCol, lastCol) {
   for (var i = firstCol; i < lastCol + 1 ; i++) {
     const style = ws.getCell(alphabet(i) + firstRow).style;
     var obj = {
-      name: alphabet(i) + firstRow,
+      name: alphabet(i) + (firstRow - 1),
       filterButton: true,
       font: { 
         size: style.font.size, 

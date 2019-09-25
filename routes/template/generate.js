@@ -46,7 +46,6 @@ router.get('/', function (req, res) {
           } else if (!resProject) {
             return res.status(400).json({message: 'an error occured'});
           } else {
-            // console.log('resPo:', JSON.stringify(resProject));
             var s3 = new aws.S3();
             var params = {
                 Bucket: awsBucketName,
@@ -70,44 +69,40 @@ router.get('/', function (req, res) {
                   const docFieldStl = filterDocFiled(resDocField, 'Sheet2', 'Line');
                   const firstColStl = getColumnFirst(docFieldStl);
                   const lastColStl = getColumnLast(docFieldStl);
-
-                  // console.log('firstColSol:', firstColSol);
-                  // console.log('lastColSol:', lastColSol);
-                  // console.log('firstColStl:', firstColStl);
-                  // console.log('lastColStl:', lastColStl);
+                  
 
                   workbook.eachSheet(function(worksheet, sheetId) {
 
                     if (sheetId === 1) {
                       
                       if (!!firstColSol && !!lastColSol && !!resDocDef.row1) {
-                        // console.log('case1');
                         worksheet.addTable({
                           name: 'TableOne',
                           ref: alphabet(firstColSol) + (resDocDef.row1 - 1),
-                          headerRow: false,
+                          headerRow: true,
                           totalsRow: false,
                           columns: getColumns(resDocDef.row1, worksheet, firstColSol, lastColSol),
                           rows: getRows(resProject, docFieldSol, firstColSol,lastColSol)
                         });
+                        hideHeader(resDocDef.row1, worksheet, firstColSol, lastColSol);
+                        wsPageSetup(resDocDef.row1, worksheet, lastColSol);
                       }
 
                     } else if (sheetId === 2) {
                       
                       if (!!firstColStl && !!lastColStl && !!resDocDef.row2) {
-                        // console.log('case2');
                         worksheet.addTable({
                           name: 'TableTwo',
                           ref: alphabet(firstColStl) + (resDocDef.row2 - 1),
-                          headerRow: false,
+                          headerRow: true,
                           totalsRow: false,
                           columns: getColumns(resDocDef.row2, worksheet, firstColStl, lastColStl),
                           rows: getRows(resProject, docFieldStl, firstColStl,lastColStl)
                         });
+                        hideHeader(resDocDef.row2, worksheet, firstColStl, lastColStl);
+                        wsPageSetup(resDocDef.row2, worksheet, lastColStl);
                       }
-                      
                     }
-                    
                   });
 
                   workbook.xlsx.write(res);
@@ -149,6 +144,44 @@ router.get('/', function (req, res) {
     });
 });
 
+function wsPageSetup(firstRow, ws, lastCol) {
+  var lastRow = ws.lastRow ? ws.lastRow._number : firstRow;
+  ws.pageSetup = {
+    orientation: 'landscape',
+    paperSize: 9,
+    fitToPage: true,
+    fitToWidth: 1,
+    fitToHeight: 0,
+    printArea: `A1:${alphabet(lastCol) + lastRow}`,
+    margins: {
+      left: 0.25, right: 0.25,
+      top: 0.75, bottom: 0.75,
+      header: 0.3, footer: 0.3    
+    }
+  }
+}
+
+function hideHeader(firstRow, ws, firstCol, lastCol){
+  for (var i = firstCol; i < lastCol + 1 ; i++) {
+    let cell = ws.getCell(alphabet(i) + (firstRow - 1));
+    with(cell) {
+      style = Object.create(cell.style), //shallow-clone the style, break references
+      border ={
+        left: {style:'none'},
+        right: {style:'none'}                
+      },
+      fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor:{argb:'FFFFFFFF'}
+      },
+      font = {
+        color: {'argb': 'FFFFFFFF'}
+      }
+    }
+  }
+}
+
 function promeses(resDocDef, resDocField) {
   return resDocField.map(async docField => {
     const resField = await Field.findById(docField.fieldId);
@@ -166,10 +199,19 @@ function promeses(resDocDef, resDocField) {
 function getColumns(firstRow, ws, firstCol, lastCol) {
   const arr = [];
   for (var i = firstCol; i < lastCol + 1 ; i++) {
+    const style = ws.getCell(alphabet(i) + firstRow).style;
     var obj = {
       name: alphabet(i) + firstRow,
       filterButton: true,
-      style: ws.getCell(alphabet(i) + firstRow).style      
+      font: { 
+        size: style.font.size, 
+        name: style.font.name,
+        family: style.font.family, 
+      },
+      style: {
+        border: style.border,
+        alignment: style.alignment,
+      }      
     }
     arr.push(obj);
   };
@@ -178,7 +220,6 @@ function getColumns(firstRow, ws, firstCol, lastCol) {
 
 function getRows (resProject, docField, firstCol, lastCol) {
   const arrayBody = [];
-  arrayBody.push(Array.from( {length: lastCol-firstCol+1} , () => ''));
   arraySorted(resProject.pos, 'clPo', 'clPoRev', 'clPoItem').map(po => {
     if (po.subs) {
       po.subs.map(sub => {

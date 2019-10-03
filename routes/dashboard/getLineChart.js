@@ -4,8 +4,8 @@ var chart = require('../../middleware/chart');
 const moment = require('moment');
 
 const constants = [
-  {label: 'contractual', color: '#ed5565'},
-  {label: 'rfiExp', color: '#ed5565'},
+  {label: 'contract', color: '#ed5565'},
+  {label: 'rfiExp', color: '#fbd5ac'},
   {label: 'rfiAct', color: '#f8ac59'},
   {label: 'released', color: '#23c6c8'},
   {label: 'shipExp', color: '#8cd9c9'},
@@ -23,7 +23,7 @@ router.get('/', function (req, res) {
   const period = req.query.period; //day, week, fortnight, month, quarter, 
   const clPos = req.query.clPos; 
   const clPoRevs = req.query.clPoRevs; 
-  const lines = req.query.lines;// contractual, rfiExp, rfiAct, released, shipExp, shipAct, delExp, delAct
+  const lines = req.query.lines;// contract, rfiExp, rfiAct, released, shipExp, shipAct, delExp, delAct
   
   chart.getLine(projectId, unit, firstDate, lastDate, period, clPos, clPoRevs, lines)
   .then(fulfilled => {

@@ -26,21 +26,6 @@ function getLine(projectId, unit, firstDate, lastDate, period, clPos, clPoRevs, 
                   Promise.all(promeses(filteredLines, dates, unit)).then( function(fields) {
                     resolve(fields);
                   });
-                  // let array = [];
-                  // dates.map(date => {
-                  //   array.push({
-                  //     date: date,
-                  //     contractual: filteredLines.populateValue(date, 'po', 'vlContDelDate', 'qty', unit).toFixed(2),
-                  //     rfiExp: filteredLines.populateValue(date, 'sub', 'rfiDateExp', 'rfiQty', unit).toFixed(2),
-                  //     rfiAct: filteredLines.populateValue(date, 'sub', 'rfiDateAct', 'rfiQty', unit).toFixed(2),
-                  //     released: filteredLines.populateValue(date, 'sub', 'inspRelDate', 'relQty', unit).toFixed(2),
-                  //     shipExp: filteredLines.populateValue(date, 'sub', 'shipDateExp', 'shippedQty', unit).toFixed(2),
-                  //     shipAct: filteredLines.populateValue(date, 'sub', 'shipDateAct', 'shippedQty', unit).toFixed(2),
-                  //     delExp: filteredLines.populateValue(date, 'sub', 'vlDelDateExp', 'splitQty', unit).toFixed(2),
-                  //     delAct: filteredLines.populateValue(date, 'sub', 'vlDelDateAct', 'splitQty', unit).toFixed(2)
-                  //   });
-                  // });
-                  // resolve(array);
                 }
               }
             });
@@ -50,19 +35,9 @@ function getLine(projectId, unit, firstDate, lastDate, period, clPos, clPoRevs, 
 
 function promeses(filteredLines, dates, unit) {
   return dates.map(async date => {
-    // var obj = {
-    //   contractual: await filteredLines.populateValue(date, 'po', 'vlContDelDate', 'qty', unit).toFixed(2),
-    //   rfiExp: await filteredLines.populateValue(date, 'sub', 'rfiDateExp', 'rfiQty', unit).toFixed(2),
-    //   rfiAct: await filteredLines.populateValue(date, 'sub', 'rfiDateAct', 'rfiQty', unit).toFixed(2),
-    //   released: await filteredLines.populateValue(date, 'sub', 'inspRelDate', 'relQty', unit).toFixed(2),
-    //   shipExp: await filteredLines.populateValue(date, 'sub', 'shipDateExp', 'shippedQty', unit).toFixed(2),
-    //   shipAct: await filteredLines.populateValue(date, 'sub', 'shipDateAct', 'shippedQty', unit).toFixed(2),
-    //   delExp: await filteredLines.populateValue(date, 'sub', 'vlDelDateExp', 'splitQty', unit).toFixed(2),
-    //   delAct: delAct = await filteredLines.populateValue(date, 'sub', 'vlDelDateAct', 'splitQty', unit).toFixed(2),
-    // };
     return {
       date: date,
-      contractual: await filteredLines.populateValue(date, 'po', 'vlContDelDate', 'qty', unit).toFixed(2),
+      contract: await filteredLines.populateValue(date, 'po', 'vlContDelDate', 'qty', unit).toFixed(2),
       rfiExp: await filteredLines.populateValue(date, 'sub', 'rfiDateExp', 'rfiQty', unit).toFixed(2),
       rfiAct: await filteredLines.populateValue(date, 'sub', 'rfiDateAct', 'rfiQty', unit).toFixed(2),
       released: await filteredLines.populateValue(date, 'sub', 'inspRelDate', 'relQty', unit).toFixed(2),

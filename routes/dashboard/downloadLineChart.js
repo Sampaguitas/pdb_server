@@ -13,7 +13,7 @@ router.get('/', function (req, res) {
   const period = req.query.period; //day, week, fortnight, month, quarter, 
   const clPos = req.query.clPos; 
   const clPoRevs = req.query.clPoRevs; 
-  const lines = req.query.lines; //// contractual, rfiExp, rfiAct, released, shipExp, shipAct, delExp, delAct
+  const lines = req.query.lines; //// contract, rfiExp, rfiAct, released, shipExp, shipAct, delExp, delAct
   
   chart.getLine(projectId, unit, firstDate, lastDate, period, clPos, clPoRevs, lines)
   .then(fulfilled => {
@@ -63,7 +63,7 @@ Array.prototype.generateDatas = function(key) {
 function generateData(lines, fulfilled) {
   if (!lines) {
     return ({
-      contractual: fulfilled.generateDatas('contractual'),
+      contract: fulfilled.generateDatas('contract'),
       rfiExp: fulfilled.generateDatas('rfiExp'),
       rfiAct: fulfilled.generateDatas('rfiAct'),
       released: fulfilled.generateDatas('released'),
@@ -83,7 +83,7 @@ function generateData(lines, fulfilled) {
 
 function generateTitles(lines) {
   if (!lines) {
-    return ['contractual', 'rfiExp', 'rfiAct', 'released', 'shipExp', 'shipAct', 'delExp', 'delAct',]
+    return ['contract', 'rfiExp', 'rfiAct', 'released', 'shipExp', 'shipAct', 'delExp', 'delAct',]
   } else {
     return lines;
   }

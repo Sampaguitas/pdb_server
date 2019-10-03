@@ -114,7 +114,7 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
           default:
             currentValue.subs.map(sub => {
               if (Date.parse(sub[dateField]) < Date.parse(date)) {
-                accumulator += (sub[qtyField] * currentValue.unitPrice) || 0
+                accumulator += ( (sub[qtyField] || sub.splitQty) * currentValue.unitPrice) || 0
               }
             });
         } 
@@ -128,7 +128,7 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
           default:
             currentValue.subs.map(sub => {
               if (Date.parse(sub[dateField]) < Date.parse(date)) {
-                accumulator += sub[qtyField] || 0
+                accumulator += (sub[qtyField] || sub.splitQty) || 0
               }
             });
         }

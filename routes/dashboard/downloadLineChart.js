@@ -8,13 +8,12 @@ router.get('/', function (req, res) {
   
   const projectId = req.query.projectId;
   const unit = req.query.unit; //value, qty
-  // const firstDate = req.query.firstDate;
-  // const lastDate = req.query.lastDate;
   const period = req.query.period; //day, week, fortnight, month, quarter, 
   const clPo = req.query.clPo; 
-  const clPoRev = req.query.clPoRev; 
-  const lines = req.query.lines; //// contract, rfiExp, rfiAct, released, shipExp, shipAct, delExp, delAct
-  //firstDate, lastDate lines
+  const clPoRev = req.query.clPoRev;
+  const lines = req.query.lines.split(',');
+  // console.log('lines:', lines);
+
   chart.getLine(projectId, unit, period, clPo, clPoRev)
   .then(fulfilled => {
     if (!fulfilled) {
@@ -85,7 +84,32 @@ function generateTitles(lines) {
   if (!lines) {
     return ['contract', 'rfiExp', 'rfiAct', 'released', 'shipExp', 'shipAct', 'delExp', 'delAct',]
   } else {
-    return lines;
+    let newArray = [];
+    if (lines.indexOf('contract') > -1) {
+      newArray.push('contract');
+    }
+    if (lines.indexOf('rfiExp') > -1) {
+      newArray.push('rfiExp');
+    }
+    if (lines.indexOf('rfiAct') > -1) {
+      newArray.push('rfiAct');
+    }
+    if (lines.indexOf('released') > -1) {
+      newArray.push('released');
+    }
+    if (lines.indexOf('shipExp') > -1) {
+      newArray.push('shipExp');
+    }
+    if (lines.indexOf('shipAct') > -1) {
+      newArray.push('shipAct');
+    }
+    if (lines.indexOf('delExp') > -1) {
+      newArray.push('delExp');
+    }
+    if (lines.indexOf('delAct') > -1) {
+      newArray.push('delAct');
+    }
+    return newArray;    
   }
 }
 

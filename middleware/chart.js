@@ -3,7 +3,7 @@ const Po = require('../models/Po');
 const moment = require('moment');
 fs = require('fs');
 const _ = require('lodash');
-//firstDate, lastDate, lines
+
 function getLine(projectId, unit, period, clPo, clPoRev) {
     return new Promise(
         function (resolve, reject) {

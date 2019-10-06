@@ -25,7 +25,7 @@ router.get('/', function (req, res) {
   const clPoRev = req.query.clPoRev; 
   const lines = req.query.lines;// contract, rfiExp, rfiAct, released, shipExp, shipAct, delExp, delAct
   //firstDate, lastDate
-  chart.getLine(projectId, unit, period, clPo, clPoRev, lines)
+  chart.getLine(projectId, unit, period, clPo, clPoRev)
   .then(fulfilled => {
     if (!fulfilled) {
       res.status(400).json({ message: 'request returned empty responce'});

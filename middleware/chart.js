@@ -3,8 +3,8 @@ const Po = require('../models/Po');
 const moment = require('moment');
 fs = require('fs');
 const _ = require('lodash');
-
-function getLine(projectId, unit, firstDate, lastDate, period, clPos, clPoRevs, lines) {
+//firstDate, lastDate, lines
+function getLine(projectId, unit, period, clPo, clPoRev) {
     return new Promise(
         function (resolve, reject) {
             Po.find({ projectId })
@@ -15,13 +15,13 @@ function getLine(projectId, unit, firstDate, lastDate, period, clPos, clPoRevs, 
               } else if (!resPos) {
                 reject('the project is empty');
               } else {
-                let filteredLines = resPos.filterLines(clPos, clPoRevs);
+                let filteredLines = resPos.filterLines(clPo, clPoRev);
                 let allDates = filteredLines.returnAllDates();
                 if (_.isEmpty(allDates)) {
                     reject('the project does not contain any dates');
                 } else {
-                  let earliest = firstDate || allDates.returnEarliest();
-                  let latest = lastDate || allDates.returnLatest();
+                  let earliest = allDates.returnEarliest();
+                  let latest = allDates.returnLatest();
                   let dates = populateDates(earliest, latest, period);
                   Promise.all(promeses(filteredLines, dates, unit)).then( function(fields) {
                     resolve(fields);
@@ -87,16 +87,16 @@ function populateDates(earliest, latest, period) {
   return array;
 }
 
-Array.prototype.filterLines = function(clPos, clPoRevs) {
+Array.prototype.filterLines = function(clPo, clPoRev) {
   return this.filter(function(el) {
-    if (_.isEmpty(clPos) && _.isEmpty(clPoRevs)) {
+    if (!clPo && !clPoRev) {
       return true;
-    } else if (!_.isEmpty(clPos)) {
-      return clPos.indexOf(el.clPo) !== -1;
-    } else if (!_.isEmpty(clPoRevs)) {
-      return clPoRevs.indexOf(el.clPoRev) !== -1;
+    } else if (clPo) {
+      return _.isEqual(clPo, el.clPo);
+    } else if (clPoRev) {
+      return _.isEqual(clPoRev, el.clPoRev);
     } else {
-      return (clPos.indexOf(el.clPo) !== -1) && (clPoRevs.indexOf(el.clPoRev) !== -1);
+      return _.isEqual(clPo, el.clPo) && _.isEqual(clPoRev, el.clPoRev);
     }
   })
 }

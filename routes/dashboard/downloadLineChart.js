@@ -8,14 +8,14 @@ router.get('/', function (req, res) {
   
   const projectId = req.query.projectId;
   const unit = req.query.unit; //value, qty
-  const firstDate = req.query.firstDate;
-  const lastDate = req.query.lastDate;
+  // const firstDate = req.query.firstDate;
+  // const lastDate = req.query.lastDate;
   const period = req.query.period; //day, week, fortnight, month, quarter, 
-  const clPos = req.query.clPos; 
-  const clPoRevs = req.query.clPoRevs; 
+  const clPo = req.query.clPo; 
+  const clPoRev = req.query.clPoRev; 
   const lines = req.query.lines; //// contract, rfiExp, rfiAct, released, shipExp, shipAct, delExp, delAct
-  
-  chart.getLine(projectId, unit, firstDate, lastDate, period, clPos, clPoRevs, lines)
+  //firstDate, lastDate lines
+  chart.getLine(projectId, unit, period, clPo, clPoRev)
   .then(fulfilled => {
     if (!fulfilled) {
       res.status(400).json({ message: 'request returned empty responce'});

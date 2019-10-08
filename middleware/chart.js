@@ -133,20 +133,20 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
                 }
               });
           }
-      case 'weight':////////////////////////////////////////////////
-          switch (collection) {
-            case 'po':
-              if (Date.parse(currentValue[dateField]) < Date.parse(date)) {
-                accumulator += getTotalWeight(currentValue, currentValue[qtyField]) || 0
-              }
-              break;
-            default: //sub
-              currentValue.subs.map(sub => {
-                if (Date.parse(sub[dateField]) < Date.parse(date)) {
-                  accumulator += getTotalWeight(currentValue, (sub[qtyField] || sub.splitQty)) || 0
-                }
-              });
-          }////////////////////////////////////////////////////////
+      // case 'weight':////////////////////////////////////////////////
+      //     switch (collection) {
+      //       case 'po':
+      //         if (Date.parse(currentValue[dateField]) < Date.parse(date)) {
+      //           accumulator += getTotalWeight(currentValue, currentValue[qtyField]) || 0
+      //         }
+      //         break;
+      //       default: //sub
+      //         currentValue.subs.map(sub => {
+      //           if (Date.parse(sub[dateField]) < Date.parse(date)) {
+      //             accumulator += getTotalWeight(currentValue, (sub[qtyField] || sub.splitQty)) || 0
+      //           }
+      //         });
+      //     }////////////////////////////////////////////////////////
       default: //qty
         switch (collection) {
           case 'po':

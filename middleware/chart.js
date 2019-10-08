@@ -1,5 +1,6 @@
 const fault = require('../utilities/Errors'); //../utilities/Errors
 const Po = require('../models/Po');
+const Article = require('../models/Article');
 const moment = require('moment');
 fs = require('fs');
 const _ = require('lodash');
@@ -111,21 +112,49 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
               accumulator += (currentValue[qtyField] * currentValue.unitPrice) || 0
             }
             break;
-          default:
+          default: //sub
             currentValue.subs.map(sub => {
               if (Date.parse(sub[dateField]) < Date.parse(date)) {
                 accumulator += ( (sub[qtyField] || sub.splitQty) * currentValue.unitPrice) || 0
               }
             });
-        } 
-      default:
+        }
+      case 'qty':
+          switch (collection) {
+            case 'po':
+              if (Date.parse(currentValue[dateField]) < Date.parse(date)) {
+                accumulator += currentValue[qtyField] || 0
+              }
+              break;
+            default: //sub
+              currentValue.subs.map(sub => {
+                if (Date.parse(sub[dateField]) < Date.parse(date)) {
+                  accumulator += (sub[qtyField] || sub.splitQty) || 0
+                }
+              });
+          }
+      case 'weight':////////////////////////////////////////////////
+          switch (collection) {
+            case 'po':
+              if (Date.parse(currentValue[dateField]) < Date.parse(date)) {
+                accumulator += getTotalWeight(currentValue, currentValue[qtyField]) || 0
+              }
+              break;
+            default: //sub
+              currentValue.subs.map(sub => {
+                if (Date.parse(sub[dateField]) < Date.parse(date)) {
+                  accumulator += getTotalWeight(currentValue, (sub[qtyField] || sub.splitQty)) || 0
+                }
+              });
+          }////////////////////////////////////////////////////////
+      default: //qty
         switch (collection) {
           case 'po':
             if (Date.parse(currentValue[dateField]) < Date.parse(date)) {
               accumulator += currentValue[qtyField] || 0
             }
             break;
-          default:
+          default: //sub
             currentValue.subs.map(sub => {
               if (Date.parse(sub[dateField]) < Date.parse(date)) {
                 accumulator += (sub[qtyField] || sub.splitQty) || 0
@@ -136,6 +165,29 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
     return accumulator;
   }, 0 );
 }
+
+function getTotalWeight(currentValue, qty) {
+  if (!currentValue.vlArtNo && !currentValue.vlArtNoX) {
+    return 0
+  } else if (!!currentValue.vlArtNo) {
+    Article.findOne({vlArtNo: currentValue.vlArtNo}, function(err, doc) {
+      if (err) {
+        return 0;
+      } else if (doc) {
+        return qty * doc.netWeight;
+      }
+    });
+  } else {
+    Article.findOne({vlArtNoX: currentValue.vlArtNoX}, function(err, doc) {
+      if (err) {
+        return 0;
+      } else if (doc) {
+        return qty * doc.netWeight;
+      }
+    });
+  }
+}
+
 
 Array.prototype.returnAllDates = function() {
   return this.reduce(function (accumulator, currentValue){

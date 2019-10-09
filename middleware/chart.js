@@ -50,8 +50,6 @@ function promeses(filteredLines, dates, unit) {
   });
 }
 
-
-
 function populateDates(earliest, latest, period) {
   let array = [];
   switch(period) {
@@ -81,9 +79,9 @@ function populateDates(earliest, latest, period) {
         }      
       break;
     default:
-      for (var i = 0; moment(earliest).add(i, 'weeks') < moment(latest).add(1, 'weeks'); i++ ) {
-        array.push(moment(earliest).add(i, 'weeks'));
-      }
+      for (var i = 0; moment(earliest).add(i * 3, 'months') < moment(latest).add(3, 'months'); i++ ) {
+        array.push(moment(earliest).add(i * 3, 'months'));
+      } 
   }
   return array;
 }

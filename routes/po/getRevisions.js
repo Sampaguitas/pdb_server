@@ -4,13 +4,9 @@ const Po = require('../../models/Po');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
-    var data = {};
-    // var select = 'clPo clPoRev' //req.query.select;
-    Object.keys(req.body).forEach(function (k) {
-        data[k] = req.body[k];
-    });
+    var projectId = req.query.projectId;
 
-    Po.find(data,  function (err, po) {
+    Po.find(projectId, 'clPo clPoRev',  function (err, po) {
         if (!po) {
             return res.status(400).json({ 
                 message: fault(1204).message

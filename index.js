@@ -350,6 +350,8 @@ const projectFindAll = require('./routes/project/findAll');
 app.get('/project/findAll', passport.authenticate('jwt', { session: false }), projectFindAll);
 const projectFindOne = require('./routes/project/findOne');
 app.get('/project/findOne', passport.authenticate('jwt', { session: false }), projectFindOne);
+const projectSelection = require('./routes/project/selection');
+app.get('/project/selection', passport.authenticate('jwt', { session: false }), projectSelection);
 const projectUpdate = require('./routes/project/update');
 app.put('/project/update', passport.authenticate('jwt', { session: false }), projectUpdate);
 //screen

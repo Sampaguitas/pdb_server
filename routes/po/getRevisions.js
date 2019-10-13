@@ -6,7 +6,7 @@ const fault = require('../../utilities/Errors');
 router.get('/', (req, res) => {
     var projectId = req.query.projectId;
 
-    Po.find(projectId, 'clPo clPoRev',  function (err, po) {
+    Po.find({ projectId: projectId }, 'clPo clPoRev',  function (err, po) {
         if (!po) {
             return res.status(400).json({ 
                 message: fault(1204).message

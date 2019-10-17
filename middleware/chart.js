@@ -100,6 +100,16 @@ Array.prototype.filterLines = function(clPo, clPoRev) {
   })
 }
 
+function isLength(uom){
+  switch (uom.toUpperCase()) {
+    case 'MTRS': return true;
+    case 'MTR': return true;
+    case 'FT': return true;
+    case 'FTS': return true;
+    default: return false;
+  }
+}
+
 Array.prototype.populateValue = function(date, collection, dateField, qtyField, unit) {
   return this.reduce(function (accumulator, currentValue){
     switch (unit) {
@@ -117,20 +127,34 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
               }
             });
         }
-      case 'qty':
-          switch (collection) {
-            case 'po':
-              if (Date.parse(currentValue[dateField]) < Date.parse(date)) {
-                accumulator += currentValue[qtyField] || 0
+      case 'pcs':
+        switch (collection) {
+          case 'po':
+            if (Date.parse(currentValue[dateField]) < Date.parse(date) && !isLength(currentValue.uom)) {
+              accumulator += currentValue[qtyField] || 0
+            }
+            break;
+          default: //sub
+            currentValue.subs.map(sub => {
+              if (Date.parse(sub[dateField]) < Date.parse(date) && !isLength(currentValue.uom)) {
+                accumulator += (sub[qtyField] || sub.splitQty) || 0
               }
-              break;
-            default: //sub
-              currentValue.subs.map(sub => {
-                if (Date.parse(sub[dateField]) < Date.parse(date)) {
-                  accumulator += (sub[qtyField] || sub.splitQty) || 0
-                }
-              });
-          }
+            });
+        }
+      case 'mtr':
+        switch (collection) {
+          case 'po':
+            if (Date.parse(currentValue[dateField]) < Date.parse(date) && isLength(currentValue.uom)) {
+              accumulator += currentValue[qtyField] || 0
+            }
+            break;
+          default: //sub
+            currentValue.subs.map(sub => {
+              if (Date.parse(sub[dateField]) < Date.parse(date) && isLength(currentValue.uom)) {
+                accumulator += (sub[qtyField] || sub.splitQty) || 0
+              }
+            });
+        }
       // case 'weight':////////////////////////////////////////////////
       //     switch (collection) {
       //       case 'po':
@@ -145,17 +169,17 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
       //           }
       //         });
       //     }////////////////////////////////////////////////////////
-      default: //qty
+      default: //value
         switch (collection) {
           case 'po':
             if (Date.parse(currentValue[dateField]) < Date.parse(date)) {
-              accumulator += currentValue[qtyField] || 0
+              accumulator += (currentValue[qtyField] * currentValue.unitPrice) || 0
             }
             break;
           default: //sub
             currentValue.subs.map(sub => {
               if (Date.parse(sub[dateField]) < Date.parse(date)) {
-                accumulator += (sub[qtyField] || sub.splitQty) || 0
+                accumulator += ( (sub[qtyField] || sub.splitQty) * currentValue.unitPrice) || 0
               }
             });
         }

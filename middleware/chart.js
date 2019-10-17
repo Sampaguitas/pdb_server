@@ -102,11 +102,32 @@ Array.prototype.filterLines = function(clPo, clPoRev) {
 
 function isLength(uom){
   switch (uom.toUpperCase()) {
-    case 'MTRS': return true;
-    case 'MTR': return true;
-    case 'FT': return true;
-    case 'FTS': return true;
-    default: return false;
+    case 'M': 
+      return true;
+      break;
+    case 'MT': 
+      return true;
+      break;
+    case 'MTR': 
+      return true;
+      break;
+    case 'MTRS': 
+      return true;
+      break;
+    case 'F': 
+      return true;
+      break;
+    case 'FT': 
+      return true;
+      break;
+    case 'FEET': 
+      return true;
+      break;
+    case 'LM': 
+      return true;
+      break;
+    default: 
+      return false;
   }
 }
 
@@ -130,13 +151,13 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
       case 'pcs':
         switch (collection) {
           case 'po':
-            if (Date.parse(currentValue[dateField]) < Date.parse(date) && !isLength(currentValue.uom)) {
+            if ( (Date.parse(currentValue[dateField]) < Date.parse(date)) && !isLength(currentValue.uom)) {
               accumulator += currentValue[qtyField] || 0
             }
             break;
           default: //sub
             currentValue.subs.map(sub => {
-              if (Date.parse(sub[dateField]) < Date.parse(date) && !isLength(currentValue.uom)) {
+              if ( (Date.parse(sub[dateField]) < Date.parse(date)) && !isLength(currentValue.uom)) {
                 accumulator += (sub[qtyField] || sub.splitQty) || 0
               }
             });
@@ -144,13 +165,13 @@ Array.prototype.populateValue = function(date, collection, dateField, qtyField, 
       case 'mtr':
         switch (collection) {
           case 'po':
-            if (Date.parse(currentValue[dateField]) < Date.parse(date) && isLength(currentValue.uom)) {
+            if ( (Date.parse(currentValue[dateField]) < Date.parse(date)) && isLength(currentValue.uom)) {
               accumulator += currentValue[qtyField] || 0
             }
             break;
           default: //sub
             currentValue.subs.map(sub => {
-              if (Date.parse(sub[dateField]) < Date.parse(date) && isLength(currentValue.uom)) {
+              if ( (Date.parse(sub[dateField]) < Date.parse(date)) && isLength(currentValue.uom)) {
                 accumulator += (sub[qtyField] || sub.splitQty) || 0
               }
             });

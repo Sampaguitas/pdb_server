@@ -6,12 +6,12 @@ const fault = require('../../utilities/Errors');
 router.get('/', (req, res) => {
     const id = req.query.id
     Project.findById(id)
-    .populate({
-        path: 'accesses',
-        populate: {
-            path: 'user'
-        }
-    })
+    // .populate({
+    //     path: 'accesses',
+    //     populate: {
+    //         path: 'user'
+    //     }
+    // })
     .populate({
         path: 'pos',
         populate: {

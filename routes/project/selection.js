@@ -28,8 +28,8 @@ router.get('/', (req, res) => {
     //     }
     // })
     .populate('collitypes')
-    .populate('erp')
-    .populate('suppliers')
+    // .populate('erp')
+    // .populate('suppliers')
     .populate('fields')
     .populate({
         path: 'fieldnames',

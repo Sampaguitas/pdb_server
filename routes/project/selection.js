@@ -21,13 +21,7 @@ router.get('/', (req, res) => {
             }
         }
     })
-    // .populate({
-    //     path: 'subs',
-    //     populate:{
-    //         path: 'po'
-    //     }
-    // })
-    .populate('collitypes')
+    // .populate('collitypes')
     // .populate('erp')
     // .populate('suppliers')
     .populate('fields')

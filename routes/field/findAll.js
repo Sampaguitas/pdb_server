@@ -4,12 +4,12 @@ const Field = require('../../models/Field');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
-    var data = {};
-    Object.keys(req.body).forEach(function (k) {
-        data[k] = req.body[k];
-    });
+    // var data = {};
+    // Object.keys(req.body).forEach(function (k) {
+    //     data[k] = req.body[k];
+    // });
 
-    Field.find(data, function (err, field) {
+    Field.find({projectId: req.query.projectId}, function (err, field) {
         if (!field) {
             return res.status(400).json({
                 message: fault(0704).message

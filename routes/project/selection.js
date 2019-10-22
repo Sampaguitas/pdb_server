@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
     // .populate('collitypes')
     // .populate('erp')
     // .populate('suppliers')
-    .populate('fields')
+    // .populate('fields')
     .populate({
         path: 'fieldnames',
         populate: {

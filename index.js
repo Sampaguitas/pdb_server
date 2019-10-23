@@ -4,15 +4,14 @@ mongoose.set('useFindAndModify', false);
 const glob = require('glob');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
-const app = express();
 const passport = require('passport');
 const cors = require('cors');
 //const bcrypt = require('bcryptjs');
 const fs = require('fs');
-  
+
+const app = express();
+
 var whitelist = ['https://www.vanleeuwenpdb.com', 'http://www.vanleeuwenpdb.com', 'http://localhost:8080', 'http://localhost:5555']
-
-
 var corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
@@ -22,12 +21,14 @@ var corsOptions = {
         }
     }
 }
+
 app.use(cors(corsOptions));
 
 // app.use(cors());
 //bodyParser middleware
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
+
 
 //Passport config file
 app.use(passport.initialize());

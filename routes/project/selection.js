@@ -32,7 +32,7 @@ router.get('/', (req, res) => {
             //select:'custom'
         }
     })
-    .populate('docdefs')
+    // .populate('docdefs')
     .populate({
         path: 'docfields',
         populate: {

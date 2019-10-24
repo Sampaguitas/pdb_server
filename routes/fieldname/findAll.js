@@ -4,12 +4,12 @@ const FieldName = require('../../models/FieldName');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
-    var data = {};
-    Object.keys(req.body).forEach(function (k) {
-        data[k] = req.body[k];
-    });
-
-    FieldName.find(data, function (err, fieldname) {
+    FieldName.find({projectId: req.query.projectId})
+    .populate({
+        path: 'fields',
+        //select:'custom'
+    })
+    .exec(function (err, fieldname) {
         if (!fieldname) {
             return res.status(400).json({
                 message: fault(0804).message

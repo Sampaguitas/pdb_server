@@ -12,34 +12,33 @@ router.get('/', (req, res) => {
     //         path: 'user'
     //     }
     // })
-    .populate({
-        path: 'pos',
-        populate: {
-            path: 'subs',
-            populate: {
-                path: 'certificates'
-            }
-        }
-    })
+    // .populate({
+    //     path: 'pos',
+    //     populate: {
+    //         path: 'subs',
+    //         populate: {
+    //             path: 'certificates'
+    //         }
+    //     }
+    // })
     // .populate('collitypes')
     // .populate('erp')
     // .populate('suppliers')
     // .populate('fields')
-    .populate({
-        path: 'fieldnames',
-        populate: {
-            path: 'fields', 
-            //select:'custom'
-        }
-    })
+    // .populate({
+    //     path: 'fieldnames',
+    //     populate: {
+    //         path: 'fields', 
+    //     }
+    // })
     // .populate('docdefs')
-    .populate({
-        path: 'docfields',
-        populate: {
-            path:'fields',
-            select: 'custom'
-        }
-    })
+    // .populate({
+    //     path: 'docfields',
+    //     populate: {
+    //         path:'fields',
+    //         select: 'custom'
+    //     }
+    // })
     .exec(function (err, project) {
             if (!project) {
                 return res.status(400).json({

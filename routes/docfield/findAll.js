@@ -4,12 +4,12 @@ const DocField = require('../../models/DocField');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
-    var data = {};
-    Object.keys(req.body).forEach(function (k) {
-        data[k] = req.body[k];
-    });
-
-    DocField.find(data, function (err, docfield) {
+    DocField.find({projectId: req.query.projectId})
+    .populate({
+        path:'fields',
+        select: 'custom'
+    })
+    .exec(function (err, docfield) {
         if (!docfield) {
             return res.status(400).json({
                 message: fault(2604).message

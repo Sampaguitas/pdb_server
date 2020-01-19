@@ -2,12 +2,10 @@ var express = require('express');
 const router = express.Router();
 const fault = require('../../utilities/Errors'); //../utilities/Errors
 const FieldName = require('../../models/FieldName');
-const Project = require('../../models/Project');
 var Excel = require('exceljs');
 fs = require('fs');
 
 router.get('/', function (req, res) {
-  console.log('toto');
   const projectId = req.query.projectId;
 
     FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
@@ -49,123 +47,11 @@ router.get('/', function (req, res) {
                         }
                     }
                 })
-            // worksheet.addTable({
-            //     name: 'MyTable',
-            //     ref: 'A1',
-            //     headerRow: true,
-            //     totalsRow: false,
-            //     columns: getColumns(resFieldNames),
-            //     rows: getRows(resProject, resFieldNames)
-            // });
-
-            // for (var i = 1; i < resFieldNames.length + 1; i++) {
-            //     let cell = worksheet.getCell(`${alphabet(i) + 1}`);
-            //     with (cell) {
-            //     style = Object.create(cell.style), //shallow-clone the style, break references
-            //     border ={
-            //         top: {style:'thin'},
-            //         left: {style:'thin'},
-            //         bottom: {style:'thick'},
-            //         right: {style:'thin'}                
-            //     },
-            //     fill = {
-            //         type: 'pattern',
-            //         pattern: 'solid',
-            //         fgColor:{argb:'FFFFFFCC'}
-            //     },
-            //     font = {
-            //         name: 'Calibri',
-            //         family: 2,
-            //         size: 11,
-            //         bold: true
-            //     }             
-            //     }
-            // }
             }
             workbook.xlsx.write(res);
         }
     });
 });
-
-function getColumns(resFieldNames) {
-  const arr = [];
-    // arr.push({
-    //   name: 'PO ID',
-    //   filterButton: true,
-    //   style: {
-    //     border: {
-    //       top: {style:'thin'},
-    //       left: {style:'thin'},
-    //       bottom: {style:'thin'},
-    //       right: {style:'thin'}
-    //     },
-    //     alignment: {
-    //       vertical: 'middle',
-    //       horizontal: 'left'
-    //     }
-    //   }
-    // },{
-    //   name: 'SUB ID',
-    //   filterButton: true,
-    //   style: {
-    //     border: {
-    //       top: {style:'thin'},
-    //       left: {style:'thin'},
-    //       bottom: {style:'thin'},
-    //       right: {style:'thin'}
-    //     },
-    //     alignment: {
-    //       vertical: 'middle',
-    //       horizontal: 'left'
-    //     }
-    //   }
-    // });
-    resFieldNames.map(fieldName => {
-      arr.push({
-        name: fieldName.fields.custom,
-        filterButton: true,
-        style: {
-          border: {
-            top: {style:'thin'},
-            left: {style:'thin'},
-            bottom: {style:'thin'},
-            right: {style:'thin'}
-          },
-          alignment: {
-            vertical: 'middle',
-            horizontal: fieldName.align
-          }
-        }         
-      });
-    });
-  return arr;
-}
-
-function getRows (resProject, resFieldNames) {
-  const arrayBody = [];
-  // arrayBody.push(Array.from( {length: resFieldNames.length} , () => ''));
-  arraySorted(resProject.pos, 'clPo', 'clPoRev', 'clPoItem').map(po => {
-    if (po.subs) {
-      po.subs.map(sub => {
-        let arrayRow = [];
-        arrayRow.push(po._id, sub._id);
-        resFieldNames.map(fieldname => {
-          if(!fieldname) {
-            arrayRow.push('');
-          } else if (fieldname.fields.fromTbl == 'po') {
-            arrayRow.push(po[fieldname.fields.name] === undefined ? '' : po[fieldname.fields.name]);
-          } else if (fieldname.fields.fromTbl == 'sub') {
-            arrayRow.push(sub[fieldname.fields.name] === undefined ? '' : sub[fieldname.fields.name]);
-          } else {
-            arrayRow.push('');
-          }
-        })
-        arrayBody.push(arrayRow);
-      });
-    }
-  });
-  return arrayBody;
-}
 
 function alphabet(num){
   var s = '', t;
@@ -182,30 +68,6 @@ function resolve(path, obj) {
   return path.split('.').reduce(function(prev, curr) {
       return prev ? prev[curr] : null
   }, obj || self)
-}
-
-function arraySorted(array, fieldOne, fieldTwo, fieldThree) {
-  if (array) {
-      const newArray = array
-      newArray.sort(function(a,b){
-          if (resolve(fieldOne, a) < resolve(fieldOne, b)) {
-              return -1;
-          } else if (resolve(fieldOne, a) > resolve(fieldOne, b)) {
-              return 1;
-          } else if (fieldTwo && resolve(fieldTwo, a) < resolve(fieldTwo, b)) {
-              return -1;
-          } else if (fieldTwo && resolve(fieldTwo, a) > resolve(fieldTwo, b)) {
-              return 1;
-          } else if (fieldThree && resolve(fieldThree, a) < resolve(fieldThree, b)) {
-              return -1;
-          } else if (fieldThree && resolve(fieldThree, a) > resolve(fieldThree, b)) {
-              return 1;
-          } else {
-              return 0;
-          }
-      });
-      return newArray;             
-  }
 }
 
 module.exports = router;

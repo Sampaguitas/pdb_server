@@ -9,12 +9,15 @@ const FieldSchema = new Schema({
     },
     custom: {
         type: String,
+        required: true
     },
     type:{
         type: String,
+        required: true
     },
     fromTbl: {
         type: String,
+        required: true
     },
     projectId: {
         type: mongoose.SchemaTypes.ObjectId,

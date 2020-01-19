@@ -18,7 +18,7 @@ const FieldNameSchema = new Schema({
         type: Number,
     },
     forShow: {
-        type: Number,
+        type: Number
     },
     screenId: {
         type: mongoose.SchemaTypes.ObjectId,

@@ -4,16 +4,16 @@ const Schema = mongoose.Schema;
 //Create Schema
 const PoSchema = new Schema({
     clPo: {
-        type: String,
+        type: String, //2
     },
     clPoRev: {
-        type: String,
+        type: String, //2
     },
     clPoItem: {
-        type: Number,
+        type: Number, //2
     },
     clCode: {
-        type: String,
+        type: String, //2
     },
     qty: {
         type: Number,
@@ -31,7 +31,7 @@ const PoSchema = new Schema({
         type: String,
     },
     material: {
-        type: String,
+        type: String, 
     },
     remarks: {
         type: String,
@@ -46,10 +46,10 @@ const PoSchema = new Schema({
         type: String,
     },
     vlSo: {
-        type: String,
+        type: String, //1
     },
     vlSoItem: {
-        type: Number,
+        type: Number, //1
     },
     vlPo: {
         type: Number,

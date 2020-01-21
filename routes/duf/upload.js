@@ -11,78 +11,296 @@ const Po = require('../../models/Po');
 const Sub = require('../../models/Sub');
 var Excel = require('exceljs');
 fs = require('fs');
+var _ = require('lodash');
 
 router.post('/', upload.single('file'), function (req, res) {
+  
   const projectId = req.body.projectId;
-  const file = req.file
+  const file = req.file;
+
+  let promises = [];
+  let resPromises = [];
+  let poQuery = {};
+
+  let tempPo = {};
+  let tempSub = {};
+  // let tempColliPack = {};
+  // let tempPackItem = {};
+  
+  let rejections = [];
+  let nProcessed = 0;
+  let nRejected = 0;
+  let nAdded = 0;
+  let nEdited = 0;
+  
   if (!projectId || !file) {
-    res.status(400).json({message: 'file or projectId missing'});
+    res.status(400).json({
+      message: 'file or projectId missing',
+      rejections: rejections,
+      nProcessed: nProcessed,
+      nRejected: nRejected,
+      nAdded: nAdded,
+      nEdited: nEdited
+    });
   } else {
     FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
     .populate('fields')
     .sort({forShow:'asc'})
     .exec(function (errFieldNames, resFieldNames) {
       if (errFieldNames || !resFieldNames) {
-        return res.status(400).json({message: 'an error occured'});
+        return res.status(400).json({
+            message: 'an error occured',
+            rejections: rejections,
+            nProcessed: nProcessed,
+            nRejected: nRejected,
+            nAdded: nAdded,
+            nEdited: nEdited
+        });
       } else {
-        //Does the object already exist, search by PO_VLB and PO_VLB_Item?
-        //Does the object already exist, search by COO, Rev, ClientCode and Item
-
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => {
+
           var worksheet = wb.getWorksheet(1);
-          const rowCount = worksheet.rowCount;
+          let rowCount = worksheet.rowCount;
+          
           if (rowCount < 2) {
-            return res.status(400).json({message: 'the Duf File appears to be empty'});
+            return res.status(400).json({
+              message: 'the Duf File seams to be empty',
+              rejections: rejections,
+              nProcessed: nProcessed,
+              nRejected: nRejected,
+              nAdded: nAdded,
+              nEdited: nEdited
+            });
           } else {
-            for (let i=2; i < worksheet.rowCount + 1; i++) {
-              const tempPo = new Object();
-              const tempSub = new Object();
-              resFieldNames.map(resFieldName => {
-                switch (resFieldName.fields.fromTbl) {
-                  case 'po':
-                    tempPo[resFieldName.fields.name] = worksheet.getCell(`${alphabet(resFieldName.forShow) + i}`).value;
-                    break;
-                  case 'sub':
-                    tempSub[resFieldName.fields.name] = worksheet.getCell(`${alphabet(resFieldName.forShow) + i}`).value;
-                    break;
-                  default: console.log('not in table Po or Table Sub')
-                }
+
+            (async function() {
+              for (let row = 2; row < worksheet.rowCount + 1 ; row++) {
+
+                promises = [];
+
+                //initialise objects
+                for (var member in tempPo) delete tempPo[member];
+                for (var member in tempSub) delete tempSub[member];
+                // for (var member in tempColliPack) delete tempColliPack[member];
+                // for (var member in tempPackItem) delete tempPackItem[member];
+                
+                //assign projectId
+                tempPo.projectId = projectId;
+
+                resFieldNames.map(function (resFieldName, index) {
+                  let cell = alphabet(resFieldName.forShow) + row;
+                  let fromTbl = resFieldName.fields.fromTbl;
+                  let type = resFieldName.fields.type;
+                  let key = resFieldName.fields.name;
+                  let value = worksheet.getCell(cell).value;
+                  
+                  promises.push(testLength(row, cell, key, value));
+                  promises.push(testFormat(row, cell, type, value));
+                  
+                  switch (fromTbl) {
+                    case 'po':
+                      tempPo[key] = value;
+                      break;
+                    case 'sub':
+                      tempSub[key] = value;
+                      break;
+                    // case 'collipack':
+                    //     tempColliPack[key] = value;
+                    //   break;
+                    // case 'packitem':
+                    //     tempPackItem[key] = value;
+                    //     break;
+                    // default: console.log('not in table Po or Table Sub')
+                  }
+                });
+
+                await Promise.all(promises).then(async () => {
+
+                  if (!isidentifiable(tempPo)) {
+                    rejections.push({row: row, reason: 'Table PO should have a Client PO, Rev, Item Nr or VL SO and Item Nr'});
+                    nRejected++;
+                  } else {
+
+                    //reset poQuery object
+                    for (var member in poQuery) delete poQuery[member];
+
+                    if (tempPo.vlSo && tempPo.vlSoItem) {
+                      poQuery = {
+                        projectId: projectId, 
+                        vlSo: tempPo.vlSo, 
+                        vlSoItem: tempPo.vlSoItem
+                      };
+                    } else {
+                      poQuery = {
+                        projectId: projectId,
+                        clPo: tempPo.clPo,
+                        clPoRev: tempPo.clPoRev,
+                        clPoItem: tempPo.clPoItem,
+                        clCode: tempPo.clCode
+                      };
+                    }
+
+                    await Po.findOne(poQuery, async function (errCurrentPo, resCurrentPo) {
+                      if (errCurrentPo) {
+                        rejections.push({row: row, reason: 'Fields from Table Po could not be saved.'});
+                        nRejected++;
+                      } else {
+                        await Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true}, async function(errNewPo, resNewPo){
+                          if (errNewPo || !resNewPo) {
+                            rejections.push({row: row, reason: 'Fields from Table Po could not be saved.'});
+                            nRejected++;
+                          } else {
+                            tempSub.poId = resNewPo._id;
+                            await Sub.findOneAndUpdate({poId: resNewPo._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
+                              if (errNewSub || !resNewSub) {
+                                rejections.push({row: row, reason: 'Fields from Table Sub could not be saved.'});
+                                nRejected++;
+                              } else {
+                                if (!_.isEmpty(resCurrentPo)) {
+                                  nEdited++;
+                                } else {
+                                  nAdded++;
+                                }
+                        //         if (_.isEmpty(tempColliPack) && _.isEmpty(tempPackItem)) {
+                        //           if (!_.isEmpty(resCurrentPo)) {
+                        //             nEdited++;
+                        //           } else {
+                        //             nAdded++;
+                        //           }
+                        //         } else {
+                        //           let plNr = tempColliPack.plNr || packitem.plNr || '';
+                        //           let colliNr = tempColliPack.colliNr || packitem.colliNr || '';
+                        //           if (!plNr || !colliNr) {
+                        //             if (!_.isEmpty(resCurrentPo)) {
+                        //               rejections.push({row: row, reason: 'Table ColliPack should have a PL Nr && Colli Nr'});
+                        //               nRejected++;
+                        //             } else {
+                        //               rejections.push({row: row, reason: 'Table ColliPack should have a PL Nr && Colli Nr'});
+                        //               nRejected++;
+                        //             }
+                        //           } else {
+                        //             tempColliPack.plNr = plNr;
+                        //             tempColliPack.colliNr = colliNr;
+                        //             tempColliPack.projectId = projectId;
+
+                        //             let colliPackQuery = new Object;
+                        //             colliPackQuery = {
+                        //               plNr: plNr,
+                        //               colliNr: colliNr,
+                        //               projectId: projectId
+                        //             }
+                                    
+                        //             ColliPack.findOneAndUpdate(colliPackQuery, tempColliPack, { new: true, upsert: true}, function(errNewColliPack, resNewColliPack){
+                        //               if (errNewColliPack || !resNewColliPack) {
+                        //                 rejections.push({row: row, reason: 'Fields from Table ColliPack could not be saved.'});
+                        //                 nRejected++;
+                        //               } else {
+                        //                 tempPackItem.plNr = plNr;
+                        //                 tempPackItem.colliNr = colliNr;
+                        //                 tempPackItem.packId = resNewColliPack._id;
+                        //                 tempPackItem.subId = resNewSub._id;
+                        //                 tempPackItem.projectId = projectId;
+                                        
+                        //                 let packItemQuery = new Object;
+                        //                 packItemQuery = {
+                        //                   plNr: plNr,
+                        //                   colliNr: colliNr,
+                        //                   packId: resNewColliPack._id,
+                        //                   subId: resNewSub._id,
+                        //                   projectId: projectId
+                        //                 }
+
+                        //                 PackItem.findOneAndUpdate(packItemQuery, tempColliPack, { new: true, upsert: true}, function(errNewColliPack, resNewColliPack){
+                        //                   if (errNewColliPack || !resNewColliPack) {
+                        //                     rejections.push({row: row, reason: 'Fields from Table PackItem could not be saved.'});
+                        //                     nRejected++;
+                        //                   } else {
+                        //                     if (!_.isEmpty(resCurrentPo)) {
+                        //                       nEdited++;
+                        //                     } else {
+                        //                       nAdded++;
+                        //                     }
+                        //                   }
+                        //                 });
+                        //               }
+                        //             });
+                        //           }
+                        //         }
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
+                }).catch(errPromises => {
+                  rejections.push(errPromises)
+                  nRejected++
+                });
+                nProcessed++;
+                // console.log('nProcessed:', nProcessed);
+              } //end for loop
+              // console.log('after loop');
+              // console.log('rejections:', rejections);
+              // console.log('nProcessed:', nProcessed);
+              // console.log('nRejected:', nRejected);
+              // console.log('nAdded:', nAdded);
+              // console.log('nEdited:', nEdited);
+              return res.status(200).json({
+                  rejections: rejections,
+                  nProcessed: nProcessed,
+                  nRejected: nRejected,
+                  nAdded: nAdded,
+                  nEdited: nEdited
               });
-              console.log('tempPo', tempPo);
-              console.log('tempSub', tempSub);
-            }
+            })();
           }
+        }).catch( () => {
+          // console.log('message:', 'could not load the workbook');
+          // console.log('rejections:', rejections);
+          // console.log('rejections:', nProcessed);
+          // console.log('rejections:', nRejected);
+          // console.log('rejections:', nAdded);
+          // console.log('rejections:', nEdited);
+          return res.status(400).json({
+              message: 'could not load the workbook',
+              rejections: rejections,
+              nProcessed: nProcessed,
+              nRejected: nRejected,
+              nAdded: nAdded,
+              nEdited: nEdited
+          });
         });
       }
     })
   }
 
-  // function testIdt(vlSo, vlSoItem, clPo, clPoRev, clPoItem, clCode) {
-  //   return new Promise (function (respolve, reject) {
-  //     if ( (vlSo== '' || vlSoItem == 0) && ({
 
-  //     }
-  //   })
-  // }
+  function isidentifiable(tempPo) {
+    if ( (!tempPo.vlSo || !tempPo.vlSoItem) && (!tempPo.clPo || !tempPo.clPoRev || !tempPo.clPoItem || !tempPo.clCode) ) {
+        return false;
+    } else {
+      return true;
+    } 
+  }
 
-
-  function testLength(row, col, key, value) {
-    return new Promise (function (respolve, reject) {
+  function testLength(row, cell, key, value) {
+    return new Promise (function (resolve, reject) {
       switch (key) {
         case 'rev':
         case 'size':
         case 'sch':
         case 'qty':
-          if (value.ToString().Length > 25){
-            reject(`rejected line: ${row}, col ${col} Value exceeds maxium length: ${value}`);
+          if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 25){
+            reject({row: row, reason: `cell ${cell} exceeds maxium length set to 25 characters`});
           } else {
             resolve();
           } 
           break;
         case 'kind':
-            if (value.ToString().Length > 15){
-              reject(`rejected line: ${row}, col ${col} Value exceeds maxium length: ${value}`);
+            if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 15){
+              reject({row: row, reason: `cell ${cell} exceeds maxium length set to 15 characters`});
             } else {
               resolve();
             } 
@@ -90,8 +308,9 @@ router.post('/', upload.single('file'), function (req, res) {
         case 'manufacturer':
         case 'manufOrigin':
         case 'destination':
-            if (value.ToString().Length > 15){
-              reject(`rejected line: ${row}, col ${col} Value exceeds maxium length: ${value}`);
+        case 'vlSo':
+            if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 50){
+              reject({row: row, reason: `cell ${cell} exceeds maxium length set to 50 characters`});
             } else {
               resolve();
             } 
@@ -100,52 +319,28 @@ router.post('/', upload.single('file'), function (req, res) {
       }
     });
   }
-
-
-    // FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
-    // .populate('fields')
-    // .sort({forShow:'asc'})
-    // .exec(function (errFieldNames, resFieldNames) {
-    //     if (errFieldNames) {
-    //         return res.status(400).json({message: errFieldNames})
-    //     } else if (!resFieldNames) {
-    //         return res.status(400).json({message: 'an error occured'});
-    //     } else {
-    //         workbook = new Excel.Workbook();
-    //         workbook.properties.date1904 = true;
-    //         var worksheet = workbook.addWorksheet('My Sheet');
-    //         if (!!resFieldNames.length) {
-    //             resFieldNames.map(resFieldName => {
-    //                 if(resFieldName.forShow > 0) {
-    //                     let cell = worksheet.getCell(`${alphabet(resFieldName.forShow) + 1}`);
-    //                     with (cell) {
-    //                         value = resFieldName.fields.custom,
-    //                         style = Object.create(cell.style), //shallow-clone the style, break references
-    //                         border ={
-    //                             top: {style:'thin'},
-    //                             left: {style:'thin'},
-    //                             bottom: {style:'thick'},
-    //                             right: {style:'thin'}                
-    //                         },
-    //                         fill = {
-    //                             type: 'pattern',
-    //                             pattern: 'solid',
-    //                             fgColor:{argb:'FFFFFFCC'}
-    //                         },
-    //                         font = {
-    //                             name: 'Calibri',
-    //                             family: 2,
-    //                             size: 11,
-    //                             bold: true
-    //                         }
-    //                     }
-    //                 }
-    //             })
-    //         }
-    //         workbook.xlsx.write(res);
-    //     }
-    // });
 });
+
+function testFormat(row, cell, type, value) {
+  return new Promise(function (resolve, reject) {
+    switch (type){
+      case 'Number':
+        if ((!_.isNull(value) && !_.isUndefined(value)) && !_.isNumber(value)) {
+          reject({row: row, reason: `cell ${cell} is not a Number`});
+        } else {
+          resolve();
+        }
+      case 'Date':
+        if((!_.isNull(value) && !_.isUndefined(value)) && !_.isDate(value)) {
+          reject({row: row, reason: `cell ${cell} is not a Date`});
+        } else {
+          resolve();
+        }
+        break;
+      default: resolve();
+    }
+  });
+}
 
 function alphabet(num){
   var s = '', t;
@@ -165,3 +360,7 @@ function resolve(path, obj) {
 }
 
 module.exports = router;
+
+
+
+

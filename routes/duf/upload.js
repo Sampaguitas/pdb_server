@@ -72,7 +72,7 @@ router.post('/', upload.single('file'), function (req, res) {
           } else {
 
             // (async function() {
-              for (let row = 2; row < worksheet.rowCount + 1 ; row++) {
+              for (let row = 2; row < rowCount ; row++) {
 
                 promises = [];
 

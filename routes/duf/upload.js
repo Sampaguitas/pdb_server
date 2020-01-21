@@ -19,13 +19,10 @@ router.post('/', upload.single('file'), function (req, res) {
   const file = req.file;
 
   let promises = [];
-  let resPromises = [];
   let poQuery = {};
 
   let tempPo = {};
   let tempSub = {};
-  // let tempColliPack = {};
-  // let tempPackItem = {};
   
   let rejections = [];
   let nProcessed = 0;
@@ -74,7 +71,7 @@ router.post('/', upload.single('file'), function (req, res) {
             });
           } else {
 
-            (async function() {
+            // (async function() {
               for (let row = 2; row < worksheet.rowCount + 1 ; row++) {
 
                 promises = [];
@@ -82,8 +79,6 @@ router.post('/', upload.single('file'), function (req, res) {
                 //initialise objects
                 for (var member in tempPo) delete tempPo[member];
                 for (var member in tempSub) delete tempSub[member];
-                // for (var member in tempColliPack) delete tempColliPack[member];
-                // for (var member in tempPackItem) delete tempPackItem[member];
                 
                 //assign projectId
                 tempPo.projectId = projectId;
@@ -105,18 +100,10 @@ router.post('/', upload.single('file'), function (req, res) {
                     case 'sub':
                       tempSub[key] = value;
                       break;
-                    // case 'collipack':
-                    //     tempColliPack[key] = value;
-                    //   break;
-                    // case 'packitem':
-                    //     tempPackItem[key] = value;
-                    //     break;
-                    // default: console.log('not in table Po or Table Sub')
                   }
                 });
 
-                await Promise.all(promises).then(async () => {
-
+                Promise.all(promises).then( () => {
                   if (!isidentifiable(tempPo)) {
                     rejections.push({row: row, reason: 'Table PO should have a Client PO, Rev, Item Nr or VL SO and Item Nr'});
                     nRejected++;
@@ -141,94 +128,23 @@ router.post('/', upload.single('file'), function (req, res) {
                       };
                     }
 
-                    await Po.findOne(poQuery, async function (errCurrentPo, resCurrentPo) {
-                      if (errCurrentPo) {
+                    Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){
+                      if (errNewPo || !resNewPo) {
                         rejections.push({row: row, reason: 'Fields from Table Po could not be saved.'});
                         nRejected++;
                       } else {
-                        await Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true}, async function(errNewPo, resNewPo){
-                          if (errNewPo || !resNewPo) {
-                            rejections.push({row: row, reason: 'Fields from Table Po could not be saved.'});
+                        //assign poId
+                        tempSub.poId = resNewPo.value._id;
+                        Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
+                          if (errNewSub || !resNewSub) {
+                            rejections.push({row: row, reason: 'Fields from Table Sub could not be saved.'});
                             nRejected++;
                           } else {
-                            tempSub.poId = resNewPo._id;
-                            await Sub.findOneAndUpdate({poId: resNewPo._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
-                              if (errNewSub || !resNewSub) {
-                                rejections.push({row: row, reason: 'Fields from Table Sub could not be saved.'});
-                                nRejected++;
-                              } else {
-                                if (!_.isEmpty(resCurrentPo)) {
-                                  nEdited++;
-                                } else {
-                                  nAdded++;
-                                }
-                        //         if (_.isEmpty(tempColliPack) && _.isEmpty(tempPackItem)) {
-                        //           if (!_.isEmpty(resCurrentPo)) {
-                        //             nEdited++;
-                        //           } else {
-                        //             nAdded++;
-                        //           }
-                        //         } else {
-                        //           let plNr = tempColliPack.plNr || packitem.plNr || '';
-                        //           let colliNr = tempColliPack.colliNr || packitem.colliNr || '';
-                        //           if (!plNr || !colliNr) {
-                        //             if (!_.isEmpty(resCurrentPo)) {
-                        //               rejections.push({row: row, reason: 'Table ColliPack should have a PL Nr && Colli Nr'});
-                        //               nRejected++;
-                        //             } else {
-                        //               rejections.push({row: row, reason: 'Table ColliPack should have a PL Nr && Colli Nr'});
-                        //               nRejected++;
-                        //             }
-                        //           } else {
-                        //             tempColliPack.plNr = plNr;
-                        //             tempColliPack.colliNr = colliNr;
-                        //             tempColliPack.projectId = projectId;
-
-                        //             let colliPackQuery = new Object;
-                        //             colliPackQuery = {
-                        //               plNr: plNr,
-                        //               colliNr: colliNr,
-                        //               projectId: projectId
-                        //             }
-                                    
-                        //             ColliPack.findOneAndUpdate(colliPackQuery, tempColliPack, { new: true, upsert: true}, function(errNewColliPack, resNewColliPack){
-                        //               if (errNewColliPack || !resNewColliPack) {
-                        //                 rejections.push({row: row, reason: 'Fields from Table ColliPack could not be saved.'});
-                        //                 nRejected++;
-                        //               } else {
-                        //                 tempPackItem.plNr = plNr;
-                        //                 tempPackItem.colliNr = colliNr;
-                        //                 tempPackItem.packId = resNewColliPack._id;
-                        //                 tempPackItem.subId = resNewSub._id;
-                        //                 tempPackItem.projectId = projectId;
-                                        
-                        //                 let packItemQuery = new Object;
-                        //                 packItemQuery = {
-                        //                   plNr: plNr,
-                        //                   colliNr: colliNr,
-                        //                   packId: resNewColliPack._id,
-                        //                   subId: resNewSub._id,
-                        //                   projectId: projectId
-                        //                 }
-
-                        //                 PackItem.findOneAndUpdate(packItemQuery, tempColliPack, { new: true, upsert: true}, function(errNewColliPack, resNewColliPack){
-                        //                   if (errNewColliPack || !resNewColliPack) {
-                        //                     rejections.push({row: row, reason: 'Fields from Table PackItem could not be saved.'});
-                        //                     nRejected++;
-                        //                   } else {
-                        //                     if (!_.isEmpty(resCurrentPo)) {
-                        //                       nEdited++;
-                        //                     } else {
-                        //                       nAdded++;
-                        //                     }
-                        //                   }
-                        //                 });
-                        //               }
-                        //             });
-                        //           }
-                        //         }
-                              }
-                            });
+                            if (resNewPo.lastErrorObject.updatedExisting) {
+                              nEdited++;
+                            } else {
+                              nAdded++;
+                            }
                           }
                         });
                       }
@@ -239,30 +155,17 @@ router.post('/', upload.single('file'), function (req, res) {
                   nRejected++
                 });
                 nProcessed++;
-                // console.log('nProcessed:', nProcessed);
               } //end for loop
-              // console.log('after loop');
-              // console.log('rejections:', rejections);
-              // console.log('nProcessed:', nProcessed);
-              // console.log('nRejected:', nRejected);
-              // console.log('nAdded:', nAdded);
-              // console.log('nEdited:', nEdited);
               return res.status(200).json({
-                  rejections: rejections,
-                  nProcessed: nProcessed,
-                  nRejected: nRejected,
-                  nAdded: nAdded,
-                  nEdited: nEdited
+                rejections: rejections,
+                nProcessed: nProcessed,
+                nRejected: nRejected,
+                nAdded: nAdded,
+                nEdited: nEdited
               });
-            })();
+            // })();
           }
         }).catch( () => {
-          // console.log('message:', 'could not load the workbook');
-          // console.log('rejections:', rejections);
-          // console.log('rejections:', nProcessed);
-          // console.log('rejections:', nRejected);
-          // console.log('rejections:', nAdded);
-          // console.log('rejections:', nEdited);
           return res.status(400).json({
               message: 'could not load the workbook',
               rejections: rejections,

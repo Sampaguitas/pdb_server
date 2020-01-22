@@ -11,25 +11,26 @@ var Excel = require('exceljs');
 var _ = require('lodash');
 
 router.post('/', upload.single('file'), function (req, res) {
-  
-  const projectId = req.body.projectId;
-  const file = req.file;
+    
+    const screenId = req.query.screenId;
+    const projectId = req.body.projectId;
+    const file = req.file;
 
-  let colPromises = [];
-  let rowPromises = [];
+    let colPromises = [];
+    let rowPromises = [];
 
-  let tempPo = {};
-  let tempSub = {};
+    let tempPo = {};
+    let tempSub = {};
   
-  let rejections = [];
-  let nProcessed = 0;
-  let nRejected = 0;
-  let nAdded = 0;
-  let nEdited = 0;
+    let rejections = [];
+    let nProcessed = 0;
+    let nRejected = 0;
+    let nAdded = 0;
+    let nEdited = 0;
   
-  if (!projectId || !file) {
+  if (!screenId || !projectId || !file) {
     res.status(400).json({
-      message: 'File or projectId is missing.',
+      message: 'file screenId or projectId missing',
       rejections: rejections,
       nProcessed: nProcessed,
       nRejected: nRejected,
@@ -37,13 +38,13 @@ router.post('/', upload.single('file'), function (req, res) {
       nEdited: nEdited
     });
   } else {
-    FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
+    FieldName.find({ screenId: screenId, projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
     .populate('fields')
     .sort({forShow:'asc'})
     .exec(function (errFieldNames, resFieldNames) {
       if (errFieldNames || !resFieldNames) {
         return res.status(400).json({
-            message: 'An error has occured, please check with your administrator.',
+            message: 'an error has occured',
             rejections: rejections,
             nProcessed: nProcessed,
             nRejected: nRejected,
@@ -59,7 +60,7 @@ router.post('/', upload.single('file'), function (req, res) {
           
           if (rowCount < 2) {
             return res.status(400).json({
-              message: 'The Duf File seems to be empty.',
+              message: 'the Duf File seams to be empty',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
@@ -68,7 +69,7 @@ router.post('/', upload.single('file'), function (req, res) {
             });
           } else if (rowCount > 800) {
             return res.status(400).json({
-              message: 'Try to upload less rows than 800 rows at the time.',
+              message: 'try to upload less rows than 800 rows at the time',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
@@ -152,7 +153,7 @@ router.post('/', upload.single('file'), function (req, res) {
           }
         }).catch( () => {
           return res.status(400).json({
-              message: 'Could not load the workbook.',
+              message: 'could not load the workbook.',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
@@ -248,14 +249,14 @@ router.post('/', upload.single('file'), function (req, res) {
         case 'sch':
         case 'qty':
           if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 25){
-            reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 25 characters.`});
+            reject({row: row, reason: `cell ${cell} exceeds maxium length set to 25 characters`});
           } else {
             resolve();
           } 
           break;
         case 'kind':
             if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 15){
-              reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 15 characters.`});
+              reject({row: row, reason: `cell ${cell} exceeds maxium length set to 15 characters`});
             } else {
               resolve();
             } 
@@ -265,7 +266,7 @@ router.post('/', upload.single('file'), function (req, res) {
         case 'destination':
         case 'vlSo':
             if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 50){
-              reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 50 characters.`});
+              reject({row: row, reason: `cell ${cell} exceeds maxium length set to 50 characters`});
             } else {
               resolve();
             } 
@@ -281,14 +282,14 @@ function testFormat(row, cell, type, value) {
     switch (type){
       case 'Number':
         if ((!_.isNull(value) && !_.isUndefined(value)) && !_.isNumber(value)) {
-          reject({row: row, reason: `Cell: ${cell} is not a Number.`});
+          reject({row: row, reason: `cell ${cell} is not a Number`});
         } else {
           resolve();
         }
       break;
       case 'Date':
         if((!_.isNull(value) && !_.isUndefined(value)) && !_.isDate(value)) {
-          reject({row: row, reason: `Cell: ${cell} is not a Date.`});
+          reject({row: row, reason: `cell ${cell} is not a Date`});
         } else {
           resolve();
         }
@@ -307,6 +308,36 @@ function alphabet(num){
   }
   return s || undefined;
 }
+
+function resolve(path, obj) {
+    return path.split('.').reduce(function(prev, curr) {
+        return prev ? prev[curr] : null
+    }, obj || self)
+  }
+  
+  function arraySorted(array, fieldOne, fieldTwo, fieldThree) {
+    if (array) {
+        const newArray = array
+        newArray.sort(function(a,b){
+            if (resolve(fieldOne, a) < resolve(fieldOne, b)) {
+                return -1;
+            } else if (resolve(fieldOne, a) > resolve(fieldOne, b)) {
+                return 1;
+            } else if (fieldTwo && resolve(fieldTwo, a) < resolve(fieldTwo, b)) {
+                return -1;
+            } else if (fieldTwo && resolve(fieldTwo, a) > resolve(fieldTwo, b)) {
+                return 1;
+            } else if (fieldThree && resolve(fieldThree, a) < resolve(fieldThree, b)) {
+                return -1;
+            } else if (fieldThree && resolve(fieldThree, a) > resolve(fieldThree, b)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        return newArray;             
+    }
+  }
 
 module.exports = router;
 

@@ -34,7 +34,7 @@ router.get('/', function (req, res) {
           return res.status(400).json({message: 'an error occured'});
         } else {
           workbook = new Excel.Workbook();
-          workbook.properties.date1904 = true;
+          // workbook.properties.date1904 = true;
           var worksheet = workbook.addWorksheet('My Sheet');
           if (!!resFieldNames.length) {
             worksheet.addTable({

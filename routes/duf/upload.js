@@ -285,6 +285,7 @@ function testFormat(row, cell, type, value) {
         } else {
           resolve();
         }
+      break;
       case 'Date':
         if((!_.isNull(value) && !_.isUndefined(value)) && !_.isDate(value)) {
           reject({row: row, reason: `cell ${cell} is not a Date`});

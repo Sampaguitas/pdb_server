@@ -60,7 +60,7 @@ router.get('/', function (req, res) {
                 if (errDocField){
                   return res.status(400).json({message: 'an error occured'});
                 } else {
-                  workbook.properties.date1904 = true;
+                  // workbook.properties.date1904 = true;
 
                   const docFieldSol = filterDocFiled(resDocField, 'Sheet1', 'Line');
                   const firstColSol = getColumnFirst(docFieldSol);

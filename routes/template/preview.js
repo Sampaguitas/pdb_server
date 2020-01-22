@@ -50,7 +50,7 @@ router.get('/', function (req, res) {
                 if (errDocField){
                   return res.status(400).json({message: 'an error occured'});
                 } else {
-                  workbook.properties.date1904 = true;
+                  // workbook.properties.date1904 = true;
                   Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
                     fields.filter(n => n);
                     fields.map(field => {

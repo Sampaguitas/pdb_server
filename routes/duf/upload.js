@@ -18,8 +18,8 @@ router.post('/', upload.single('file'), function (req, res) {
   const projectId = req.body.projectId;
   const file = req.file;
 
-  let promises = [];
-  let poQuery = {};
+  let colPromises = [];
+  let rowPromises = [];
 
   let tempPo = {};
   let tempSub = {};
@@ -45,8 +45,9 @@ router.post('/', upload.single('file'), function (req, res) {
     .sort({forShow:'asc'})
     .exec(function (errFieldNames, resFieldNames) {
       if (errFieldNames || !resFieldNames) {
+        console.log('an error has occured');
         return res.status(400).json({
-            message: 'an error occured',
+            message: 'an error has occured',
             rejections: rejections,
             nProcessed: nProcessed,
             nRejected: nRejected,
@@ -69,12 +70,21 @@ router.post('/', upload.single('file'), function (req, res) {
               nAdded: nAdded,
               nEdited: nEdited
             });
+          } else if (rowCount > 400) {
+            return res.status(400).json({
+              message: 'try to upload less rows at the time',
+              rejections: rejections,
+              nProcessed: nProcessed,
+              nRejected: nRejected,
+              nAdded: nAdded,
+              nEdited: nEdited
+            });
           } else {
+ 
+            (async function() {
+              for (let row = 2; row < rowCount + 1 ; row++) {
 
-            // (async function() {
-              for (let row = 2; row < rowCount ; row++) {
-
-                promises = [];
+                colPromises = [];
 
                 //initialise objects
                 for (var member in tempPo) delete tempPo[member];
@@ -83,15 +93,15 @@ router.post('/', upload.single('file'), function (req, res) {
                 //assign projectId
                 tempPo.projectId = projectId;
 
-                resFieldNames.map(function (resFieldName, index) {
+                resFieldNames.map(resFieldName => {
                   let cell = alphabet(resFieldName.forShow) + row;
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
                   let value = worksheet.getCell(cell).value;
                   
-                  promises.push(testLength(row, cell, key, value));
-                  promises.push(testFormat(row, cell, type, value));
+                  colPromises.push(testLength(row, cell, key, value));
+                  colPromises.push(testFormat(row, cell, type, value));
                   
                   switch (fromTbl) {
                     case 'po':
@@ -101,91 +111,139 @@ router.post('/', upload.single('file'), function (req, res) {
                       tempSub[key] = value;
                       break;
                   }
-                });
+                });// end map
 
-                Promise.all(promises).then( () => {
-                  if (!isidentifiable(tempPo)) {
-                    rejections.push({row: row, reason: 'Table PO should have a Client PO, Rev, Item Nr or VL SO and Item Nr'});
-                    nRejected++;
-                  } else {
-
-                    //reset poQuery object
-                    for (var member in poQuery) delete poQuery[member];
-
-                    if (tempPo.vlSo && tempPo.vlSoItem) {
-                      poQuery = {
-                        projectId: projectId, 
-                        vlSo: tempPo.vlSo, 
-                        vlSoItem: tempPo.vlSoItem
-                      };
-                    } else {
-                      poQuery = {
-                        projectId: projectId,
-                        clPo: tempPo.clPo,
-                        clPoRev: tempPo.clPoRev,
-                        clPoItem: tempPo.clPoItem,
-                        clCode: tempPo.clCode
-                      };
-                    }
-
-                    Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){
-                      if (errNewPo || !resNewPo) {
-                        rejections.push({row: row, reason: 'Fields from Table Po could not be saved.'});
-                        nRejected++;
-                      } else {
-                        //assign poId
-                        tempSub.poId = resNewPo.value._id;
-                        Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
-                          if (errNewSub || !resNewSub) {
-                            rejections.push({row: row, reason: 'Fields from Table Sub could not be saved.'});
-                            nRejected++;
-                          } else {
-                            if (resNewPo.lastErrorObject.updatedExisting) {
-                              nEdited++;
-                            } else {
-                              nAdded++;
-                            }
-                          }
-                        });
-                      }
-                    });
-                  }
+                await Promise.all(colPromises).then( async () => {
+                  rowPromises.push(upsert(projectId, row, tempPo, tempSub));
                 }).catch(errPromises => {
+                  console.log(`line ${row} nRejected`);
                   rejections.push(errPromises)
-                  nRejected++
-                });
+                  nRejected++;
+                });//end colPromises.all promise
+
                 nProcessed++;
               } //end for loop
-              return res.status(200).json({
-                rejections: rejections,
-                nProcessed: nProcessed,
-                nRejected: nRejected,
-                nAdded: nAdded,
-                nEdited: nEdited
-              });
-            // })();
+
+              await Promise.all(rowPromises).then(resRowPromises => {
+                console.log('inside Promise.all(rowPromises)');
+                resRowPromises.map(r => {
+                  if (r.isRejected) {
+                    rejections.push({row: r.row, reason: r.reason});
+                    nRejected++;
+                  } else if(r.isEdited) {
+                    nEdited++;
+                  } else {
+                    nAdded++;
+                  }
+                });//end parse resRowPromise
+                return res.status(200).json({
+                  rejections: rejections,
+                  nProcessed: nProcessed,
+                  nRejected: nRejected,
+                  nAdded: nAdded,
+                  nEdited: nEdited
+                });
+              }).catch( () => {
+                return res.status(400).json({
+                  message: 'An error has occured during the upload.',
+                  rejections: rejections,
+                  nProcessed: nProcessed,
+                  nRejected: nRejected,
+                  nAdded: nAdded,
+                  nEdited: nEdited
+                });
+              });//end rowPromise.all promise
+              
+            })();//end async function
           }
         }).catch( () => {
           return res.status(400).json({
-              message: 'could not load the workbook',
+              message: 'could not load the workbook.',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
               nAdded: nAdded,
               nEdited: nEdited
           });
-        });
+        });//end wb load promise
       }
     })
   }
 
+  function upsert(projectId, row, tempPo, tempSub) {
+    return new Promise (function (resolve, reject) {
+      let poQuery = {};
+      
+      if (tempPo.vlSo && tempPo.vlSoItem) {
+        poQuery = {
+          projectId: projectId, 
+          vlSo: tempPo.vlSo, 
+          vlSoItem: tempPo.vlSoItem
+        };
+      } else {
+        poQuery = {
+          projectId: projectId,
+          clPo: tempPo.clPo,
+          clPoRev: tempPo.clPoRev,
+          clPoItem: tempPo.clPoItem,
+          clCode: tempPo.clCode
+        };
+      }
 
-  function isidentifiable(tempPo) {
-    if ( (!tempPo.vlSo || !tempPo.vlSoItem) && (!tempPo.clPo || !tempPo.clPoRev || !tempPo.clPoItem || !tempPo.clCode) ) {
-        return false;
-    } else {
-      return true;
-    } 
+      if ( (!tempPo.vlSo || !tempPo.vlSoItem) && (!tempPo.clPo || !tempPo.clPoRev || !tempPo.clPoItem || !tempPo.clCode) ) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Table PO should have a Client PO, Rev, Item Nr or VL SO and Item Nr.'
+        });
+      } else {
+        Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){
+          if (errNewPo || !resNewPo) {
+            resolve({
+              row: row,
+              isRejected: true,
+              isEdited: false,
+              isAdded: false,
+              reason: 'Fields from Table Po could not be saved.'
+            });
+          } else {
+            //assign poId
+            tempSub.poId = resNewPo.value._id;
+            Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
+              if (errNewSub || !resNewSub) {
+                resolve({
+                  row: row,
+                  isRejected: true,
+                  isEdited: false,
+                  isAdded: false,
+                  reason: 'Fields from Table Sub could not be saved.'
+                });
+              } else {
+                if (resNewPo.lastErrorObject.updatedExisting) {
+                  resolve({
+                    row: row,
+                    isRejected: false,
+                    isEdited: true,
+                    isAdded: false,
+                    reason: ''
+                  });
+                } else {
+                  resolve({
+                    row: row,
+                    isRejected: false,
+                    isEdited: false,
+                    isAdded: true,
+                    reason: ''
+                  });
+                }
+              }
+            });
+          }
+        });
+      }
+    });
   }
 
   function testLength(row, cell, key, value) {
@@ -247,19 +305,12 @@ function testFormat(row, cell, type, value) {
 
 function alphabet(num){
   var s = '', t;
-
   while (num > 0) {
     t = (num - 1) % 26;
     s = String.fromCharCode(65 + t) + s;
     num = (num - t)/26 | 0;
   }
   return s || undefined;
-}
-
-function resolve(path, obj) {
-  return path.split('.').reduce(function(prev, curr) {
-      return prev ? prev[curr] : null
-  }, obj || self)
 }
 
 module.exports = router;

@@ -3,14 +3,11 @@ const router = express.Router();
 var multer = require('multer');
 var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
-var s3bucket = require('../../middleware/s3bucket');
 fs = require('fs');
-const fault = require('../../utilities/Errors'); //../utilities/Errors
 const FieldName = require('../../models/FieldName');
 const Po = require('../../models/Po');
 const Sub = require('../../models/Sub');
 var Excel = require('exceljs');
-fs = require('fs');
 var _ = require('lodash');
 
 router.post('/', upload.single('file'), function (req, res) {
@@ -45,7 +42,6 @@ router.post('/', upload.single('file'), function (req, res) {
     .sort({forShow:'asc'})
     .exec(function (errFieldNames, resFieldNames) {
       if (errFieldNames || !resFieldNames) {
-        console.log('an error has occured');
         return res.status(400).json({
             message: 'an error has occured',
             rejections: rejections,
@@ -116,7 +112,6 @@ router.post('/', upload.single('file'), function (req, res) {
                 await Promise.all(colPromises).then( async () => {
                   rowPromises.push(upsert(projectId, row, tempPo, tempSub));
                 }).catch(errPromises => {
-                  console.log(`line ${row} nRejected`);
                   rejections.push(errPromises)
                   nRejected++;
                 });//end colPromises.all promise
@@ -125,7 +120,6 @@ router.post('/', upload.single('file'), function (req, res) {
               } //end for loop
 
               await Promise.all(rowPromises).then(resRowPromises => {
-                console.log('inside Promise.all(rowPromises)');
                 resRowPromises.map(r => {
                   if (r.isRejected) {
                     rejections.push({row: r.row, reason: r.reason});

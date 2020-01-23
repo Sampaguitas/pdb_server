@@ -66,9 +66,9 @@ router.post('/', upload.single('file'), function (req, res) {
               nAdded: nAdded,
               nEdited: nEdited
             });
-          } else if (rowCount > 800) {
+          } else if (rowCount > 801) {
             return res.status(400).json({
-              message: 'Try to upload less rows than 800 rows at the time.',
+              message: 'Try to upload less than 800 rows at the time.',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
@@ -94,7 +94,11 @@ router.post('/', upload.single('file'), function (req, res) {
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
-                  let value = worksheet.getCell(cell).value;
+                  let value = worksheet.getCell(cell).value
+                  
+                  if (type === 'String' && value === 0) {
+                    value = '0'
+                  }
                   
                   colPromises.push(testLength(row, cell, key, value));
                   colPromises.push(testFormat(row, cell, type, value));
@@ -174,7 +178,7 @@ router.post('/', upload.single('file'), function (req, res) {
           vlSo: tempPo.vlSo, 
           vlSoItem: tempPo.vlSoItem
         };
-      } else {
+      } else if (tempPo.clPo && tempPo.clPoRev && tempPo.clPoItem && tempPo.clCode) {
         poQuery = {
           projectId: projectId,
           clPo: tempPo.clPo,
@@ -182,15 +186,17 @@ router.post('/', upload.single('file'), function (req, res) {
           clPoItem: tempPo.clPoItem,
           clCode: tempPo.clCode
         };
+      } else {
+          poQuery = {};
       }
 
-      if ( (!tempPo.vlSo || !tempPo.vlSoItem) && (!tempPo.clPo || !tempPo.clPoRev || !tempPo.clPoItem || !tempPo.clCode) ) {
+      if (_.isEmpty(poQuery)) {
         resolve({
           row: row,
           isRejected: true,
           isEdited: false,
           isAdded: false,
-          reason: 'Table PO should have a Client PO, Rev, Item Nr or VL SO and Item Nr.'
+          reason: 'Fields ("clPo", "clPoRev", "clPoItem", "clCode") or ("vlSo", "vlSoItem") should not be empty.'
         });
       } else {
         Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){
@@ -203,8 +209,9 @@ router.post('/', upload.single('file'), function (req, res) {
               reason: 'Fields from Table Po could not be saved.'
             });
           } else {
-            //assign poId
+            //assign poId and Split Qty
             tempSub.poId = resNewPo.value._id;
+            tempSub.splitQty = resNewPo.value.qty;
             Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
               if (errNewSub || !resNewSub) {
                 resolve({

@@ -254,7 +254,7 @@ router.post('/', upload.single('file'), function (req, res) {
         case 'size':
         case 'sch':
         case 'qty':
-          if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 25){
+          if ((!_.isNull(value) && !_.isUndefined(value)) && ((!_.isNumber(value) && value.toString().Length > 25) || (_.isNumber(value) && Math.ceil(Math.log10(value + 1))> 25))){
             reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 25 characters.`});
           } else {
             resolve();

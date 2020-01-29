@@ -100,7 +100,7 @@ router.post('/', upload.single('file'), function (req, res) {
                     value = '0'
                   }
                   
-                  // colPromises.push(testLength(row, cell, key, value));
+                  colPromises.push(testLength(row, cell, key, value));
                   colPromises.push(testFormat(row, cell, type, value));
                   
                   switch (fromTbl) {
@@ -248,42 +248,43 @@ router.post('/', upload.single('file'), function (req, res) {
       }
     });
   }
+});
 
-//   function testLength(row, cell, key, value) {
-//     return new Promise (function (resolve, reject) {
-//       switch (key) {
-//         case 'rev':
-//         case 'size':
-//         case 'sch':
-//         case 'qty':
-//           if ((!_.isNull(value) && !_.isUndefined(value)) && ((!_.isNumber(value) && value.toString().Length > 25) || (_.isNumber(value) && Math.ceil(Math.log10(value + 1))> 25))){
-//             reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 25 characters.`});
-//           } else {
-//             resolve();
-//           } 
-//           break;
-//         case 'kind':
-//             if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 15){
-//               reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 15 characters.`});
-//             } else {
-//               resolve();
-//             } 
-//             break;
-//         case 'manufacturer':
-//         case 'manufOrigin':
-//         case 'destination':
-//         case 'vlSo':
-//             if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 50){
-//               reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 50 characters.`});
-//             } else {
-//               resolve();
-//             } 
-//             break;
-//         default: resolve();
-//       }
-//     });
-//   }
-// });
+  // function testLength(row, cell, key, value) {
+  //   return new Promise (function (resolve, reject) {
+  //     switch (key) {
+  //       case 'rev':
+  //       case 'size':
+  //       case 'sch':
+  //       case 'qty':
+  //         if ((!_.isNull(value) && !_.isUndefined(value)) && ((!_.isNumber(value) && value.toString().Length > 25) || (_.isNumber(value) && Math.ceil(Math.log10(value + 1))> 25))){
+  //           reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 25 characters.`});
+  //         } else {
+  //           resolve();
+  //         } 
+  //         break;
+  //       case 'kind':
+  //           if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 15){
+  //             reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 15 characters.`});
+  //           } else {
+  //             resolve();
+  //           } 
+  //           break;
+  //       case 'manufacturer':
+  //       case 'manufOrigin':
+  //       case 'destination':
+  //       case 'vlSo':
+  //           if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 50){
+  //             reject({row: row, reason: `Cell: ${cell} exceeds maxium length set to 50 characters.`});
+  //           } else {
+  //             resolve();
+  //           } 
+  //           break;
+  //       default: resolve();
+  //     }
+  //   });
+  // }
+
 
 function testFormat(row, cell, type, value) {
   return new Promise(function (resolve, reject) {

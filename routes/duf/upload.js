@@ -171,7 +171,6 @@ router.post('/', upload.single('file'), function (req, res) {
   }
 
   function upsert(projectId, row, tempPo, tempSub) {
-    // console.log('tempPo.clCode:', tempPo.clCode);
     return new Promise (function (resolve, reject) {
       let poQuery = {};
       

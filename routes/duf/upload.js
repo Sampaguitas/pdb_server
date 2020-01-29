@@ -100,7 +100,7 @@ router.post('/', upload.single('file'), function (req, res) {
                     value = '0'
                   }
                   
-                  colPromises.push(testLength(row, cell, key, value));
+                  // colPromises.push(testLength(row, cell, key, value));
                   colPromises.push(testFormat(row, cell, type, value));
                   
                   switch (fromTbl) {

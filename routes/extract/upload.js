@@ -25,20 +25,18 @@ router.post('/', upload.single('file'), function (req, res) {
     let rejections = [];
     let nProcessed = 0;
     let nRejected = 0;
-    let nAdded = 0;
     let nEdited = 0;
   
   if (!screenId || !projectId || !file) {
     res.status(400).json({
-      message: 'file screenId or projectId missing',
+      message: 'file, screenId or projectId missing',
       rejections: rejections,
       nProcessed: nProcessed,
       nRejected: nRejected,
-      nAdded: nAdded,
       nEdited: nEdited
     });
   } else {
-    FieldName.find({ screenId: screenId, projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
+    FieldName.find({ screenId: screenId, projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} }) //edited
     .populate('fields')
     .sort({forShow:'asc'})
     .exec(function (errFieldNames, resFieldNames) {
@@ -48,23 +46,21 @@ router.post('/', upload.single('file'), function (req, res) {
             rejections: rejections,
             nProcessed: nProcessed,
             nRejected: nRejected,
-            nAdded: nAdded,
             nEdited: nEdited
         });
       } else {
         var workbook = new Excel.Workbook();
-        workbook.xlsx.load(file.buffer).then(wb => {
+        workbook.xlsx.load(file.buffer).then(wb => { //edited
 
           var worksheet = wb.getWorksheet(1);
           let rowCount = worksheet.rowCount;
           
           if (rowCount < 2) {
             return res.status(400).json({
-              message: 'the Duf File seams to be empty',
+              message: 'the File seams to be empty',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
-              nAdded: nAdded,
               nEdited: nEdited
             });
           } else if (rowCount > 800) {
@@ -73,13 +69,12 @@ router.post('/', upload.single('file'), function (req, res) {
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
-              nAdded: nAdded,
               nEdited: nEdited
             });
           } else {
  
             (async function() {
-              for (let row = 2; row < rowCount + 1 ; row++) {
+              for (let row = 2; row < rowCount + 1 ; row++) { //edited
 
                 colPromises = [];
 
@@ -89,9 +84,12 @@ router.post('/', upload.single('file'), function (req, res) {
                 
                 //assign projectId
                 tempPo.projectId = projectId;
+                tempPo._id = worksheet.getCell('A' + row).value;
+                tempSub._id = worksheet.getCell('B' + row).value;
+                tempSub.poId = tempPo._id;
 
-                resFieldNames.map(resFieldName => {
-                  let cell = alphabet(resFieldName.forShow) + row;
+                resFieldNames.map((resFieldName, index) => {
+                  let cell = alphabet(index + 3) + row;
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
@@ -111,7 +109,7 @@ router.post('/', upload.single('file'), function (req, res) {
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(upsert(projectId, row, tempPo, tempSub));
+                  rowPromises.push(update(row, tempPo, tempSub));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
@@ -125,17 +123,14 @@ router.post('/', upload.single('file'), function (req, res) {
                   if (r.isRejected) {
                     rejections.push({row: r.row, reason: r.reason});
                     nRejected++;
-                  } else if(r.isEdited) {
-                    nEdited++;
                   } else {
-                    nAdded++;
+                    nEdited++;
                   }
                 });//end parse resRowPromise
                 return res.status(200).json({
                   rejections: rejections,
                   nProcessed: nProcessed,
                   nRejected: nRejected,
-                  nAdded: nAdded,
                   nEdited: nEdited
                 });
               }).catch( () => {
@@ -144,7 +139,6 @@ router.post('/', upload.single('file'), function (req, res) {
                   rejections: rejections,
                   nProcessed: nProcessed,
                   nRejected: nRejected,
-                  nAdded: nAdded,
                   nEdited: nEdited
                 });
               });//end rowPromise.all promise
@@ -157,7 +151,6 @@ router.post('/', upload.single('file'), function (req, res) {
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
-              nAdded: nAdded,
               nEdited: nEdited
           });
         });//end wb load promise
@@ -165,36 +158,9 @@ router.post('/', upload.single('file'), function (req, res) {
     })
   }
 
-  function upsert(projectId, row, tempPo, tempSub) {
+  function update(row, tempPo, tempSub) {
     return new Promise (function (resolve, reject) {
-      let poQuery = {};
-      
-      if (tempPo.vlSo && tempPo.vlSoItem) {
-        poQuery = {
-          projectId: projectId, 
-          vlSo: tempPo.vlSo, 
-          vlSoItem: tempPo.vlSoItem
-        };
-      } else {
-        poQuery = {
-          projectId: projectId,
-          clPo: tempPo.clPo,
-          clPoRev: tempPo.clPoRev,
-          clPoItem: tempPo.clPoItem,
-          clCode: tempPo.clCode
-        };
-      }
-
-      if ( (!tempPo.vlSo || !tempPo.vlSoItem) && (!tempPo.clPo || !tempPo.clPoRev || !tempPo.clPoItem || !tempPo.clCode) ) {
-        resolve({
-          row: row,
-          isRejected: true,
-          isEdited: false,
-          isAdded: false,
-          reason: 'Table PO should have a Client PO, Rev, Item Nr or VL SO and Item Nr.'
-        });
-      } else {
-        Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){
+        Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
           if (errNewPo || !resNewPo) {
             resolve({
               row: row,
@@ -204,9 +170,7 @@ router.post('/', upload.single('file'), function (req, res) {
               reason: 'Fields from Table Po could not be saved.'
             });
           } else {
-            //assign poId
-            tempSub.poId = resNewPo.value._id;
-            Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
+            Sub.findByIdAndUpdate(tempSub._id, tempSub, function(errNewSub, resNewSub) {
               if (errNewSub || !resNewSub) {
                 resolve({
                   row: row,
@@ -216,28 +180,17 @@ router.post('/', upload.single('file'), function (req, res) {
                   reason: 'Fields from Table Sub could not be saved.'
                 });
               } else {
-                if (resNewPo.lastErrorObject.updatedExisting) {
-                  resolve({
-                    row: row,
-                    isRejected: false,
-                    isEdited: true,
-                    isAdded: false,
-                    reason: ''
-                  });
-                } else {
-                  resolve({
-                    row: row,
-                    isRejected: false,
-                    isEdited: false,
-                    isAdded: true,
-                    reason: ''
-                  });
-                }
+                resolve({
+                  row: row,
+                  isRejected: false,
+                  isEdited: true,
+                  isAdded: false,
+                  reason: ''
+                });
               }
             });
           }
         });
-      }
     });
   }
 
@@ -308,36 +261,6 @@ function alphabet(num){
   }
   return s || undefined;
 }
-
-function resolve(path, obj) {
-    return path.split('.').reduce(function(prev, curr) {
-        return prev ? prev[curr] : null
-    }, obj || self)
-  }
-  
-  function arraySorted(array, fieldOne, fieldTwo, fieldThree) {
-    if (array) {
-        const newArray = array
-        newArray.sort(function(a,b){
-            if (resolve(fieldOne, a) < resolve(fieldOne, b)) {
-                return -1;
-            } else if (resolve(fieldOne, a) > resolve(fieldOne, b)) {
-                return 1;
-            } else if (fieldTwo && resolve(fieldTwo, a) < resolve(fieldTwo, b)) {
-                return -1;
-            } else if (fieldTwo && resolve(fieldTwo, a) > resolve(fieldTwo, b)) {
-                return 1;
-            } else if (fieldThree && resolve(fieldThree, a) < resolve(fieldThree, b)) {
-                return -1;
-            } else if (fieldThree && resolve(fieldThree, a) > resolve(fieldThree, b)) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-        return newArray;             
-    }
-  }
 
 module.exports = router;
 

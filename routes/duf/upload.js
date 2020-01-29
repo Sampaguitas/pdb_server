@@ -116,7 +116,9 @@ router.post('/', upload.single('file'), function (req, res) {
                 await Promise.all(colPromises).then( async () => {
                   rowPromises.push(upsert(projectId, row, tempPo, tempSub));
                 }).catch(errPromises => {
-                  rejections.push(errPromises)
+                  if(!_.isEmpty(errPromises)) {
+                    rejections.push(errPromises);
+                  }
                   nRejected++;
                 });//end colPromises.all promise
 
@@ -169,6 +171,7 @@ router.post('/', upload.single('file'), function (req, res) {
   }
 
   function upsert(projectId, row, tempPo, tempSub) {
+    // console.log('tempPo.clCode:', tempPo.clCode);
     return new Promise (function (resolve, reject) {
       let poQuery = {};
       
@@ -296,6 +299,15 @@ function testFormat(row, cell, type, value) {
       case 'Date':
         if((!_.isNull(value) && !_.isUndefined(value)) && !_.isDate(value)) {
           reject({row: row, reason: `Cell: ${cell} is not a Date.`});
+        } else {
+          resolve();
+        }
+        break;
+      case 'String':
+        if (_.isObject(value) && value.hasOwnProperty('hyperlink')) {
+          reject({row: row, reason: `Cell: ${cell} contains a Hyperlink`});
+        } else if (_.isObject(value)) {
+          reject({row: row, reason: `Cell: ${cell} contains invalid characters`});
         } else {
           resolve();
         }

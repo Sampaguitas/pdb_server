@@ -12,10 +12,13 @@ var _ = require('lodash');
 
 router.post('/', upload.single('file'), function (req, res) {
     
-    const screenId = req.query.screenId;
+    const screenId = req.body.screenId;
     const projectId = req.body.projectId;
     const file = req.file;
 
+    console.log('screenId:', screenId);
+    console.log('projectId:', projectId);
+    
     let colPromises = [];
     let rowPromises = [];
 
@@ -95,7 +98,6 @@ router.post('/', upload.single('file'), function (req, res) {
                   let key = resFieldName.fields.name;
                   let value = worksheet.getCell(cell).value;
                   
-                  colPromises.push(testLength(row, cell, key, value));
                   colPromises.push(testFormat(row, cell, type, value));
                   
                   switch (fromTbl) {
@@ -193,41 +195,6 @@ router.post('/', upload.single('file'), function (req, res) {
         });
     });
   }
-
-  function testLength(row, cell, key, value) {
-    return new Promise (function (resolve, reject) {
-      switch (key) {
-        case 'rev':
-        case 'size':
-        case 'sch':
-        case 'qty':
-          if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 25){
-            reject({row: row, reason: `cell ${cell} exceeds maxium length set to 25 characters`});
-          } else {
-            resolve();
-          } 
-          break;
-        case 'kind':
-            if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 15){
-              reject({row: row, reason: `cell ${cell} exceeds maxium length set to 15 characters`});
-            } else {
-              resolve();
-            } 
-            break;
-        case 'manufacturer':
-        case 'manufOrigin':
-        case 'destination':
-        case 'vlSo':
-            if ((!_.isNull(value) && !_.isUndefined(value)) && value.toString().Length > 50){
-              reject({row: row, reason: `cell ${cell} exceeds maxium length set to 50 characters`});
-            } else {
-              resolve();
-            } 
-            break;
-        default: resolve();
-      }
-    });
-  }
 });
 
 function testFormat(row, cell, type, value) {
@@ -235,14 +202,23 @@ function testFormat(row, cell, type, value) {
     switch (type){
       case 'Number':
         if ((!_.isNull(value) && !_.isUndefined(value)) && !_.isNumber(value)) {
-          reject({row: row, reason: `cell ${cell} is not a Number`});
+          reject({row: row, reason: `Cell: ${cell} is not a Number.`});
         } else {
           resolve();
         }
       break;
       case 'Date':
         if((!_.isNull(value) && !_.isUndefined(value)) && !_.isDate(value)) {
-          reject({row: row, reason: `cell ${cell} is not a Date`});
+          reject({row: row, reason: `Cell: ${cell} is not a Date.`});
+        } else {
+          resolve();
+        }
+        break;
+      case 'String':
+        if (_.isObject(value) && value.hasOwnProperty('hyperlink')) {
+          reject({row: row, reason: `Cell: ${cell} contains a Hyperlink`});
+        } else if (_.isObject(value)) {
+          reject({row: row, reason: `Cell: ${cell} contains invalid characters`});
         } else {
           resolve();
         }

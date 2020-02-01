@@ -134,7 +134,7 @@ function getRows (resProject, resFieldNames) {
   const arrayBody = [];
   // arrayBody.push(Array.from( {length: resFieldNames.length} , () => ''));
   arraySorted(resProject.pos, 'clPo', 'clPoRev', 'clPoItem').map(po => {
-    console.log('po._id:', po._id);
+    // console.log('po._id:', po._id);
     if (po.subs) {
       po.subs.map(sub => {
         let arrayRow = [];

@@ -239,7 +239,7 @@ function alphabet(num){
 
 function clean(value) {
   let DbQuotes = /^".*"$/
-  let sQuote = /^`.*$/
+  let sQuote = /^[`|'].*$/
   if(DbQuotes.test(value)){
     return value.slice(1,-1);
   } else if (sQuote.test(value)) {

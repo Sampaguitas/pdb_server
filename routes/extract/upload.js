@@ -15,9 +15,6 @@ router.post('/', upload.single('file'), function (req, res) {
     const screenId = req.body.screenId;
     const projectId = req.body.projectId;
     const file = req.file;
-
-    console.log('screenId:', screenId);
-    console.log('projectId:', projectId);
     
     let colPromises = [];
     let rowPromises = [];
@@ -32,7 +29,7 @@ router.post('/', upload.single('file'), function (req, res) {
   
   if (!screenId || !projectId || !file) {
     res.status(400).json({
-      message: 'file, screenId or projectId missing',
+      message: 'file, screenId or projectId is missing',
       rejections: rejections,
       nProcessed: nProcessed,
       nRejected: nRejected,
@@ -87,8 +84,9 @@ router.post('/', upload.single('file'), function (req, res) {
                 
                 //assign projectId
                 tempPo.projectId = projectId;
-                tempPo._id = worksheet.getCell('A' + row).value;
-                tempSub._id = worksheet.getCell('B' + row).value;
+                tempPo._id = clean(worksheet.getCell('A' + row).value);
+                // console.log('tempPo._id:', tempPo._id);
+                tempSub._id = clean(worksheet.getCell('B' + row).value);
                 tempSub.poId = tempPo._id;
 
                 resFieldNames.map((resFieldName, index) => {
@@ -96,7 +94,8 @@ router.post('/', upload.single('file'), function (req, res) {
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
-                  let value = worksheet.getCell(cell).value;
+                  let value = clean(worksheet.getCell(cell).value);
+                  // console.log(`cell: ${cell}, key: ${key}, value: ${value}`);
                   
                   colPromises.push(testFormat(row, cell, type, value));
                   
@@ -201,14 +200,14 @@ function testFormat(row, cell, type, value) {
   return new Promise(function (resolve, reject) {
     switch (type){
       case 'Number':
-        if ((!_.isNull(value) && !_.isUndefined(value)) && !_.isNumber(value)) {
+        if (!_.isEmpty(value) && !_.isNull(value) && !_.isUndefined(value) && !_.isNumber(value)) {
           reject({row: row, reason: `Cell: ${cell} is not a Number.`});
         } else {
           resolve();
         }
       break;
       case 'Date':
-        if((!_.isNull(value) && !_.isUndefined(value)) && !_.isDate(value)) {
+        if(!_.isEmpty(value) && !_.isNull(value) && !_.isUndefined(value) && !_.isDate(value)) {
           reject({row: row, reason: `Cell: ${cell} is not a Date.`});
         } else {
           resolve();
@@ -236,6 +235,18 @@ function alphabet(num){
     num = (num - t)/26 | 0;
   }
   return s || undefined;
+}
+
+function clean(value) {
+  let DbQuotes = /^".*"$/
+  let sQuote = /^`.*$/
+  if(DbQuotes.test(value)){
+    return value.slice(1,-1);
+  } else if (sQuote.test(value)) {
+    return value.substr(1)
+  } else {
+    return value
+  }
 }
 
 module.exports = router;

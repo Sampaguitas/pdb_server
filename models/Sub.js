@@ -223,6 +223,13 @@ SubSchema.virtual("certificates", {
     justOne: false
 });
 
+SubSchema.virtual("packitems", {
+    ref: "packitems",
+    localField: "_id",
+    foreignField: "subId",
+    justOne: false
+});
+
 SubSchema.virtual("po", {
     ref: "pos",
     localField: "poId",

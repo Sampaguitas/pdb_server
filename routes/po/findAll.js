@@ -5,11 +5,25 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     Po.find({projectId: req.query.projectId})
+    .sort({
+        clPo: 'asc',
+        clPoRev: 'asc',
+        clPoItem: 'asc'
+    })
     .populate({
-        path: 'subs',
-        // populate: {
-        //     path: 'certificates'
-        // }
+        path:'subs',
+        populate: {
+            path: 'certificates'
+        },
+        populate: {
+            path: 'packitems',
+            options: {
+                sort: { 
+                    'plNr': 'asc',
+                    'colliNr': 'asc'
+                }
+            }
+        }
     })
     .exec(function (err, po) {
         if (!po) {

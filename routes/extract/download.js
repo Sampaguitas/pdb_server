@@ -6,6 +6,7 @@ const Project = require('../../models/Project');
 const Po = require('../../models/Po');
 var Excel = require('exceljs');
 fs = require('fs');
+const _ = require('lodash');
 
   //expediting: poId and subId
   //inspection,  release data: poId, subId, _id (from certificate)
@@ -67,16 +68,16 @@ router.get('/', function (req, res) {
                     } else {
                         var workbook = new Excel.Workbook();
                         var worksheet = workbook.addWorksheet('My Sheet');
-                        // console.log('resPos:', resPos);
+                        var hasPackitems = getScreenTbls(resFieldNames).includes('packitem')
                         worksheet.addTable({
                             name: 'MyTable',
                             ref: 'A1',
                             headerRow: true,
                             totalsRow: false,
                             columns: getColumns(resFieldNames),
-                            rows: getRows(resPos, resFieldNames)
+                            rows: getRows(resPos, resFieldNames, hasPackitems)
                         });
-                        for (var i = 1; i < resFieldNames.length + 3; i++) {
+                        for (var i = 1; i < resFieldNames.length + 5; i++) {
                             let cell = worksheet.getCell(`${alphabet(i) + 1}`);
                             with (cell) {
                               style = Object.create(cell.style), //shallow-clone the style, break references
@@ -115,14 +116,7 @@ router.get('/', function (req, res) {
 //     }
 // }
 
-function getScreenTables (resFieldNames) {
-    return resFieldNames.reduce(function (accumulator, currentValue) {
-        if(!accumulator.includes(currentValue.fields.fromTbl)) {
-            accumulator.push(currentValue.fields.fromTbl)
-        }
-        return accumulator;
-    },[]);
-}
+
 
 function getColumns(resFieldNames) {
     const arr = [];
@@ -141,8 +135,41 @@ function getColumns(resFieldNames) {
             horizontal: 'left'
           }
         }
-      },{
+      },
+      {
         name: 'SUB ID',
+        filterButton: true,
+        style: {
+          border: {
+            top: {style:'thin'},
+            left: {style:'thin'},
+            bottom: {style:'thin'},
+            right: {style:'thin'}
+          },
+          alignment: {
+            vertical: 'middle',
+            horizontal: 'left'
+          }
+        }
+      },
+      {
+        name: 'PackItem ID',
+        filterButton: true,
+        style: {
+          border: {
+            top: {style:'thin'},
+            left: {style:'thin'},
+            bottom: {style:'thin'},
+            right: {style:'thin'}
+          },
+          alignment: {
+            vertical: 'middle',
+            horizontal: 'left'
+          }
+        }
+      },
+      {
+        name: 'ColliPack ID',
         filterButton: true,
         style: {
           border: {
@@ -178,42 +205,77 @@ function getColumns(resFieldNames) {
     return arr;
   }
 
-function getRows (resPos, resFieldNames) {
+function getRows (resPos, resFieldNames, hasPackitems) {
     let arrayBody = [];
     let arrayRow = [];
-    // if (resPos.pos) {
-        resPos.map(po => {
-            if (po.subs) {
-                po.subs.map(sub => {
-                    arrayRow = [];
-                    console.log('po._id:', po._id);
-                    arrayRow.push(po._id);
-                    arrayRow.push(sub._id);
-                    resFieldNames.map(fieldname => {
-                        if(!fieldname) {
-                            arrayRow.push('');
-                        } else {
-                            switch(fieldname.fields.fromTbl) {
-                                case 'po':
-                                    arrayRow.push(getValue(fieldname.fields.name, po));
-                                    break;
-                                case 'sub':
-                                    arrayRow.push(getValue(fieldname.fields.name, sub));
-                                    break;
-                                default: arrayRow.push('');
-                            }
+    resPos.map(po => {
+        if (po.subs) {
+            po.subs.map(sub => {
+              if (!_.isEmpty(sub.packitems) && hasPackitems) { //
+                sub.packitems.map(packitem => {
+                  arrayRow = [];
+                  arrayRow.push(po._id, sub._id, packitem._id, ''); //poId, subId, packItemId, colliPackId
+                  resFieldNames.map(fieldname => {
+                    if(!fieldname) {
+                      arrayRow.push('');
+                    } else {
+                        switch(fieldname.fields.fromTbl) {
+                            case 'po':
+                                arrayRow.push(getValue(fieldname.fields.name, po));
+                                break;
+                            case 'sub':
+                                arrayRow.push(getValue(fieldname.fields.name, sub));
+                                break;
+                            case 'packitem':
+                                arrayRow.push(getValue(fieldname.fields.name, packitem));
+                                break;
+                            default: arrayRow.push('');
                         }
-                    });
-                    arrayBody.push(arrayRow);
+                    }
+                  });
+                  arrayBody.push(arrayRow);
                 });
-            }
-        });
-    // } 
+              } else {
+                arrayRow = [];
+                arrayRow.push(po._id, sub._id, '', ''); //poId, subId, packItemId, colliPackId
+                resFieldNames.map(fieldname => {
+                  if(!fieldname) {
+                      arrayRow.push('');
+                  } else {
+                      switch(fieldname.fields.fromTbl) {
+                          case 'po':
+                              arrayRow.push(getValue(fieldname.fields.name, po));
+                              break;
+                          case 'sub':
+                              arrayRow.push(getValue(fieldname.fields.name, sub));
+                              break;
+                          default: arrayRow.push('');
+                      }
+                  }
+                });
+                arrayBody.push(arrayRow);
+              }
+            });
+        }
+    });
     return arrayBody;
 }
 
+function getScreenTbls (resFieldNames) {
+  return resFieldNames.reduce(function (accumulator, currentValue) {
+      if(!accumulator.includes(currentValue.fields.fromTbl)) {
+          accumulator.push(currentValue.fields.fromTbl)
+      }
+      return accumulator;
+  },[]);
+}
+
 function getValue(key, object) {
+  if (key === undefined) {
+    return '';
+  } else {
     return object[key] === undefined ? '' : object[key]
+  } 
 }
 
 function alphabet(num){

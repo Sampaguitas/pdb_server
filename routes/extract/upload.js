@@ -21,6 +21,7 @@ router.post('/', upload.single('file'), function (req, res) {
 
     let tempPo = {};
     let tempSub = {};
+    let tempPackItem = {};
   
     let rejections = [];
     let nProcessed = 0;
@@ -49,9 +50,10 @@ router.post('/', upload.single('file'), function (req, res) {
             nEdited: nEdited
         });
       } else {
+        var hasPackitems = getScreenTbls(resFieldNames).includes('packitem');
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => { //edited
-
+        
           var worksheet = wb.getWorksheet(1);
           let rowCount = worksheet.rowCount;
           
@@ -81,16 +83,23 @@ router.post('/', upload.single('file'), function (req, res) {
                 //initialise objects
                 for (var member in tempPo) delete tempPo[member];
                 for (var member in tempSub) delete tempSub[member];
+                for (var member in tempPackItem) delete tempPackItem[member];
                 
-                //assign projectId
+                //assign Po Ids
                 tempPo.projectId = projectId;
                 tempPo._id = clean(worksheet.getCell('A' + row).value);
-                // console.log('tempPo._id:', tempPo._id);
+                //assign Sub Ids
                 tempSub._id = clean(worksheet.getCell('B' + row).value);
                 tempSub.poId = tempPo._id;
+                //assign PackItem Ids
+                tempPackItem._id = clean(worksheet.getCell('C' + row).value);
+                tempPackItem.packId = clean(worksheet.getCell('D' + row).value);
+                tempPackItem.subId = tempSub._id;
+
+
 
                 resFieldNames.map((resFieldName, index) => {
-                  let cell = alphabet(index + 3) + row;
+                  let cell = alphabet(index + 5) + row;
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
@@ -106,11 +115,14 @@ router.post('/', upload.single('file'), function (req, res) {
                     case 'sub':
                       tempSub[key] = value;
                       break;
+                    case 'packitem':
+                      tempPackItem[key] = value;
+                      break;
                   }
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(update(row, tempPo, tempSub));
+                  rowPromises.push(update(row, tempPo, tempSub, tempPackItem, hasPackitems));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
@@ -159,7 +171,7 @@ router.post('/', upload.single('file'), function (req, res) {
     })
   }
 
-  function update(row, tempPo, tempSub) {
+  function update(row, tempPo, tempSub, tempPackItem, hasPackitems) {
     return new Promise (function (resolve, reject) {
         Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
           if (errNewPo || !resNewPo) {
@@ -179,6 +191,26 @@ router.post('/', upload.single('file'), function (req, res) {
                   isEdited: false,
                   isAdded: false,
                   reason: 'Fields from Table Sub could not be saved.'
+                });
+              } else if (hasPackitems && tempPackItem._id){
+                PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
+                  if (errNewPackItem || !resNewPackItem) {
+                    resolve({
+                      row: row,
+                      isRejected: true,
+                      isEdited: false,
+                      isAdded: false,
+                      reason: 'Fields from Table PackItem could not be saved.'
+                    });
+                  } else {
+                    resolve({
+                      row: row,
+                      isRejected: false,
+                      isEdited: true,
+                      isAdded: false,
+                      reason: ''
+                    });
+                  }
                 });
               } else {
                 resolve({
@@ -235,6 +267,15 @@ function alphabet(num){
     num = (num - t)/26 | 0;
   }
   return s || undefined;
+}
+
+function getScreenTbls (resFieldNames) {
+  return resFieldNames.reduce(function (accumulator, currentValue) {
+      if(!accumulator.includes(currentValue.fields.fromTbl)) {
+          accumulator.push(currentValue.fields.fromTbl)
+      }
+      return accumulator;
+  },[]);
 }
 
 function clean(value) {

@@ -66,9 +66,10 @@ router.get('/', function (req, res) {
                             message: 'it seems that your project is empty'
                         });
                     } else {
+                      var hasPackitems = getScreenTbls(resFieldNames).includes('packitem');
                         var workbook = new Excel.Workbook();
                         var worksheet = workbook.addWorksheet('My Sheet');
-                        var hasPackitems = getScreenTbls(resFieldNames).includes('packitem')
+                        
                         worksheet.addTable({
                             name: 'MyTable',
                             ref: 'A1',

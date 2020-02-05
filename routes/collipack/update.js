@@ -14,13 +14,13 @@ router.put('/', (req, res) => {
     ColliPack.findByIdAndUpdate(id, { $set: data }, function (err, collipack) {
         if (!collipack) {
             return res.status(400).json({
-                message: fault(0201).message
+                message: 'ColliPack does not exist'
                 //"0201": "ColliPack does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(0202).message
+                message: 'ColliPack has been updated'
                 //"0202": "ColliPack has been updated",,
             });
         }

@@ -7,27 +7,23 @@ router.put('/', (req, res) => {
     var data = {};
     Object.keys(req.body).forEach(function (k) {
         if (req.body[k] == true || req.body[k] == false) {
-            console.log('true or false');
             data[k] = req.body[k];
         } else {
-            console.log('not true and not false');
             data[k] = decodeURI(req.body[k]);
         }
     });
-    console.log('data:', data);
     const id = req.query.id
     FieldName.findByIdAndUpdate(id, { $set: data }, function (err, fieldname) {
         if (!fieldname) {
-            console.log("no field name");
             return res.status(400).json({
-                message: fault(0801).message
+                message: 'FieldName does not exist'
                 //"0801": "FieldName does not exist",
             });
         }
         else {
             console.log("fieldname:", fieldname);
             return res.status(200).json({
-                message: fault(0802).message
+                message: 'FieldName has been updated'
                 //"0802": "FieldName has been updated",
             });
         }

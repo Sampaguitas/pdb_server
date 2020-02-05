@@ -8,13 +8,13 @@ router.delete('/', (req, res) => {
     Currency.findByIdAndRemove(id, function (err, currency) {
         if (!currency) {
             return res.status(400).json({
-                message: fault(2201).message
+                message: 'Curreny does not exist'
                 //"2201": "Curreny does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(2203).message,
+                message: 'Curreny has been deleted'
                 //"2203": "Curreny has been deleted",
             });
         }

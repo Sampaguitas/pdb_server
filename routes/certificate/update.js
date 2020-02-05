@@ -14,13 +14,13 @@ router.put('/', (req, res) => {
     Certificate.findByIdAndUpdate(id, { $set: data }, function (err, certificate) {
         if (!certificate) {
             return res.status(400).json({
-                message: fault(1901).message
+                message: 'Certificate does not exist'
                 //"1901": "Certificate does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(1902).message
+                message: 'Certificate has been updated'
                 //"1902": "Certificate has been updated",
             });
         }

@@ -8,13 +8,13 @@ router.delete('/', (req, res) => {
     Access.findByIdAndRemove(id, function (err, access) {
         if (!access) {
             return res.status(400).json({
-                message: fault(2101).message
+                message: 'Access does not exist'
                 //"2101": "Access does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(2103).message,
+                message: 'Access has been deleted',
                 //"2103": "Access has been deleted",
             });
         }

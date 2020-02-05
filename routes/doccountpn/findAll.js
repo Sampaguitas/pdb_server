@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     DocCountPn.find(data, function (err, doccountpn) {
         if (!doccountpn) {
             return res.status(400).json({
-                message: fault(1804).message
+                message: 'No DocCountPn match'
                 //"1804": "No DocCountPn match",
             });
         }

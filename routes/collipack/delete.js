@@ -9,13 +9,13 @@ router.delete('/', (req, res) => {
     ColliPack.findByIdAndRemove(id, function (err, collipack) {
         if (!collipack) {
             return res.status(400).json({
-                message: fault(0201).message
+                message: 'ColliPack does not exist'
                 //"0201": "ColliPack does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(0203).message,
+                message: 'ColliPack has been deleted',
                 //"0203": "ColliPack has been deleted",
             });
         }

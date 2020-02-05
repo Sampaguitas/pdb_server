@@ -12,13 +12,13 @@ router.put('/', (req, res) => {
     Counter.findByIdAndUpdate(id, { $set: data }, function (err, counter) {
         if (!counter) {
             return res.status(400).json({
-                message: fault(1801).message
+                message: 'Counter does not exist'
                 //"1801": "Counter does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(1802).message
+                message: 'Counter has been updated'
                 //"1802": "Counter has been updated",
             });
         }

@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     ColliType.findById(id, function (err, collitype) {
         if (!collitype) {
             return res.status(404).json({
-                message: fault(0301).message
+                message: 'ColliType does not exist'
                 //"0301": "ColliType does not exist",
             });
         }

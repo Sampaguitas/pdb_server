@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     DocCountPf.find(data, function (err, doccountpf) {
         if (!doccountpf) {
             return res.status(400).json({
-                message: fault(1804).message
+                message: 'No DocCountPf match'
                 //"1804": "No DocCountPf match",
             });
         }

@@ -7,7 +7,7 @@ router.post('/', (req, res) => {
     Currency.findOne({ name: req.body.name }).then(currency => {
         if (currency) {
             return res.status(400).json({
-                message: fault(2200).message
+                message: 'Curreny already exists'
                 //"2200": "Curreny already exists",
             });
         } else {

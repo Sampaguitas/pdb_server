@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     Access.find({projectId: req.query.projectId}, function (err, access) {
         if (!access) {
             return res.status(400).json({
-                message: fault(2104).message
+                message: 'No Access match'
                 //"2104": "No Access match",
             });
         }

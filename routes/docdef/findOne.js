@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     DocDef.findById(id, function (err, docdef) {
         if (!docdef) {
             return res.status(404).json({
-                message: fault(0401).message
+                message: 'DocDef does not exist'
                 //"0401": "DocDef does not exist",
             });
         }

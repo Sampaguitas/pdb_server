@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     Certificate.findById(id, function (err, certificate) {
         if (!certificate) {
             return res.status(404).json({
-                message: fault(1901).message
+                message: 'Certificate does not exist'
                 //"1901": "Certificate does not exist",
             });
         }

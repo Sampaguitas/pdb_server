@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     DocCountNfi.findById(id, function (err, doccountnfi) {
             if (!doccountnfi) {
                 return res.status(400).json({
-                    message: fault(1801).message
+                    message: 'DocCountNfi does not exist'
                     //"1801": "DocCountNfi does not exist",
                 });
             }

@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     Counter.findById(id, function (err, counter) {
             if (!counter) {
                 return res.status(400).json({
-                    message: fault(1801).message
+                    message: 'Counter does not exist'
                     //"1801": "Counter does not exist",
                 });
             }

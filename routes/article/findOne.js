@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     Article.findById(id, function (err, article) {
         if (!article) {
             return res.status(404).json({
-                message: fault(0101).message
+                message: 'Article does not exist'
                 //"0101": "Article does not exist",
             });
         }

@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     DocCountInspect.findById(id, function (err, doccountinspect) {
             if (!doccountinspect) {
                 return res.status(400).json({
-                    message: fault(1801).message
+                    message: 'DocCountInspect does not exist'
                     //"1801": "DocCountInspect does not exist",
                 });
             }

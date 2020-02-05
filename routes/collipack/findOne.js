@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     ColliPack.findById(id, function (err, collipack) {
         if (!collipack) {
             return res.status(404).json({
-                message: fault(0201).message
+                message: 'ColliPack does not exist'
                 //"0201": "ColliPack does not exist",
             });
         }

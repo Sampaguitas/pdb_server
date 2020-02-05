@@ -15,7 +15,7 @@ router.delete('/', (req, res) => {
             });            
         } else if (!docdef) {
             return res.status(400).json({
-                message: fault(0401).message
+                message: 'DocDef does not exist'
                 //"0401": "DocDef does not exist",
             });
         }
@@ -40,7 +40,7 @@ router.delete('/', (req, res) => {
                         }); 
                     } else if (!project) {
                         return res.status(400).json({
-                            message: fault(1301).message
+                            message: 'Project does not exist'
                             //"1301": "Project does not exist",
                         });
                     } else {

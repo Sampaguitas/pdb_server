@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     Certificate.find(data, function (err, certificate) {
         if (!certificate) {
             return res.status(400).json({
-                message: fault(1904).message
+                message: 'No Certificate match'
                 //"1904": "No Certificate match",
             });
         }

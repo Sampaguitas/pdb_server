@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     DocCountPf.findById(id, function (err, doccountpf) {
             if (!doccountpf) {
                 return res.status(400).json({
-                    message: fault(1801).message
+                    message: 'DocCountPf does not exist'
                     //"1801": "DocCountPf does not exist",
                 });
             }

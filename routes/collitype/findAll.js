@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     ColliType.find({projectId: req.query.projectId}, function (err, collitype) {
         if (!collitype) {
             return res.status(400).json({
-                message: fault(0304).message
+                message: 'No ColliType match'
                 //"0304": "No ColliType match",
             });
         }

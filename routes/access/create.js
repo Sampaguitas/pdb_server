@@ -10,7 +10,7 @@ router.post('/', (req, res) => {
     }).then(access => {
         if (access) {
             return res.status(400).json({
-                message: fault(2100).message
+                message: 'Access already exists'
                 //"2100": "Access already exists",
             });
         } else {

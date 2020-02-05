@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     Currency.findById(id, function (err, currency) {
         if (!currency) {
             return res.status(404).json({
-                message: fault(2201).message
+                message: 'Curreny does not exist'
                 //"2201": "Curreny does not exist",
             });
         }

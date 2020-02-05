@@ -16,13 +16,13 @@ router.put('/', (req, res) => {
     DocDef.findByIdAndUpdate(id, { $set: data }, function (err, docdef) {
         if (!docdef) {
             return res.status(400).json({
-                message: fault(0401).message
+                message: 'DocDef does not exist'
                 //"0401": "DocDef does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(0402).message
+                message: 'DocDef has been updated'
                 //"0402": "DocDef has been updated",
             });
         }

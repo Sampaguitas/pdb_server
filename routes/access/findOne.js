@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     Access.findById(id, function (err, access) {
         if (!access) {
             return res.status(404).json({
-                message: fault(2101).message
+                message: 'Access does not exist'
                 //"2101": "Access does not exist",
             });
         }

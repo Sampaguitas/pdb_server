@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     DocCountSm.find(data, function (err, doccountsm) {
         if (!doccountsm) {
             return res.status(400).json({
-                message: fault(1804).message
+                message: 'No DocCountSm match'
                 //"1804": "No DocCountSm match",
             });
         }

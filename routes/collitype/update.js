@@ -14,13 +14,13 @@ router.put('/', (req, res) => {
     ColliType.findByIdAndUpdate(id, { $set: data }, function (err, collitype) {
         if (!collitype) {
             return res.status(400).json({
-                message: fault(0301).message
+                message: 'ColliType does not exist'
                 //"0301": "ColliType does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(0302).message
+                message: 'ColliType has been updated'
                 //"0302": "ColliType has been updated",
             });
         }

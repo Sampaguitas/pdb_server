@@ -8,13 +8,13 @@ router.delete('/', (req, res) => {
     DocCountInsprel.findByIdAndRemove(id, function (err, doccountinsprel) {
         if (!doccountinsprel) {
             return res.status(400).json({
-                message: fault(1801).message
+                message: 'DocCountInsprel does not exist'
                 //"1801": "DocCountInsprel does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(1803).message
+                message: 'DocCountInsprel has been deleted'
                 //"1803": "DocCountInsprel has been deleted",
             });
         }

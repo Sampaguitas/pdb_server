@@ -9,13 +9,13 @@ router.delete('/', (req, res) => {
     Article.findByIdAndRemove(id, function (err, article) {
         if (!article) {
             return res.status(400).json({
-                message: fault(0101).message
+                message: 'Article does not exist'
                 //"0101": "Article does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(0103).message,
+                message: 'Article has been deleted',
                 //"0103": "Article has been deleted",
             });
         }

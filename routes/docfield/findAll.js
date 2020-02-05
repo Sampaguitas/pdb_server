@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     .exec(function (err, docfield) {
         if (!docfield) {
             return res.status(400).json({
-                message: fault(2604).message
+                message: 'No DocField match'
                 //"2604": "No DocField match",
             });
         }

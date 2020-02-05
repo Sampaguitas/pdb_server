@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     DocField.findById(id, function (err, docfield) {
         if (!docfield) {
             return res.status(404).json({
-                message: fault(2601).message
+                message: 'DocField does not exist'
                 //"2601": "DocField does not exist",
             });
         }

@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     Currency.find(data, function (err, currency) {
         if (!currency) {
             return res.status(400).json({
-                message: fault(2204).message
+                message: 'No Curreny match'
                 //"2204": "No Curreny match",
             });
         }

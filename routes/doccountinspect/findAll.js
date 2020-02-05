@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     DocCountInspect.find(data, function (err, doccountinspect) {
         if (!doccountinspect) {
             return res.status(400).json({
-                message: fault(1804).message
+                message: 'No DocCountInspect match'
                 //"1804": "No DocCountInspect match",
             });
         }

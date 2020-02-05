@@ -8,13 +8,13 @@ router.delete('/', (req, res) => {
     DocCountEsr.findByIdAndRemove(id, function (err, doccountesr) {
         if (!doccountesr) {
             return res.status(400).json({
-                message: fault(1801).message
+                message: 'DocCountEsr does not exist'
                 //"1801": "DocCountEsr does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(1803).message
+                message: 'DocCountEsr has been deleted'
                 //"1803": "DocCountEsr has been deleted",
             });
         }

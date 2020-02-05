@@ -12,13 +12,13 @@ router.put('/', (req, res) => {
     DocCountPl.findByIdAndUpdate(id, { $set: data }, function (err, doccountpl) {
         if (!doccountpl) {
             return res.status(400).json({
-                message: fault(1801).message
+                message: 'DocCountPl does not exist'
                 //"1801": "DocCountPl does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(1802).message
+                message: 'DocCountPl has been updated'
                 //"1802": "DocCountPl has been updated",
             });
         }

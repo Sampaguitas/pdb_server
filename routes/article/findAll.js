@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     Article.find(data, function (err, article) {
         if (!article) {
             return res.status(400).json({
-                message: fault(0104).message
+                message: 'No Article match'
                 //"0104": "No Article match",
             });
         }

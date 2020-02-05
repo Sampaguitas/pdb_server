@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
     DocDef.find({projectId: req.query.projectId}, function (err, docdef) {
         if (!docdef) {
             return res.status(400).json({
-                message: fault(0404).message
+                message: 'No DocDef match'
                 //"0404": "No DocDef match",
             });
         }

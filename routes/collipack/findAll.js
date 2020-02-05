@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     ColliPack.find(data, function (err, collipack) {
         if (!collipack) {
             return res.status(400).json({
-                message: fault(0204).message
+                message: 'No ColliPack match'
                 //"0204": "No ColliPack match",
             });
         }

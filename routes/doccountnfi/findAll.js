@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     DocCountNfi.find(data, function (err, doccountnfi) {
         if (!doccountnfi) {
             return res.status(400).json({
-                message: fault(1804).message
+                message: 'No DocCountNfi match'
                 //"1804": "No DocCountNfi match",
             });
         }

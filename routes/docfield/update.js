@@ -14,13 +14,13 @@ router.put('/', (req, res) => {
     DocField.findByIdAndUpdate(id, { $set: data }, function (err, docfield) {
         if (!docfield) {
             return res.status(400).json({
-                message: fault(2601).message
+                message: 'DocField does not exist'
                 //"2601": "DocField does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(2602).message
+                message: 'DocField has been updated'
                 //"2602": "DocField has been updated",
             });
         }

@@ -14,13 +14,13 @@ router.put('/', (req, res) => {
     Article.findByIdAndUpdate(id, { $set: data }, function (err, article) {
         if (!article) {
             return res.status(400).json({
-                message: fault(0101).message
+                message: 'Article does not exist'
                 //"0101": "Article does not exist",
             });
         }
         else {
             return res.status(200).json({
-                message: fault(0102).message
+                message: 'Article has been updated'
                 //"0102": "Article has been updated",
             });
         }

@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     DocCountEsr.findById(id, function (err, doccountesr) {
             if (!doccountesr) {
                 return res.status(400).json({
-                    message: fault(1801).message
+                    message: 'DocCountEsr does not exist'
                     //"1801": "DocCountEsr does not exist",
                 });
             }

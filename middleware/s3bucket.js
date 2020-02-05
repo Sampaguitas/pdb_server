@@ -22,9 +22,9 @@ function deleteFile (file, project) {
   return new Promise(
     function (resolve, reject) {
       if (!project) {
-        reject(fault(2400).message); //"2400": "No Project selected",
+        reject('No Project selected'); //"2400": "No Project selected",
       } else if (!file) {
-        reject(fault(2401).message); //"2401": "No file selected",
+        reject('No file selected'); //"2401": "No file selected",
       } else {
         var s3 = new aws.S3();
         var params = {
@@ -33,9 +33,9 @@ function deleteFile (file, project) {
         };
         s3.deleteObject(params, function(err, data) {
           if (err) {
-            reject(fault(2405).message); //"2405": "An error occurred",        
+            reject('An error occurred'); //"2405": "An error occurred",        
           } else {
-            resolve(fault(2403).message); //"2403": "Template has been deleted",
+            resolve('Template has been deleted'); //"2403": "Template has been deleted",
           }
         });
       }
@@ -47,7 +47,7 @@ function deleteProject(project) {
   return new Promise(
     function (resolve, reject) {
       if (!project) {
-        reject(fault(2400).message); //"2400": "No Project selected",
+        reject('No Project selected'); //"2400": "No Project selected",
       } else {
         var s3 = new aws.S3();
         var listParams = {
@@ -56,14 +56,14 @@ function deleteProject(project) {
         };
         s3.listObjectsV2(listParams, function(err, listData) {
           if (err) {
-            reject(fault(2405).message); //"2405": "An error occurred",
+            reject('An error occurred'); //"2405": "An error occurred",
           } else if (listData.Contents) {
             var candidate = [];
             listData.Contents.map(a => {
               candidate.push({ Key: a.Key });
             });
             if (_.isEmpty(candidate)) {
-              resolve(fault(2406).message); //"2406": "The Project folder is already empty",
+              resolve('The Project folder is already empty'); //"2406": "The Project folder is already empty",
             } else {
               var deleteParams = {
                 Bucket: awsBucketName,
@@ -74,14 +74,14 @@ function deleteProject(project) {
               };
               s3.deleteObjects(deleteParams, function(err, deleteData) {
                 if (err) {
-                  reject(fault(2405).message); //"2405": "An error occurred",
+                  reject('An error occurred'); //"2405": "An error occurred",
                 } else {
-                  resolve(fault(2405).message); //"2404": "Project folder has been deleted",
+                  resolve('Project folder has been deleted'); //"2404": "Project folder has been deleted",
                 }
               });
             }
           } else {
-            reject(fault(2405).message); //"2405": "An error occurred",
+            reject('An error occurred'); //"2405": "An error occurred",
           }
         });
       }
@@ -118,7 +118,7 @@ function duplicateProject(oldProject, newProject) {
   return new Promise(
     function (resolve, reject) {
       if (!oldProject || !newProject) {
-        reject(fault(2400).message); //"2400": "No Project selected",
+        reject('No Project selected'); //"2400": "No Project selected",
       } else {
         var s3 = new aws.S3();
         var listParams = {
@@ -127,9 +127,9 @@ function duplicateProject(oldProject, newProject) {
         };
         s3.listObjectsV2(listParams, function(err, listData) {
           if (err) {
-            reject(fault(2405).message); //"2405": "An error occurred",           
+            reject('An error occurred'); //"2405": "An error occurred",           
           } else if (_.isEmpty(listData.Contents)) {
-            reject(fault(2405).message); //"2405": "An error occurred",         
+            reject('An error occurred'); //"2405": "An error occurred",         
           } else {
             listData.Contents.map(a => {
               var copyParams = {
@@ -139,9 +139,9 @@ function duplicateProject(oldProject, newProject) {
               };
               s3.copyObject(copyParams, function(err) {
                 if (err) {
-                  reject(fault(2405).message); //"2405": "An error occurred",
+                  reject('An error occurred'); //"2405": "An error occurred",
                 } else {
-                  resolve(fault(2407).message); //"2407": "Templates have been copied to the new Project"
+                  resolve('Templates have been copied to the new Project'); //"2407": "Templates have been copied to the new Project"
                 }                     
               });
             });
@@ -156,7 +156,7 @@ function findAll(req, res) {
   const project = req.body.project;
   if (!project) {
     return res.status(400).json({
-      message: fault(2400).message
+      message: 'No Project selected'
       //"2400": "No Project selected",
     });      
   } else {
@@ -168,7 +168,7 @@ function findAll(req, res) {
     s3.listObjectsV2(params, function(err, data) {
       if (err) {
         return res.status(400).json({
-          message: fault(2405).message
+          message: 'An error occurred'
           //"2405": "An error occurred",
         });              
       } else {
@@ -182,9 +182,9 @@ function uploadFile(file, project) {
   return new Promise(
     function (resolve, reject) {
       if (!project){
-        reject(fault(2400).message); //"2400": "No Project selected",
+        reject('No Project selected'); //"2400": "No Project selected",
       } else if (!file) {
-        reject(fault(2401).message); //"2401": "No file selected",
+        reject('No file selected'); //"2401": "No file selected",
       } else {
         var s3 = new aws.S3();
         var params = {
@@ -194,7 +194,7 @@ function uploadFile(file, project) {
         }; 
         s3.upload(params, function(err, data) {
           if (err) {
-            reject(fault(2405).message); //"2405": "An error occurred",
+            reject('An error occurred'); //"2405": "An error occurred",
           } else {
             resolve(data);
           }      

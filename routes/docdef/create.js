@@ -62,10 +62,8 @@ router.post('/', async (req, res) => {
             newDocDef
                 .save()
                 .then(docdef => {
-                    console.log(docdef),
                     res.json(docdef);
                 }).catch(err => {
-                    console.log(err),
                     res.json(err)
                 });
         }).catch(err => res.status(400).json({message: "an error occured"}))

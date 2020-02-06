@@ -5,17 +5,18 @@ const fault = require('../../utilities/Errors');
 
 router.delete('/', async (req, res) => {
     const parsedId = JSON.parse(req.query.id);
-    await parsedId.map(id => {
-        DocField.findByIdAndRemove({_id: String(id)}, function(err, fn){
-            if (fn) {
-                console.log('DocField deleted');   
-            }
-            if(err) {
-                return res.status(400).json({message: 'DocField does not exist'}); //"2601": "DocField does not exist",
+    
+    if (_.isEmpty(parsedId)) {
+        return res.status(400).json({message: 'You need to pass an Id'});
+    } else {
+        DocField.deleteMany({_id: { $in: parsedId } }, function (err) {
+            if (err) {
+                return res.status(400).json({message: 'An error has occured'});
+            } else {
+                return res.status(200).json({message: 'Done'});
             }
         });
-    });
-    return res.status(200).json({message: 'DocField has been deleted'}); //"2603": "DocField has been deleted",
+    }
 });
 
 module.exports = router;

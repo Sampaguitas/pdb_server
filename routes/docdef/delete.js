@@ -9,15 +9,9 @@ router.delete('/', (req, res) => {
     const id = req.query.id
     DocDef.findByIdAndRemove(id, function (err, docdef) {
         if (err) {
-            return res.status(400).json({
-                message: err
-                //An error occured",
-            });            
+            return res.status(400).json({message: 'An error occured'});            
         } else if (!docdef) {
-            return res.status(400).json({
-                message: 'DocDef does not exist'
-                //"0401": "DocDef does not exist",
-            });
+            return res.status(400).json({message: 'DocDef does not exist'});
         }
         else {
             DocField.find({docdefId: docdef._id}).then(dfls => {
@@ -34,22 +28,18 @@ router.delete('/', (req, res) => {
                 });
                 Project.find({_id: docdef.projectId}, function (err, project) {
                     if(err) {
-                        return res.status(400).json({
-                            message: err
-                            //An error occured",
-                        }); 
+                        return res.status(400).json({message: 'An error occured'}); 
                     } else if (!project) {
-                        return res.status(400).json({
-                            message: 'Project does not exist'
-                            //"1301": "Project does not exist",
-                        });
+                        return res.status(400).json({message: 'Project does not exist'});
                     } else {
                         s3bucket.deleteFile(docdef.field, String(project.number))
                         .then(fulfilled => res.status(200).json({ message: fulfilled })) //"2403": "Template has been deleted",
                         .catch(rejected => res.status(400).json({ message: rejected})); // "An error has occured",
                     }
                 });
-            });
+            }).catch( () => {
+                return res.status(400).json({message: 'An error has occured'})
+            })
         }
     });
 });

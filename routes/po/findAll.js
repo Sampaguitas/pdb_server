@@ -13,7 +13,13 @@ router.get('/', (req, res) => {
     .populate({
         path:'subs',
         populate: {
-            path: 'certificates'
+            path: 'certificates',
+            options: {
+                sort: { 
+                    'cif': 'asc',
+                    'heatNr': 'asc'
+                }
+            }
         },
         populate: {
             path: 'packitems',

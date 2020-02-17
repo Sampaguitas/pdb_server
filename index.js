@@ -11,7 +11,7 @@ const fs = require('fs');
 
 const app = express();
 
-var whitelist = ['https://www.vanleeuwenpdb.com', 'http://www.vanleeuwenpdb.com', 'http://localhost:8080', 'http://localhost:5555']
+var whitelist = ['https://www.vanleeuwenpdb.com', 'http://www.vanleeuwenpdb.com', 'http://localhost:8080', 'http://localhost:5555', 'https://pdb-client.herokuapp.com/']
 var corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {

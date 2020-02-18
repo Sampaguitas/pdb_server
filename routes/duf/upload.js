@@ -26,6 +26,8 @@ router.post('/', upload.single('file'), function (req, res) {
   let nRejected = 0;
   let nAdded = 0;
   let nEdited = 0;
+
+  let nonPrintable = /[\t\r\n]/mg;
   
   if (!projectId || !file) {
     res.status(400).json({
@@ -98,6 +100,8 @@ router.post('/', upload.single('file'), function (req, res) {
                   
                   if (type === 'String' && value === 0) {
                     value = '0'
+                  } else if (nonPrintable.test(value)) {
+                    value = value.replace(nonPrintable, '');
                   }
                   
                   colPromises.push(testFormat(row, cell, type, value));

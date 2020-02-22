@@ -10,9 +10,22 @@ router.get('/', (req, res) => {
     });
 
     Opco.find(data)
-    .populate("projects")
-    .populate("locale")
-    .populate("region")
+    .sort({
+        regionId: 'asc',
+        country: 'asc',
+        city: 'asc',
+        name: 'asc'
+    })
+    .populate({
+        path: "region",
+        // options: {
+        //     sort: {
+        //         name: 'asc'
+        //     }
+        // }
+    })
+    // .populate("projects")
+    // .populate("locale")
     .exec( function (err, opco) {
         if (!opco) {
             return res.status(400).json({ 

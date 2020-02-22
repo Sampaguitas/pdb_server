@@ -5,9 +5,15 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     DocField.find({projectId: req.query.projectId})
+    .sort({
+        worksheet: 'asc',
+        location: 'asc',
+        row: 'asc',
+        col: 'asc',
+    })
     .populate({
-        path:'fields',
-        select: 'custom'
+        path: 'fields',
+        select: 'custom',
     })
     .exec(function (err, docfield) {
         if (!docfield) {

@@ -8,7 +8,11 @@ router.get('/', (req, res) => {
     Object.keys(req.body).forEach(function (k) {
         data[k] = req.body[k];
     });
-    User.find(data).populate({
+    User.find(data)
+    .sort({
+        name: 'asc'
+    })
+    .populate({
         path: 'opco',
         populate: {
             path: 'region'

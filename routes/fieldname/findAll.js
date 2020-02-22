@@ -5,16 +5,22 @@ const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     FieldName.find({projectId: req.query.projectId})
+    .sort({
+        // screenId: 'asc',
+        forShow: 'asc',
+        forSelect: 'asc',
+    })
     .populate({
         path: 'fields',
-        //select:'custom'
+        options: {
+            sort: {
+                custom: 'asc',
+            }
+        }
     })
     .exec(function (err, fieldname) {
         if (!fieldname) {
-            return res.status(400).json({
-                message: fault(0804).message
-                //"0804": "No FieldName match",
-            });
+            return res.status(400).json({ message: 'No FieldName where found.' });
         }
         else {
             return res.json(fieldname);

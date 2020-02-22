@@ -4,12 +4,13 @@ const Supplier = require('../../models/Supplier');
 const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
-    Supplier.find({projectId: req.query.projectId}, function (err, supplier) {
+    Supplier.find({projectId: req.query.projectId})
+    .sort({
+        name: 'asc'
+    })
+    .exec(function (err, supplier) {
         if (!supplier) {
-            return res.status(400).json({ 
-                message: fault(1504).message
-                //"1504": "No Supplier match",
-            });
+            return res.status(400).json({message: 'no suppliers where found.'});
         }
         else {
             return res.json(supplier);

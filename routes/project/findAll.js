@@ -14,17 +14,24 @@ router.get('/', (req, res) => {
     const user = req.user;
     User.findById(user._id)
     .populate({
-        path:'opco', 
-            populate: {
-                path: 'locale'
-            },
-            populate: {
-                path: 'region'
-            }
+        path:'opco',
+        select: 'regionId'
+            // populate: {
+            //     path: 'locale'
+            // },
+            // populate: {
+            //     path: 'region',
+            // }
     })
     .then(foundUser=>{
         Project.find(data)
-        .populate('erp', 'name')
+        .sort({
+            number: 'asc'
+        })
+        .populate({
+            path: 'erp', 
+            select: 'name'
+        })
         .populate({
             path: 'accesses',
             populate: {
@@ -33,12 +40,13 @@ router.get('/', (req, res) => {
         })
         .populate({
             path: 'opco',
-            populate: {
-                path: 'locale'
-            },
-            populate: {
-                path: 'region'
-            }
+            select: ('regionId','name')
+            // populate: {
+            //     path: 'locale'
+            // },
+            // populate: {
+            //     path: 'region'
+            // }
         })
         .exec(function (err, projects) {
             if (!projects) {

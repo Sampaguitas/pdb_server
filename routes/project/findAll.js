@@ -50,10 +50,7 @@ router.get('/', (req, res) => {
         })
         .exec(function (err, projects) {
             if (!projects) {
-                return res.status(400).json({
-                    message: fault(1304).message
-                    //"1304": "No Project match",
-                });
+                return res.status(400).json({ message: 'We could not find any Projects'});
             }
             else {
                 if (foundUser.isSuperAdmin) {
@@ -67,7 +64,7 @@ router.get('/', (req, res) => {
                             userProjects.push(project);
                         } else {
                             project.accesses.forEach(function(access) {
-                                if (_.isEqual(foundUser._id,access.userId)){
+                                if (_.isEqual(foundUser._id, access.userId) && (access.isExpediting || access.isInspection || access.isShipping || access.isWarehouse || access.isConfiguration)){
                                     userProjects.push(project);
                                 }
                             });
@@ -81,7 +78,7 @@ router.get('/', (req, res) => {
                             userProjects.push(project); 
                         } else {
                             project.accesses.forEach(function(access) {
-                                if (_.isEqual(foundUser._id,access.userId)){
+                                if (_.isEqual(foundUser._id, access.userId) && (access.isExpediting || access.isInspection || access.isShipping || access.isWarehouse || access.isConfiguration)){
                                     userProjects.push(project);
                                 }
                             });

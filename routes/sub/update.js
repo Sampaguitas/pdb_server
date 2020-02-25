@@ -11,13 +11,15 @@ router.put('/', (req, res) => {
         data[k] = decodeURI(req.body[k]);
     });
 
-    if (data.inspRelDate) {
+    if (data.inspRelDate || data.relQty) {
         Sub.findById(id, function (err, sub) {
             if (!sub) {
                 return res.status(400).json({ message: 'Could not update Sub information.' });
             } else {
-                if (sub.rfiQty) {
+                if (data.inspRelDate && sub.rfiQty && !sub.relQty) {
                     data.relQty = sub.rfiQty;
+                } else if (data.relQty && !sub.inspRelDate) {
+                    data.inspRelDate = new Date();
                 }
                 Sub.findByIdAndUpdate(id, { $set: data }, function (err, sub) {
                     if (!sub) {

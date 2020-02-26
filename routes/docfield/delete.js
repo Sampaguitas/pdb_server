@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const DocField = require('../../models/DocField');
 const fault = require('../../utilities/Errors');
+const _ = require('lodash');
 
 router.delete('/', async (req, res) => {
     const parsedId = JSON.parse(req.query.id);

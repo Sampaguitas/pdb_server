@@ -61,6 +61,22 @@ DocDefSchema.virtual("doctypes", {
     justOne: true
 });
 
+DocDefSchema.virtual("docfields", {
+    ref: "docfields",
+    localField: "_id",
+    foreignField: "docdefId",
+    justOne: false
+});
+
+DocDefSchema.virtual("project", {
+    ref: "projects",
+    localField: "projectId",
+    foreignField: "_id",
+    justOne: true
+});
+
+
+
 DocDefSchema.virtual("name").get(function (){
     return this.description + ' (' + this.code + ')'; 
 })

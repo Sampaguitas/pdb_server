@@ -27,7 +27,8 @@ aws.config.update({
 router.get('/', function (req, res) {
   const docDefId = req.query.id;
   const locale = req.query.locale;
-  const supplierId = req.query.supplierId
+  const selectedLocation = req.query.selectedLocation
+  const inputNfi = req.query.inputNfi
 
   DocDef.findById(docDefId)
   .populate({
@@ -50,21 +51,22 @@ router.get('/', function (req, res) {
         },
         populate: {
           path: 'subs',
+          match: { nfi : inputNfi},
           populate: {
-            path: 'packitems',
+            path: 'certificates',
             options: {
-              sort: { 
-                'plNr': 'asc',
-                'colliNr': 'asc'
-              }
+                sort: { 
+                    'cif': 'asc',
+                    'heatNr': 'asc'
+                }
             }
           }
         },
       },
-      // {
-      //   path: 'suppliers',
-      //   match: { _id : supplierId }
-      // }
+      {
+        path: 'suppliers',
+        match: { _id : selectedLocation }
+      }
     ]
   })
   .exec(function (err, docDef){
@@ -256,11 +258,11 @@ function getTables(docfields) {
   },[]);
 }
 
-function getPackItemFields (docFileds) {
+function getCertificateFields (docFileds) {
   if (docFileds) {
       let tempArray = [];
       docFileds.reduce(function (acc, curr) {
-          if (curr.fields.fromTbl === 'packitem' && !acc.includes(curr.fields._id)) {
+          if (curr.fields.fromTbl === 'certificate' && !acc.includes(curr.fields._id)) {
               tempArray.push(curr.fields);
               acc.push(curr.fields._id);
           }
@@ -272,28 +274,16 @@ function getPackItemFields (docFileds) {
   }
 }
 
-function hasPackingList(packItemFields) {
-  let tempResult = false;
-  if (packItemFields) {
-      packItemFields.map(function (packItemField) {
-          if (packItemField.name === 'plNr') {
-              tempResult = true;
-          }
-      });
-  }
-  return tempResult;
-}
-
 function getLines(docDef, docfields, locale) {
   let arrayLines = [];
   let arrayRow = [];
-  let hasPackitems = getTables(docfields).includes('packitem');
+  let hasCertificates = getTables(docfields).includes('certificate');
   if(docDef.project.pos) {
     docDef.project.pos.map(po => {
       if(po.subs){
         po.subs.map(sub => {
-          if(sub.packitems && hasPackitems) {
-            virtuals(sub.packitems, po.uom, getPackItemFields(docfields), locale).map(virtual => {
+          if(sub.certificates && hasCertificates) {
+            virtuals(sub.certificates, getCertificateFields(docfields), locale).map(virtual => {
               arrayRow = [];
               docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
@@ -305,17 +295,17 @@ function getLines(docDef, docfields, locale) {
                         type: docfield.fields.type
                       });
                     break;
-                  // case 'supplier':
-                  //   if (docDef.project.suppliers) {
-                  //     let supplier = docDef.project.suppliers[0];
-                  //     arrayRow.push({
-                  //       val: supplier[docfield.fields.name] || '',
-                  //       row: docfield.row,
-                  //       col: docfield.col,
-                  //       type: docfield.fields.type
-                  //     });
-                  //   }
-                  //   break;
+                  case 'supplier':
+                    if (docDef.project.suppliers) {
+                      let supplier = docDef.project.suppliers[0];
+                      arrayRow.push({
+                        val: supplier[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    }
+                    break;
                   case 'po':
                     arrayRow.push({
                       val: po[docfield.fields.name] || '',
@@ -325,38 +315,20 @@ function getLines(docDef, docfields, locale) {
                     });
                     break;
                   case 'sub':
-                    if(docfield.fields.name === 'shippedQty') {
-                      arrayRow.push({
-                        val: virtual.shippedQty || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
-                      });
-                    } else {
-                      arrayRow.push({
-                        val: sub[docfield.fields.name] || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
-                      });
-                    }
+                    arrayRow.push({
+                      val: sub[docfield.fields.name] || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
                     break;
-                  case 'packitem':
-                    if(docfield.fields.name === 'plNr') {
-                      arrayRow.push({
-                        val: virtual.plNr || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
-                      });
-                    } else {
-                      arrayRow.push({
-                        val: virtual[docfield.fields.name].join(' | ') || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: 'String'
-                      });
-                    }
+                  case 'certificate':
+                    arrayRow.push({
+                      val: virtual[docfield.fields.name].join(' | ') || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: 'String'
+                    });
                     break;
                   default: arrayRow.push({
                     val: '',
@@ -374,24 +346,24 @@ function getLines(docDef, docfields, locale) {
             docfields.map(docfield => {
               switch(docfield.fields.fromTbl) {
                 case 'project':
-                      arrayRow.push({
-                        val: docDef.project[docfield.fields.name] || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
-                      });
-                    break;
-                // case 'supplier':
-                //     if (docDef.project.suppliers) {
-                //       let supplier = docDef.project.suppliers[0];
-                //       arrayRow.push({
-                //         val: supplier[docfield.fields.name] || '',
-                //         row: docfield.row,
-                //         col: docfield.col,
-                //         type: docfield.fields.type
-                //       });
-                //     }
-                //     break;
+                  arrayRow.push({
+                    val: docDef.project[docfield.fields.name] || '',
+                    row: docfield.row,
+                    col: docfield.col,
+                    type: docfield.fields.type
+                  });
+                  break;
+                case 'supplier':
+                  if (docDef.project.suppliers) {
+                    let supplier = docDef.project.suppliers[0];
+                    arrayRow.push({
+                      val: supplier[docfield.fields.name] || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
+                  }
+                  break;
                 case 'po':
                   arrayRow.push({
                     val: po[docfield.fields.name] || '',
@@ -401,21 +373,12 @@ function getLines(docDef, docfields, locale) {
                   });
                   break;
                 case 'sub':
-                  if(docfield.fields.name === 'shippedQty') {
-                    arrayRow.push({
-                      val: virtual.shippedQty || '',
-                      row: docfield.row,
-                      col: docfield.col,
-                      type: docfield.fields.type
-                    });
-                  } else {
-                    arrayRow.push({
-                      val: sub[docfield.fields.name] || '',
-                      row: docfield.row,
-                      col: docfield.col,
-                      type: docfield.fields.type
-                    });
-                  }
+                  arrayRow.push({
+                    val: sub[docfield.fields.name] || '',
+                    row: docfield.row,
+                    col: docfield.col,
+                    type: docfield.fields.type
+                  });
                   break;
                 default: arrayRow.push({
                   val: '',
@@ -434,62 +397,20 @@ function getLines(docDef, docfields, locale) {
     return arrayLines;
   }
 }
-
-function virtuals(packitems, uom, packItemFields, locale) {
+//locale
+function virtuals(certificates, certificateFields, locale) {
   let tempVirtuals = [];
-  let tempUom = ['M', 'MT', 'MTR', 'MTRS', 'F', 'FT', 'FEET', 'LM'].includes(uom.toUpperCase()) ? 'mtrs' : 'pcs';
-  if (hasPackingList(packItemFields)) {
-      packitems.reduce(function (acc, curr){
-          if (curr.plNr){
-              if (!acc.includes(curr.plNr)) {
-
-                  let tempObject = {};
-                  tempObject['shippedQty'] = curr[tempUom];
-                  packItemFields.map(function (packItemField) {
-                      if (packItemField.name === 'plNr') {
-                          tempObject['plNr'] = curr['plNr'];
-                          tempObject['_id'] = curr['plNr'];
-                      } else {
-                          tempObject[packItemField.name] = [TypeToString(curr[packItemField.name], packItemField.type, locale)]
-                      }               
-                  });
-                  tempVirtuals.push(tempObject);
-                  acc.push(curr.plNr);
-                  
-              } else if (acc.includes(curr.plNr)) {
-      
-                  let tempVirtual = tempVirtuals.find(element => element.plNr === curr.plNr);            
-                  tempVirtual['shippedQty'] += curr[tempUom];
-                  packItemFields.map(function (packItemField) {
-                      if (packItemField.name != 'plNr' && !tempVirtual[packItemField.name].includes(TypeToString(curr[packItemField.name], packItemField.type, locale))) {
-                          tempVirtual[packItemField.name].push(TypeToString(curr[packItemField.name], packItemField.type, locale));
-                      }               
-                  });
-                  acc.push(curr.plNr);
-              }
-          }
-          return acc;
-      }, []);
-  } else {
-      let tempObject = {_id: '0'}
-      packitems.map(function (packitem){
-          if (packitem.plNr) {
-              if (!tempObject.hasOwnProperty('shippedQty')) {
-                  tempObject['shippedQty'] = packitem[tempUom];
-              } else {
-                  tempObject['shippedQty'] += packitem[tempUom];
-              }
-              packItemFields.map(function (packItemField) {
-                  if (!tempObject.hasOwnProperty(packItemField.name)) {
-                      tempObject[packItemField.name] = [TypeToString(packitem[packItemField.name], packItemField.type, locale)]
-                  } else if(!tempObject[packItemField.name].includes(TypeToString(packitem[packItemField.name], packItemField.type, locale))) {
-                      tempObject[packItemField.name].push(TypeToString(packitem[packItemField.name], packItemField.type, locale));
-                  }
-              });
+  let tempObject = {_id: '0'}
+  certificates.map(function (certificate){
+      certificateFields.map(function (certificateField) {
+          if (!tempObject.hasOwnProperty(certificateField.name)) {
+              tempObject[certificateField.name] = [TypeToString(certificate[certificateField.name], certificateField.type, locale)]
+          } else if(!tempObject[certificateField.name].includes(TypeToString(certificate[certificateField.name], certificateField.type, locale))) {
+              tempObject[certificateField.name].push(TypeToString(certificate[certificateField.name], certificateField.type, locale));
           }
       });
-      tempVirtuals.push(tempObject);
-  }
+  });
+  tempVirtuals.push(tempObject);
   return tempVirtuals;
 }
 

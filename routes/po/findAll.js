@@ -12,24 +12,26 @@ router.get('/', (req, res) => {
     })
     .populate({
         path:'subs',
-        populate: {
-            path: 'certificates',
-            options: {
-                sort: { 
-                    'cif': 'asc',
-                    'heatNr': 'asc'
+        populate: [
+            {
+                path: 'certificates',
+                options: {
+                    sort: { 
+                        'cif': 'asc',
+                        'heatNr': 'asc'
+                    }
+                }
+            },
+            {
+                path: 'packitems',
+                options: {
+                    sort: { 
+                        'plNr': 'asc',
+                        'colliNr': 'asc'
+                    }
                 }
             }
-        },
-        populate: {
-            path: 'packitems',
-            options: {
-                sort: { 
-                    'plNr': 'asc',
-                    'colliNr': 'asc'
-                }
-            }
-        }
+        ]
     })
     .exec(function (err, po) {
         if (!po) {

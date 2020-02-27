@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../../models/Project');
-const fault = require('../../utilities/Errors');
 const Access = require('../../models/Access');
 
 const _ =require('lodash');
@@ -24,12 +23,10 @@ router.put('/', (req, res) => {
 
     Project.findByIdAndUpdate(projectId, { $set:
         {
-            number: req.body.number,
             name: req.body.name,
             erpId: req.body.erpId,
             currencyId: req.body.currencyId,
             opcoId: req.body.opcoId,
-            daveId: req.body.daveId,
         } 
     })
     .then(function (project) {

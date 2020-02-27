@@ -11,6 +11,7 @@ var Excel = require('exceljs');
 fs = require('fs');
 const stream = require('stream');
 const moment = require('moment');
+const _ = require('lodash');
 
 
 aws.config.update({
@@ -32,30 +33,28 @@ router.get('/', function (req, res) {
   })
   .populate({
     path: 'project',
-    populate: [
-      { 
-        path: 'pos',
-        options: {
-          sort: {
-            clPo: 'asc',
-            clPoRev: 'asc',
-            clPoItem: 'asc'
-          }
-        },
+    populate: { 
+      path: 'pos',
+      options: {
+        sort: {
+          clPo: 'asc',
+          clPoRev: 'asc',
+          clPoItem: 'asc'
+        }
+      },
+      populate: {
+        path: 'subs',
         populate: {
-          path: 'subs',
-          populate: {
-            path: 'packitems',
-            options: {
-              sort: { 
-                'plNr': 'asc',
-                'colliNr': 'asc'
-              }
+          path: 'packitems',
+          options: {
+            sort: { 
+              'plNr': 'asc',
+              'colliNr': 'asc'
             }
           }
-        },
+        }
       },
-    ]
+    },
   })
   .exec(function (err, docDef){
     if (err) {
@@ -71,16 +70,17 @@ router.get('/', function (req, res) {
       var wb = new Excel.Workbook();
       wb.xlsx.read(s3.getObject(params).createReadStream())
       .then(function(workbook) {
-
-        const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
+        
         const docFieldSoh = filterDocFiled(docDef.docfields, 'Sheet1', 'Header');
+        const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
         const firstColSol = getColumnFirst(docFieldSol);
         const lastColSol = getColumnLast(docFieldSol);
+        // console.log('lastColSol:', lastColSol);
         const soh = getLines(docDef, docFieldSoh, locale);
         const sol = getLines(docDef, docFieldSol, locale);
 
-        const docFieldStl = filterDocFiled(docDef.docfields, 'Sheet2', 'Line');
         const docFieldSth = filterDocFiled(docDef.docfields, 'Sheet2', 'Header');
+        const docFieldStl = filterDocFiled(docDef.docfields, 'Sheet2', 'Line');
         const firstColStl = getColumnFirst(docFieldStl);
         const lastColStl = getColumnLast(docFieldStl);
         const sth = getLines(docDef, docFieldSth, locale);
@@ -286,7 +286,7 @@ function getLines(docDef, docfields, locale) {
     docDef.project.pos.map(po => {
       if(po.subs){
         po.subs.map(sub => {
-          if(sub.packitems && hasPackitems) {
+          if(!_.isEmpty(sub.packitems) && hasPackitems) {
             virtuals(sub.packitems, po.uom, getPackItemFields(docfields), locale).map(virtual => {
               arrayRow = [];
               docfields.map(docfield => {
@@ -411,56 +411,56 @@ function virtuals(packitems, uom, packItemFields, locale) {
   let tempVirtuals = [];
   let tempUom = ['M', 'MT', 'MTR', 'MTRS', 'F', 'FT', 'FEET', 'LM'].includes(uom.toUpperCase()) ? 'mtrs' : 'pcs';
   if (hasPackingList(packItemFields)) {
-      packitems.reduce(function (acc, curr){
-          if (curr.plNr){
-              if (!acc.includes(curr.plNr)) {
+    packitems.reduce(function (acc, curr){
+        if (curr.plNr){
+            if (!acc.includes(curr.plNr)) {
 
-                  let tempObject = {};
-                  tempObject['shippedQty'] = curr[tempUom];
-                  packItemFields.map(function (packItemField) {
-                      if (packItemField.name === 'plNr') {
-                          tempObject['plNr'] = curr['plNr'];
-                          tempObject['_id'] = curr['plNr'];
-                      } else {
-                          tempObject[packItemField.name] = [TypeToString(curr[packItemField.name], packItemField.type, locale)]
-                      }               
-                  });
-                  tempVirtuals.push(tempObject);
-                  acc.push(curr.plNr);
-                  
-              } else if (acc.includes(curr.plNr)) {
-      
-                  let tempVirtual = tempVirtuals.find(element => element.plNr === curr.plNr);            
-                  tempVirtual['shippedQty'] += curr[tempUom];
-                  packItemFields.map(function (packItemField) {
-                      if (packItemField.name != 'plNr' && !tempVirtual[packItemField.name].includes(TypeToString(curr[packItemField.name], packItemField.type, locale))) {
-                          tempVirtual[packItemField.name].push(TypeToString(curr[packItemField.name], packItemField.type, locale));
-                      }               
-                  });
-                  acc.push(curr.plNr);
-              }
-          }
-          return acc;
-      }, []);
+                let tempObject = {};
+                tempObject['shippedQty'] = curr[tempUom];
+                packItemFields.map(function (packItemField) {
+                    if (packItemField.name === 'plNr') {
+                        tempObject['plNr'] = curr['plNr'];
+                        tempObject['_id'] = curr['plNr'];
+                    } else {
+                        tempObject[packItemField.name] = [TypeToString(curr[packItemField.name], packItemField.type, locale)]
+                    }               
+                });
+                tempVirtuals.push(tempObject);
+                acc.push(curr.plNr);
+                
+            } else if (acc.includes(curr.plNr)) {
+    
+                let tempVirtual = tempVirtuals.find(element => element.plNr === curr.plNr);            
+                tempVirtual['shippedQty'] += curr[tempUom];
+                packItemFields.map(function (packItemField) {
+                    if (packItemField.name != 'plNr' && !tempVirtual[packItemField.name].includes(TypeToString(curr[packItemField.name], packItemField.type, locale))) {
+                        tempVirtual[packItemField.name].push(TypeToString(curr[packItemField.name], packItemField.type, locale));
+                    }               
+                });
+                acc.push(curr.plNr);
+            }
+        }
+        return acc;
+    }, []);
   } else {
-      let tempObject = {_id: '0'}
-      packitems.map(function (packitem){
-          if (packitem.plNr) {
-              if (!tempObject.hasOwnProperty('shippedQty')) {
-                  tempObject['shippedQty'] = packitem[tempUom];
-              } else {
-                  tempObject['shippedQty'] += packitem[tempUom];
-              }
-              packItemFields.map(function (packItemField) {
-                  if (!tempObject.hasOwnProperty(packItemField.name)) {
-                      tempObject[packItemField.name] = [TypeToString(packitem[packItemField.name], packItemField.type, locale)]
-                  } else if(!tempObject[packItemField.name].includes(TypeToString(packitem[packItemField.name], packItemField.type, locale))) {
-                      tempObject[packItemField.name].push(TypeToString(packitem[packItemField.name], packItemField.type, locale));
-                  }
-              });
-          }
-      });
-      tempVirtuals.push(tempObject);
+    let tempObject = {_id: '0'}
+    packitems.map(function (packitem){
+      if (packitem.plNr) {
+        if (!tempObject.hasOwnProperty('shippedQty')) {
+            tempObject['shippedQty'] = packitem[tempUom];
+        } else {
+            tempObject['shippedQty'] += packitem[tempUom];
+        }
+        packItemFields.map(function (packItemField) {
+            if (!tempObject.hasOwnProperty(packItemField.name)) {
+                tempObject[packItemField.name] = [TypeToString(packitem[packItemField.name], packItemField.type, locale)]
+            } else if(!tempObject[packItemField.name].includes(TypeToString(packitem[packItemField.name], packItemField.type, locale))) {
+                tempObject[packItemField.name].push(TypeToString(packitem[packItemField.name], packItemField.type, locale));
+            }
+        });
+      }
+    });
+    tempVirtuals.push(tempObject); 
   }
   return tempVirtuals;
 }

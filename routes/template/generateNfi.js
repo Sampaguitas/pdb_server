@@ -11,6 +11,7 @@ var Excel = require('exceljs');
 fs = require('fs');
 const stream = require('stream');
 const moment = require('moment');
+const _ = require('lodash');
 
 
 aws.config.update({
@@ -281,7 +282,7 @@ function getLines(docDef, docfields, locale) {
     docDef.project.pos.map(po => {
       if(po.subs){
         po.subs.map(sub => {
-          if(sub.certificates && hasCertificates) {
+          if(!_.isEmpty(sub.certificates) && hasCertificates) {
             virtuals(sub.certificates, getCertificateFields(docfields), locale).map(virtual => {
               arrayRow = [];
               docfields.map(docfield => {

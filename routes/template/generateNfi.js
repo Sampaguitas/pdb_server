@@ -108,7 +108,7 @@ router.get('/', function (req, res) {
             //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
             //totals and headers suposed to be below our table will be shifted down...
             if (sol.length > 1) {
-              worksheet.duplicateRow(docDef.row1, sol.length, true);
+              worksheet.duplicateRow(docDef.row1, sol.length -1, true);
             }
             //fill all Lines from our grid in the inserted rows
             sol.map(function (line, lineIndex) {
@@ -133,7 +133,7 @@ router.get('/', function (req, res) {
             //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
             //totals and headers suposed to be below our table will be shifted down...
             if (stl.length > 1) {
-              worksheet.duplicateRow(docDef.row2, stl.length, true);
+              worksheet.duplicateRow(docDef.row2, stl.length -1, true);
             }
             //fill all Lines from our grid in the inserted rows
             stl.map(function (line, lineIndex) {

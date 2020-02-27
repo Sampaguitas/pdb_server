@@ -393,8 +393,8 @@ function getLines(docDef, docfields, locale) {
                   type: 'String'
                 });
               }
-              arrayLines.push(arrayRow);
             });
+            arrayLines.push(arrayRow);
           }
         });
       }

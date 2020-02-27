@@ -20,9 +20,19 @@ aws.config.update({
   region: region
 });
 
-router.get('/', function (req, res) {
+router.post('/', function (req, res) {
+
   const docDefId = req.query.id;
   const locale = req.query.locale;
+  const selectedIds = req.body.selectedIds;
+
+  let poIds = [];
+  let subIds = [];
+
+  selectedIds.forEach(element => {
+    element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
+    element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
+  });
 
   DocDef.findById(docDefId)
   .populate({
@@ -35,6 +45,7 @@ router.get('/', function (req, res) {
     path: 'project',
     populate: { 
       path: 'pos',
+      match: { _id: { $in : poIds } },
       options: {
         sort: {
           clPo: 'asc',
@@ -44,6 +55,7 @@ router.get('/', function (req, res) {
       },
       populate: {
         path: 'subs',
+        match: { _id: { $in : subIds } },
         populate: {
           path: 'packitems',
           options: {
@@ -375,10 +387,10 @@ function getLines(docDef, docfields, locale) {
                 case 'sub':
                   if(docfield.fields.name === 'shippedQty') {
                     arrayRow.push({
-                      val: virtual.shippedQty || '',
+                      val: '',
                       row: docfield.row,
                       col: docfield.col,
-                      type: docfield.fields.type
+                      type: 'String'
                     });
                   } else {
                     arrayRow.push({

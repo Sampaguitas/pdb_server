@@ -2,16 +2,11 @@ var express = require('express');
 const router = express.Router();
 var aws = require('aws-sdk');
 var path = require('path');
-const fault = require('../../utilities/Errors'); //../utilities/Errors
 const accessKeyId = require('../../config/keys').accessKeyId; //../config/keys
 const secretAccessKey = require('../../config/keys').secretAccessKey;
 const region = require('../../config/keys').region;
 const awsBucketName = require('../../config/keys').awsBucketName;
 const DocDef = require('../../models/DocDef');
-const DocField = require('../../models/DocField');
-const Field = require('../../models/Field');
-const Project = require('../../models/Project');
-const Po = require('../../models/Po');
 var Excel = require('exceljs');
 fs = require('fs');
 const stream = require('stream');
@@ -112,7 +107,7 @@ router.get('/', function (req, res) {
             });
             //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
             //totals and headers suposed to be below our table will be shifted down... 
-            worksheet.duplicateRow(docDef.row1, sol.length, false);
+            worksheet.duplicateRow(docDef.row1, sol.length, true);
             //fill all Lines from our grid in the inserted rows
             sol.map(function (line, lineIndex) {
               line.map(function (cell) {
@@ -135,7 +130,7 @@ router.get('/', function (req, res) {
             });
             //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
             //totals and headers suposed to be below our table will be shifted down...
-            worksheet.duplicateRow(docDef.row2, stl.length, false);
+            worksheet.duplicateRow(docDef.row2, stl.length, true);
             //fill all Lines from our grid in the inserted rows
             stl.map(function (line, lineIndex) {
               line.map(function (cell) {

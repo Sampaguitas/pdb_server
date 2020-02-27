@@ -2,16 +2,11 @@ var express = require('express');
 const router = express.Router();
 var aws = require('aws-sdk');
 var path = require('path');
-const fault = require('../../utilities/Errors'); //../utilities/Errors
 const accessKeyId = require('../../config/keys').accessKeyId; //../config/keys
 const secretAccessKey = require('../../config/keys').secretAccessKey;
 const region = require('../../config/keys').region;
 const awsBucketName = require('../../config/keys').awsBucketName;
 const DocDef = require('../../models/DocDef');
-const DocField = require('../../models/DocField');
-const Field = require('../../models/Field');
-const Project = require('../../models/Project');
-const Po = require('../../models/Po');
 var Excel = require('exceljs');
 fs = require('fs');
 const stream = require('stream');
@@ -27,7 +22,6 @@ aws.config.update({
 router.get('/', function (req, res) {
   const docDefId = req.query.id;
   const locale = req.query.locale;
-  const supplierId = req.query.supplierId
 
   DocDef.findById(docDefId)
   .populate({
@@ -61,10 +55,6 @@ router.get('/', function (req, res) {
           }
         },
       },
-      // {
-      //   path: 'suppliers',
-      //   match: { _id : supplierId }
-      // }
     ]
   })
   .exec(function (err, docDef){
@@ -110,7 +100,7 @@ router.get('/', function (req, res) {
             });
             //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
             //totals and headers suposed to be below our table will be shifted down... 
-            worksheet.duplicateRow(docDef.row1, sol.length, false);
+            worksheet.duplicateRow(docDef.row1, sol.length, true);
             //fill all Lines from our grid in the inserted rows
             sol.map(function (line, lineIndex) {
               line.map(function (cell) {
@@ -133,7 +123,7 @@ router.get('/', function (req, res) {
             });
             //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
             //totals and headers suposed to be below our table will be shifted down...
-            worksheet.duplicateRow(docDef.row2, stl.length, false);
+            worksheet.duplicateRow(docDef.row2, stl.length, true);
             //fill all Lines from our grid in the inserted rows
             stl.map(function (line, lineIndex) {
               line.map(function (cell) {
@@ -305,17 +295,6 @@ function getLines(docDef, docfields, locale) {
                         type: docfield.fields.type
                       });
                     break;
-                  // case 'supplier':
-                  //   if (docDef.project.suppliers) {
-                  //     let supplier = docDef.project.suppliers[0];
-                  //     arrayRow.push({
-                  //       val: supplier[docfield.fields.name] || '',
-                  //       row: docfield.row,
-                  //       col: docfield.col,
-                  //       type: docfield.fields.type
-                  //     });
-                  //   }
-                  //   break;
                   case 'po':
                     arrayRow.push({
                       val: po[docfield.fields.name] || '',
@@ -381,17 +360,6 @@ function getLines(docDef, docfields, locale) {
                         type: docfield.fields.type
                       });
                     break;
-                // case 'supplier':
-                //     if (docDef.project.suppliers) {
-                //       let supplier = docDef.project.suppliers[0];
-                //       arrayRow.push({
-                //         val: supplier[docfield.fields.name] || '',
-                //         row: docfield.row,
-                //         col: docfield.col,
-                //         type: docfield.fields.type
-                //       });
-                //     }
-                //     break;
                 case 'po':
                   arrayRow.push({
                     val: po[docfield.fields.name] || '',

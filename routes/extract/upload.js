@@ -58,7 +58,7 @@ router.post('/', upload.single('file'), function (req, res) {
           worksheet.unprotect();
           let rowCount = worksheet.rowCount;
           
-          if (rowCount < 2) { 
+          if (rowCount < 3) { //2
             return res.status(400).json({
               message: 'the File seams to be empty',
               rejections: rejections,
@@ -77,7 +77,7 @@ router.post('/', upload.single('file'), function (req, res) {
           } else {
  
             (async function() {
-              for (let row = 2; row < rowCount + 1 ; row++) { 
+              for (let row = 3; row < rowCount + 1 ; row++) { //2
 
                 colPromises = [];
 

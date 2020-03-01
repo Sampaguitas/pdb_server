@@ -96,7 +96,7 @@ router.post('/', function (req, res) {
             worksheet.getRow(1).height = 30;
             myHeaders.map(function (header) {
               let cell = worksheet.getCell(`${alphabet(header.col) + 1}`);
-              myFgColour = header.col < 4 ? { argb: 'A8052C'} : { argb: '0070C0'}
+              myFgColour = header.col < 5 ? { argb: 'A8052C'} : { argb: '0070C0'}
               with (cell) {
                 style = Object.create(cell.style), //shallow-clone the style, break references
                 border ={
@@ -133,8 +133,8 @@ router.post('/', function (req, res) {
               worksheet.getRow(indexLine + 3).height = 25;
               line.map(function (myCell) {
                 let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 3)}`);
-                let myColour = myCell.col < 4 ? {argb: 'd3d3d3'} : (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
-                let myProtection = myCell.col < 4 ? { locked: true } : (!unlocked && myCell.edit) ? { locked: true } : { locked: false };
+                let myColour = myCell.col < 5 ? {argb: 'd3d3d3'} : (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
+                let myProtection = myCell.col < 5 ? { locked: true } : (!unlocked && myCell.edit) ? { locked: true } : { locked: false };
                 with (cell) {
                   style = Object.create(cell.style), //shallow-clone the style, break references
                   border ={

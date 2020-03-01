@@ -163,13 +163,14 @@ router.post('/', function (req, res) {
           }
 
           //add autofilter in row 2
-          if (!_.isEmpty(myLines)) {
-            worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
-            console.log(`"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`);
-          } else {
-            worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4)}1"`;
-            console.log(`"A1:${alphabet(resProject.fieldnames.length + 4)}1"`);
-          }
+          worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4)}1"`;
+          // if (!_.isEmpty(myLines)) {
+          //   worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
+          //   console.log(`"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`);
+          // } else {
+          //   worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4)}1"`;
+          //   console.log(`"A1:${alphabet(resProject.fieldnames.length + 4)}1"`);
+          // }
           
 
           //hide Ids
@@ -179,21 +180,21 @@ router.post('/', function (req, res) {
           // worksheet.getColumn('D').hidden = true; //collipackId
           
           //set worksheet protection options
-          let options = {
-            selectLockedCells: true,
-            selectUnlockedCells: true,
-            formatCells: true,
-            formatColumns: true,
-            formatRows: true,
-            insertRows: false,
-            insertColumns: false,
-            insertHyperlinks: false,
-            deleteRows: false,
-            deleteColumns: false,
-            sort: true,
-            autoFilter: true,
-            pivotTables: true
-          }
+          // let options = {
+          //   selectLockedCells: true,
+          //   selectUnlockedCells: true,
+          //   formatCells: true,
+          //   formatColumns: true,
+          //   formatRows: true,
+          //   insertRows: false,
+          //   insertColumns: false,
+          //   insertHyperlinks: false,
+          //   deleteRows: false,
+          //   deleteColumns: false,
+          //   sort: true,
+          //   autoFilter: true,
+          //   pivotTables: true
+          // }
 
           //protect worksheet 
           // await worksheet.protect('', options);

@@ -163,10 +163,10 @@ router.post('/', function (req, res) {
           }
 
           //add autofilter in row 2
-          // worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4)}1"`;
+          worksheet.autoFilter = `A1:${alphabet(resProject.fieldnames.length + 4)}1`;
           // console.log(`"A1:${alphabet(resProject.fieldnames.length + 4)}1"`);
 
-          worksheet.autoFilter = 'A1:BD1';
+          // worksheet.autoFilter = 'A1:BD1';
           // if (!_.isEmpty(myLines)) {
           //   worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
           //   console.log(`"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`);

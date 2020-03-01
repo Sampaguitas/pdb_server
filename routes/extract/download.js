@@ -190,7 +190,7 @@ router.post('/', function (req, res) {
           }
 
           //protect worksheet 
-          // await worksheet.protect('', options);
+          await worksheet.protect('', options);
           
           workbook.xlsx.write(res);
         }

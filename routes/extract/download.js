@@ -165,8 +165,10 @@ router.post('/', function (req, res) {
           //add autofilter in row 2
           if (!_.isEmpty(myLines)) {
             worksheet.autoFilter = `"A2:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 2)}"`;
+            console.log(`"A2:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 2)}"`);
           } else {
             worksheet.autoFilter = `"A2:${alphabet(resProject.fieldnames.length + 4)}2"`;
+            console.log(`"A2:${alphabet(resProject.fieldnames.length + 4)}2"`);
           }
           
 

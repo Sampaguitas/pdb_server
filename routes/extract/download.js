@@ -21,7 +21,9 @@ router.post('/', function (req, res) {
     
     const screenId = req.query.screenId;
     const projectId = req.query.projectId;
+    const unlocked = req.query.unlocked;
     const selectedIds = req.body.selectedIds;
+    
 
     let poIds = [];
     let subIds = [];
@@ -128,8 +130,8 @@ router.post('/', function (req, res) {
             myLines.map(function (line, indexLine) {
               line.map(function (myCell) {
                 let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 2)}`);
-                let myColour = myCell.edit ? {argb: 'FFFFFF'}  : {argb: 'd3d3d3'};
-                let myProtection = myCell.edit ? { locked: false } : { locked: true };
+                let myColour = (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
+                let myProtection = (!unlocked && myCell.edit) ? { locked: true } : { locked: false };
                 with (cell) {
                   style = Object.create(cell.style), //shallow-clone the style, break references
                   border ={
@@ -161,13 +163,14 @@ router.post('/', function (req, res) {
           }
 
           //add autofilter
-          worksheet.autoFilter = `A1:${alphabet(resProject.fieldnames.lenght + 4) + (myLines.length + 1)}`;
+          console.log(`A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}`);
+          worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
           
           //hide Ids
-          worksheet.getColumn('A').hidden = true; //poId
-          worksheet.getColumn('B').hidden = true; //subId
-          worksheet.getColumn('C').hidden = true; //packitemId
-          worksheet.getColumn('D').hidden = true; //collipackId
+          // worksheet.getColumn('A').hidden = true; //poId
+          // worksheet.getColumn('B').hidden = true; //subId
+          // worksheet.getColumn('C').hidden = true; //packitemId
+          // worksheet.getColumn('D').hidden = true; //collipackId
           
           //set worksheet protection options
           let options = {
@@ -187,7 +190,7 @@ router.post('/', function (req, res) {
           }
 
           //protect worksheet 
-          await worksheet.protect('', options);
+          // await worksheet.protect('', options);
           
           workbook.xlsx.write(res);
         }

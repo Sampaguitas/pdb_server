@@ -131,7 +131,7 @@ router.post('/', function (req, res) {
               line.map(function (myCell) {
                 let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 2)}`);
                 let myColour = (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
-                let myProtection = (!unlocked && myCell.edit) ? { locked: true } : { locked: false };
+                let myProtection = { locked: false } //(!unlocked && myCell.edit) ? { locked: true } : { locked: false };
                 with (cell) {
                   style = Object.create(cell.style), //shallow-clone the style, break references
                   border ={
@@ -164,6 +164,7 @@ router.post('/', function (req, res) {
 
           //add autofilter in row 2
           worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4)}1"`;
+          console.log(`"A1:${alphabet(resProject.fieldnames.length + 4)}1"`);
           // if (!_.isEmpty(myLines)) {
           //   worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
           //   console.log(`"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`);

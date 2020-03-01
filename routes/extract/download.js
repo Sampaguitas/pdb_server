@@ -99,10 +99,10 @@ router.post('/', function (req, res) {
               with (cell) {
                 style = Object.create(cell.style), //shallow-clone the style, break references
                 border ={
-                  top: {style:'thin'},
-                  left: {style:'thin'},
+                  top: {style:'dotted'},
+                  left: {style:'dotted'},
                   bottom: {style:'thick'},
-                  right: {style:'thin'}                
+                  right: {style:'dotted'}                
                 },
                 fill = {
                   type: 'pattern',
@@ -129,6 +129,7 @@ router.post('/', function (req, res) {
           let myLines = getLines(resProject, resProject.fieldnames, screenId);
           if (!_.isEmpty(myLines)) {
             myLines.map(function (line, indexLine) {
+              worksheet.getRow(indexLine + 3).height = 25;
               line.map(function (myCell) {
                 let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 3)}`);
                 let myColour = (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
@@ -136,10 +137,10 @@ router.post('/', function (req, res) {
                 with (cell) {
                   style = Object.create(cell.style), //shallow-clone the style, break references
                   border ={
-                    top: {style:'thin'},
-                    left: {style:'thin'},
-                    bottom: {style:'thin'},
-                    right: {style:'thin'}                
+                    top: {style:'dotted'},
+                    left: {style:'dotted'},
+                    bottom: {style:'dotted'},
+                    right: {style:'dotted'}                
                   },
                   fill = {
                     type: 'pattern',
@@ -149,7 +150,7 @@ router.post('/', function (req, res) {
                   font = {
                     name: 'Calibri',
                     family: 2,
-                    size: 8,
+                    size: 11,
                     bold: false
                   },
                   alignment = {
@@ -165,17 +166,6 @@ router.post('/', function (req, res) {
 
           //add autofilter in row 2
           worksheet.autoFilter = `A2:${alphabet(resProject.fieldnames.length + 4)}2`;
-          // console.log(`"A1:${alphabet(resProject.fieldnames.length + 4)}1"`);
-
-          // worksheet.autoFilter = 'A1:BD1';
-          // if (!_.isEmpty(myLines)) {
-          //   worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
-          //   console.log(`"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`);
-          // } else {
-          //   worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4)}1"`;
-          //   console.log(`"A1:${alphabet(resProject.fieldnames.length + 4)}1"`);
-          // }
-          
 
           //hide Ids
           worksheet.getColumn('A').hidden = true; //poId

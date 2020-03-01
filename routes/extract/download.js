@@ -167,10 +167,10 @@ router.post('/', function (req, res) {
           // worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
           worksheet.autoFilter = 'A1:BD1'
           //hide Ids
-          // worksheet.getColumn('A').hidden = true; //poId
-          // worksheet.getColumn('B').hidden = true; //subId
-          // worksheet.getColumn('C').hidden = true; //packitemId
-          // worksheet.getColumn('D').hidden = true; //collipackId
+          worksheet.getColumn('A').hidden = true; //poId
+          worksheet.getColumn('B').hidden = true; //subId
+          worksheet.getColumn('C').hidden = true; //packitemId
+          worksheet.getColumn('D').hidden = true; //collipackId
           
           //set worksheet protection options
           let options = {

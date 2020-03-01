@@ -113,7 +113,7 @@ router.post('/', function (req, res) {
                   color: { argb: 'FFFFFF'},
                   family: 2,
                   size: 11,
-                  bold: false
+                  bold: true
                 },
                 alignment = {
                   vertical: 'middle',
@@ -148,7 +148,7 @@ router.post('/', function (req, res) {
                   font = {
                     name: 'Calibri',
                     family: 2,
-                    size: 11,
+                    size: 8,
                     bold: false
                   },
                   alignment = {

@@ -129,7 +129,7 @@ router.post('/', function (req, res) {
           if (!_.isEmpty(myLines)) {
             myLines.map(function (line, indexLine) {
               line.map(function (myCell) {
-                let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 2)}`);
+                let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 3)}`);
                 let myColour = (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
                 let myProtection = { locked: false } //(!unlocked && myCell.edit) ? { locked: true } : { locked: false };
                 with (cell) {
@@ -163,7 +163,7 @@ router.post('/', function (req, res) {
           }
 
           //add autofilter in row 2
-          worksheet.autoFilter = `A1:${alphabet(resProject.fieldnames.length + 4)}1`;
+          worksheet.autoFilter = `A2:${alphabet(resProject.fieldnames.length + 4)}2`;
           // console.log(`"A1:${alphabet(resProject.fieldnames.length + 4)}1"`);
 
           // worksheet.autoFilter = 'A1:BD1';

@@ -155,7 +155,7 @@ router.post('/', function (req, res) {
                     vertical: 'middle',
                     horizontal: myCell.align
                   },
-                  protection = myProtection,
+                  // protection = myProtection,
                   value = myCell.val         
                 }
               });

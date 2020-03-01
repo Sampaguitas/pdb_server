@@ -164,8 +164,8 @@ router.post('/', function (req, res) {
 
           //add autofilter
           console.log(`A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}`);
-          worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
-          
+          // worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
+          worksheet.autoFilter = 'A1:BD1'
           //hide Ids
           // worksheet.getColumn('A').hidden = true; //poId
           // worksheet.getColumn('B').hidden = true; //subId

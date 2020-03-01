@@ -93,6 +93,7 @@ router.post('/', function (req, res) {
           //add headers
           let myHeaders = getHeaders(resProject.fieldnames);
           if (!_.isEmpty(myHeaders)) {
+            worksheet.getRow(1).height = 30;
             myHeaders.map(function (header) {
               let cell = worksheet.getCell(`${alphabet(header.col) + 1}`);
               with (cell) {

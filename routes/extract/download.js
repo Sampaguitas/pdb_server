@@ -96,6 +96,7 @@ router.post('/', function (req, res) {
             worksheet.getRow(1).height = 30;
             myHeaders.map(function (header) {
               let cell = worksheet.getCell(`${alphabet(header.col) + 1}`);
+              myColour = header.col < 4 ? { argb: 'A8052C'} : { argb: '0070C0'}
               with (cell) {
                 style = Object.create(cell.style), //shallow-clone the style, break references
                 border ={

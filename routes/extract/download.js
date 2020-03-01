@@ -173,23 +173,23 @@ router.post('/', function (req, res) {
           
           //set worksheet protection options
           let options = {
-            selectLockedCells: false,
-            selectUnlockedCells: false,
-            formatCells: false,
-            formatColumns: false,
-            formatRows: false,
+            selectLockedCells: true,
+            selectUnlockedCells: true,
+            formatCells: true,
+            formatColumns: true,
+            formatRows: true,
             insertRows: false,
             insertColumns: false,
             insertHyperlinks: false,
             deleteRows: false,
             deleteColumns: false,
-            sort: false,
-            autoFilter: false,
-            pivotTables: false
+            sort: true,
+            autoFilter: true,
+            pivotTables: true
           }
 
           //protect worksheet 
-          await worksheet.protect('', options);
+          // await worksheet.protect('', options);
           
           workbook.xlsx.write(res);
         }

@@ -178,14 +178,14 @@ router.post('/', function (req, res) {
             formatCells: true,
             formatColumns: true,
             formatRows: true,
-            insertRows: false,
-            insertColumns: false,
-            insertHyperlinks: false,
-            deleteRows: false,
-            deleteColumns: false,
+            insertRows: true,
+            insertColumns: true,
+            insertHyperlinks: true,
+            deleteRows: true,
+            deleteColumns: true,
             sort: true,
             autoFilter: true,
-            pivotTables: false
+            pivotTables: true
           }
 
           //protect worksheet 

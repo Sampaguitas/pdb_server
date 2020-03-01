@@ -129,7 +129,7 @@ router.post('/', function (req, res) {
           if (!_.isEmpty(myLines)) {
             myLines.map(function (line, indexLine) {
               line.map(function (myCell) {
-                let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 2)}`);
+                let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 3)}`);
                 let myColour = (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
                 let myProtection = (!unlocked && myCell.edit) ? { locked: true } : { locked: false };
                 with (cell) {
@@ -163,9 +163,9 @@ router.post('/', function (req, res) {
           }
 
           //add autofilter
-          console.log(`A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}`);
-          // worksheet.autoFilter = `"A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}"`;
-          worksheet.autoFilter = 'A1:BD1'
+          // console.log(`A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}`);
+          worksheet.autoFilter = `"A2:${alphabet(resProject.fieldnames.length + 4)}2"`;
+          // worksheet.autoFilter = 'A1:BD1'
           //hide Ids
           worksheet.getColumn('A').hidden = true; //poId
           worksheet.getColumn('B').hidden = true; //subId
@@ -254,28 +254,28 @@ function getLines (resProject, fieldnames, screenId) {
                       col: 1,
                       type: 'String',
                       align: 'left',
-                      edit: false
+                      edit: true
                     });
                     arrayRow.push({
                       val: sub._id, //subId
                       col: 2,
                       type: 'String',
                       align: 'left',
-                      edit: false
+                      edit: true
                     });
                     arrayRow.push({
                       val: packitem._id, //packItemId
                       col: 3,
                       type: 'String',
                       align: 'left',
-                      edit: false
+                      edit: true
                     });
                     arrayRow.push({
                       val: '', //colliPackId
                       col: 4,
                       type: 'String',
                       align: 'left',
-                      edit: false
+                      edit: true
                     });
                     fieldnames.map( (fieldname, index) => {
                       switch(fieldname.fields.fromTbl) {
@@ -311,7 +311,7 @@ function getLines (resProject, fieldnames, screenId) {
                           col: index + 5,
                           type: 'String',
                           align: 'left',
-                          edit: false
+                          edit: true
                         });
                       }
                     });
@@ -324,28 +324,28 @@ function getLines (resProject, fieldnames, screenId) {
                     col: 1,
                     type: 'String',
                     align: 'left',
-                    edit: false
+                    edit: true
                   });
                   arrayRow.push({
                     val: sub._id, //subId
                     col: 2,
                     type: 'String',
                     align: 'left',
-                    edit: false
+                    edit: true
                   });
                   arrayRow.push({
                     val: '', //packItemId
                     col: 3,
                     type: 'String',
                     align: 'left',
-                    edit: false
+                    edit: true
                   });
                   arrayRow.push({
                     val: '', //colliPackId
                     col: 4,
                     type: 'String',
                     align: 'left',
-                    edit: false
+                    edit: true
                   });
                   fieldnames.map( (fieldname, index) => {
                     switch(fieldname.fields.fromTbl) {
@@ -372,7 +372,7 @@ function getLines (resProject, fieldnames, screenId) {
                         col: index + 5,
                         type: "String",
                         align: 'left',
-                        edit: false
+                        edit: true
                       });
                     }
                   });

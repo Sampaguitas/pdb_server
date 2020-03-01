@@ -53,8 +53,9 @@ router.post('/', upload.single('file'), function (req, res) {
         var hasPackitems = getScreenTbls(resFieldNames).includes('packitem');
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => { //edited
-        
+          
           var worksheet = wb.getWorksheet(1);
+          worksheet.unprotect();
           let rowCount = worksheet.rowCount;
           
           if (rowCount < 2) {
@@ -95,7 +96,6 @@ router.post('/', upload.single('file'), function (req, res) {
                 tempPackItem._id = clean(worksheet.getCell('C' + row).value);
                 tempPackItem.packId = clean(worksheet.getCell('D' + row).value);
                 tempPackItem.subId = tempSub._id;
-
 
 
                 resFieldNames.map((resFieldName, index) => {
@@ -279,8 +279,14 @@ function getScreenTbls (resFieldNames) {
 }
 
 function clean(value) {
+  let nonPrintable = /[\t\r\n]/mg;
   let DbQuotes = /^".*"$/
   let sQuote = /^[`|'].*$/
+  
+  if (nonPrintable.test(value)) {
+    value = value.replace(nonPrintable, '');
+  }
+  
   if(DbQuotes.test(value)){
     return value.slice(1,-1);
   } else if (sQuote.test(value)) {

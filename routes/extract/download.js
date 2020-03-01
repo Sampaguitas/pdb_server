@@ -174,24 +174,24 @@ router.post('/', function (req, res) {
           worksheet.getColumn('D').hidden = true; //collipackId
           
           //set worksheet protection options
-          // let options = {
-          //   selectLockedCells: true,
-          //   selectUnlockedCells: true,
-          //   formatCells: true,
-          //   formatColumns: true,
-          //   formatRows: true,
-          //   insertRows: false,
-          //   insertColumns: false,
-          //   insertHyperlinks: false,
-          //   deleteRows: false,
-          //   deleteColumns: false,
-          //   sort: true,
-          //   autoFilter: true,
-          //   pivotTables: true
-          // }
+          let options = {
+            selectLockedCells: true,
+            selectUnlockedCells: true,
+            formatCells: true,
+            formatColumns: true,
+            formatRows: true,
+            insertRows: false,
+            insertColumns: false,
+            insertHyperlinks: false,
+            deleteRows: false,
+            deleteColumns: false,
+            sort: true,
+            autoFilter: true,
+            pivotTables: true
+          }
 
           //protect worksheet 
-          // await worksheet.protect('', options);
+          await worksheet.protect('', options);
           
           workbook.xlsx.write(res);
         }

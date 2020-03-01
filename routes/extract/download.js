@@ -173,19 +173,19 @@ router.post('/', function (req, res) {
           
           //set worksheet protection options
           let options = {
-            selectLockedCells: true,
-            selectUnlockedCells: true,
-            formatCells: true,
-            formatColumns: true,
-            formatRows: true,
-            insertRows: true,
-            insertColumns: true,
-            insertHyperlinks: true,
-            deleteRows: true,
-            deleteColumns: true,
-            sort: true,
-            autoFilter: true,
-            pivotTables: true
+            selectLockedCells: false,
+            selectUnlockedCells: false,
+            formatCells: false,
+            formatColumns: false,
+            formatRows: false,
+            insertRows: false,
+            insertColumns: false,
+            insertHyperlinks: false,
+            deleteRows: false,
+            deleteColumns: false,
+            sort: false,
+            autoFilter: false,
+            pivotTables: false
           }
 
           //protect worksheet 

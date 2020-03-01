@@ -162,10 +162,9 @@ router.post('/', function (req, res) {
             });
           }
 
-          //add autofilter
-          // console.log(`A1:${alphabet(resProject.fieldnames.length + 4) + (myLines.length + 1)}`);
+          //add autofilter in row 2
           worksheet.autoFilter = `"A2:${alphabet(resProject.fieldnames.length + 4)}2"`;
-          // worksheet.autoFilter = 'A1:BD1'
+
           //hide Ids
           worksheet.getColumn('A').hidden = true; //poId
           worksheet.getColumn('B').hidden = true; //subId

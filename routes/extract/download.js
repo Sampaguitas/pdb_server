@@ -133,8 +133,8 @@ router.post('/', function (req, res) {
               worksheet.getRow(indexLine + 3).height = 25;
               line.map(function (myCell) {
                 let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 3)}`);
-                let myColour = (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
-                let myProtection = (!unlocked && myCell.edit) ? { locked: true } : { locked: false };
+                let myColour = myCell.col < 4 ? {argb: 'd3d3d3'} : (!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'};
+                let myProtection = myCell.col < 4 ? { locked: true } : (!unlocked && myCell.edit) ? { locked: true } : { locked: false };
                 with (cell) {
                   style = Object.create(cell.style), //shallow-clone the style, break references
                   border ={

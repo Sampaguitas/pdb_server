@@ -99,10 +99,10 @@ router.post('/', function (req, res) {
               with (cell) {
                 style = Object.create(cell.style), //shallow-clone the style, break references
                 border ={
-                  top: {style:'dotted'},
-                  left: {style:'dotted'},
+                  top: {style:'dashDot'},
+                  left: {style:'dashDot'},
                   bottom: {style:'thick'},
-                  right: {style:'dotted'}                
+                  right: {style:'dashDot'}                
                 },
                 fill = {
                   type: 'pattern',
@@ -137,10 +137,10 @@ router.post('/', function (req, res) {
                 with (cell) {
                   style = Object.create(cell.style), //shallow-clone the style, break references
                   border ={
-                    top: {style:'dotted'},
-                    left: {style:'dotted'},
-                    bottom: {style:'dotted'},
-                    right: {style:'dotted'}                
+                    top: {style:'dashDot'},
+                    left: {style:'dashDot'},
+                    bottom: {style:'dashDot'},
+                    right: {style:'dashDot'}                
                   },
                   fill = {
                     type: 'pattern',

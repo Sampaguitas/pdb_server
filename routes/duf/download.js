@@ -21,6 +21,7 @@ router.get('/', function (req, res) {
             // workbook.properties.date1904 = true;
             var worksheet = workbook.addWorksheet('My Sheet');
             if (!!resFieldNames.length) {
+                worksheet.getRow(1).height = 30;
                 resFieldNames.map(resFieldName => {
                     if(resFieldName.forShow > 0) {
                         let cell = worksheet.getCell(`${alphabet(resFieldName.forShow) + 1}`);
@@ -28,21 +29,26 @@ router.get('/', function (req, res) {
                             value = resFieldName.fields.custom,
                             style = Object.create(cell.style), //shallow-clone the style, break references
                             border ={
-                                top: {style:'thin'},
-                                left: {style:'thin'},
+                                top: {style:'hair'},
+                                left: {style:'hair'},
                                 bottom: {style:'thick'},
-                                right: {style:'thin'}                
+                                right: {style:'hair'}                
                             },
                             fill = {
                                 type: 'pattern',
                                 pattern: 'solid',
-                                fgColor:{argb:'FFFFFFCC'}
+                                fgColor: { argb: '0070C0'}
                             },
                             font = {
                                 name: 'Calibri',
+                                color: { argb: 'FFFFFF'},
                                 family: 2,
                                 size: 11,
                                 bold: true
+                            },
+                            alignment = {
+                                vertical: 'middle',
+                                horizontal: 'left'
                             }
                         }
                     }

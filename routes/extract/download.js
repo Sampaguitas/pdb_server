@@ -133,8 +133,27 @@ router.post('/', function (req, res) {
               worksheet.getRow(indexLine + 3).height = 25;
               line.map(function (myCell) {
                 let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 3)}`);
-                let myColour = myCell.col < 5 ? {argb: 'd3d3d3'} : ((!unlocked && myCell.edit) ? {argb: 'd3d3d3'} : {argb: 'FFFFFF'});
-                let myProtection = myCell.col < 5 ? { locked: true } : ((!unlocked && myCell.edit) ? { locked: true } : { locked: false });
+                
+                let myColour = function () {
+                  if (myCell.col < 5) {
+                    return {argb: 'd3d3d3'};
+                  } else if (unlocked == 'false' && myCell.edit) {
+                    return {argb: 'd3d3d3'};
+                  } else {
+                    return {argb: 'FFFFFF'};
+                  }
+                }
+
+                let myProtection = function () {
+                  if (myCell.col < 5) {
+                    return { locked: true };
+                  } else if (unlocked == 'false' && myCell.edit) {
+                    return { locked: true };
+                  } else {
+                    return { locked: false }
+                  }
+                }
+                
                 with (cell) {
                   style = Object.create(cell.style), //shallow-clone the style, break references
                   border ={
@@ -146,7 +165,7 @@ router.post('/', function (req, res) {
                   fill = {
                     type: 'pattern',
                     pattern: 'solid',
-                    fgColor: myColour
+                    fgColor: myColour()
                   },
                   font = {
                     name: 'Calibri',
@@ -158,7 +177,7 @@ router.post('/', function (req, res) {
                     vertical: 'middle',
                     horizontal: myCell.align
                   },
-                  protection = myProtection,
+                  protection = myProtection(),
                   value = myCell.val         
                 }
               });

@@ -28,7 +28,6 @@ router.put('/', (req, res) => {
     } else if (_.isEmpty(virtuals)) {
         return res.status(400).json({message:'Wrong virtuals format'});
     } else {
-        // if (packItemId === 'undefined'){
         switch(!packItemId){
             case true:
                 //create all virtuals (no existing packitem)
@@ -42,7 +41,7 @@ router.put('/', (req, res) => {
                 break
             case false:
                 //update first and update others (existing packitem)
-                PackItem.findOneAndUpdate(packItemId, { $set: virtuals[0]})
+                PackItem.findByIdAndUpdate(packItemId, { $set: virtuals[0]})
                 .then( () => {
                     if(virtuals.length === 1) {
                         return res.status(200).json({ message: 'Sub information was successfuly updated.' });

@@ -18,17 +18,20 @@ function alterArray(virtuals, subId, includingFirst) {
 }
 
 router.put('/', (req, res) => {
+
     const virtuals = req.body.virtuals;
     const subId = req.query.subId;
-    const packitemId = req.query.packitemId;
+    const packItemId = req.query.packItemId;
 
     if (_.isUndefined(subId)) {
-        return res.status(400).json({message:'PO or SUB ID is missing'});
+        return res.status(400).json({message:'SUB ID is missing'});
     } else if (_.isEmpty(virtuals)) {
         return res.status(400).json({message:'Wrong virtuals format'});
     } else {
-        switch (_.isUndefined(packitemId)){
-            case true: //create all virtuals.
+        // if (packItemId === 'undefined'){
+        switch(!packItemId){
+            case true:
+                //create all virtuals (no existing packitem)
                 PackItem.insertMany(alterArray(virtuals, subId, true))
                 .then( () => {
                     return res.status(200).json({ message: 'Sub lines where successfully created.' });
@@ -37,8 +40,9 @@ router.put('/', (req, res) => {
                     return res.status(400).json({message:'Sub lines could not be created.'});
                 });
                 break
-            case false: //update first virtual and create others.
-                PackItem.findOneAndUpdate(packitemId, { $set: virtuals[0]})
+            case false:
+                //update first and update others (existing packitem)
+                PackItem.findOneAndUpdate(packItemId, { $set: virtuals[0]})
                 .then( () => {
                     if(virtuals.length === 1) {
                         return res.status(200).json({ message: 'Sub information was successfuly updated.' });
@@ -55,7 +59,7 @@ router.put('/', (req, res) => {
                 .catch( () => {
                     return res.status(400).json({message:'Sub information could not be updated'});
                 });
-                break
+                break;
         }
     }
 });

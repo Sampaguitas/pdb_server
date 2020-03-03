@@ -7,15 +7,15 @@ const _ = require('lodash');
 router.put('/', (req, res) => {
 
     var data = {};
-    const id = req.query.id;
-    const parentId = req.query.parentId;
+    const id = decodeURI(req.query.id);
+    const parentId = decodeURI(req.query.parentId);
 
     if (id || parentId) {
 
         Object.keys(req.body).forEach(function (k) {
             data[k] = decodeURI(req.body[k]);
         });
-        
+
         data.subId = parentId;
 
         PackItem.findByIdAndUpdate(id, { $set: data }, { upsert: true }, function(err, resPackitem) {

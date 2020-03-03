@@ -10,7 +10,8 @@ router.put('/', (req, res) => {
         data[k] = decodeURI(req.body[k]);
     });
 
-    const id = req.query.id
+    const id = decodeURI(req.query.id);
+    
     Po.findByIdAndUpdate(id, { $set: data }, function (err, po) {
         if (!po) {
             return res.status(400).json({

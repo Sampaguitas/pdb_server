@@ -10,21 +10,31 @@ router.put('/', (req, res) => {
     const id = decodeURI(req.query.id);
     const parentId = decodeURI(req.query.parentId);
 
-    if (id || parentId) {
+    Object.keys(req.body).forEach(function (k) {
+        data[k] = decodeURI(req.body[k]);
+    });
 
-        Object.keys(req.body).forEach(function (k) {
-            data[k] = decodeURI(req.body[k]);
-        });
-
-        data.subId = parentId;
-
-        PackItem.findByIdAndUpdate(id, { $set: data }, { upsert: true }, function(err, resPackitem) {
+    if (id) {
+       
+        PackItem.findByIdAndUpdate(id, { $set: data }, function(err, resPackitem) {
             if (err) {
                 return res.status(400).json({ message: 'Object could not be updated.' });
             }
             else {
                 return res.status(200).json({ message: 'Object has been updated.' });
             }
+        });
+
+    } else if (parentId) {
+
+        data.subId = parentId;
+
+        PackItem.create(data)
+        .then( () => {
+            return res.status(200).json({ message: 'Object has been created.' });
+        })
+        .catch( () => {
+            return res.status(400).json({ message: 'Object could not be created.' });
         });
 
     } else {

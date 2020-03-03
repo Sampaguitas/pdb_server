@@ -4,7 +4,9 @@ const FieldName = require('../../models/FieldName');
 const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
+    
     var data = {};
+    
     Object.keys(req.body).forEach(function (k) {
         if (req.body[k] == true || req.body[k] == false) {
             data[k] = req.body[k];
@@ -12,20 +14,15 @@ router.put('/', (req, res) => {
             data[k] = decodeURI(req.body[k]);
         }
     });
-    const id = req.query.id
+    
+    const id = decodeURI(req.query.id);
+    
     FieldName.findByIdAndUpdate(id, { $set: data }, function (err, fieldname) {
-        if (!fieldname) {
-            return res.status(400).json({
-                message: 'FieldName does not exist'
-                //"0801": "FieldName does not exist",
-            });
+        if (err) {
+            return res.status(400).json({ message: 'Could not update fieldname.' });
         }
         else {
-            console.log("fieldname:", fieldname);
-            return res.status(200).json({
-                message: 'FieldName has been updated'
-                //"0802": "FieldName has been updated",
-            });
+            return res.status(200).json({ message: 'Fieldname has been updated.' });
         }
     });
 });

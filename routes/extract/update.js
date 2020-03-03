@@ -113,12 +113,12 @@ router.put('/', async (req, res) => {
                     });
                         
                     return res.status(nRejected > 0 ? 400 : 200).json({
-                        message: `${nEdited} items edited, ${nAdded} items added, ${nRejected} items rejected.`
+                        message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                     });
                 })
                 .catch ( () => {
                     return res.status(400).json({
-                        message: `${nEdited} items edited, ${nAdded} items added, ${nRejected} items rejected.`
+                        message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                     });
                 });
             break;

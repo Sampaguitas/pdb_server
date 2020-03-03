@@ -2,29 +2,35 @@ const express = require('express');
 const router = express.Router();
 const PackItem = require('../../models/PackItem');
 const fault = require('../../utilities/Errors');
+const _ = require('lodash');
 
 router.put('/', (req, res) => {
+
     var data = {};
+    const id = req.query.id;
+    const parentId = req.query.parentId;
 
-    Object.keys(req.body).forEach(function (k) {
-        data[k] = decodeURI(req.body[k]);
-    });
+    if (id || parentId) {
 
-    const id = req.query.id
-    PackItem.findByIdAndUpdate(id, { $set: data }, function (err, packitem) {
-        if (!packitem) {
-            return res.status(400).json({
-                message: fault(1101).message
-                //"1101": "PackItem does not exist",
-            });
-        }
-        else {
-            return res.status(200).json({
-                message: fault(1102).message
-                //"1102": "PackItem has been updated",
-            });
-        }
-    });
+        Object.keys(req.body).forEach(function (k) {
+            data[k] = decodeURI(req.body[k]);
+        });
+        
+        data.subId = parentId;
+
+        PackItem.findByIdAndUpdate(id, { $set: data }, { upsert: true }, function(err, resPackitem) {
+            if (err) {
+                return res.status(400).json({ message: 'Object could not be updated.' });
+            }
+            else {
+                return res.status(200).json({ message: 'Object has been updated.' });
+            }
+        });
+
+    } else {
+        return res.status(400).json({ message: 'Object Id or parent Id is missing.' }); 
+    }
+    
 });
 
 module.exports = router;

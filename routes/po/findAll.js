@@ -15,21 +15,21 @@ router.get('/', (req, res) => {
         populate: [
             {
                 path: 'certificates',
-                options: {
-                    sort: { 
-                        'cif': 'asc',
-                        'heatNr': 'asc'
-                    }
-                }
+                // options: {
+                //     sort: { 
+                //         'cif': 'asc',
+                //         'heatNr': 'asc'
+                //     }
+                // }
             },
             {
                 path: 'packitems',
-                options: {
-                    sort: { 
-                        'plNr': 'asc',
-                        'colliNr': 'asc'
-                    }
-                }
+                // options: {
+                //     sort: { 
+                //         'plNr': 'asc',
+                //         'colliNr': 'asc'
+                //     }
+                // }
             }
         ]
     })

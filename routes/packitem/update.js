@@ -3,6 +3,7 @@ const router = express.Router();
 const PackItem = require('../../models/PackItem');
 const fault = require('../../utilities/Errors');
 const _ = require('lodash');
+const ObjectId = require('mongodb').ObjectID;
 
 router.put('/', (req, res) => {
 
@@ -14,33 +15,24 @@ router.put('/', (req, res) => {
         data[k] = decodeURI(req.body[k]);
     });
 
-    if (id) {
-       
-        PackItem.findByIdAndUpdate(id, { $set: data }, function(err, resPackitem) {
+    data.subId = parentId;
+
+    let query = id ? { _id: id } : { _id: new ObjectId() };
+    let update = { $set: data };
+    let options = { new: true, upsert: true };
+
+    if (!!id || !!parentId) {
+        PackItem.findOneAndUpdate(query, update, options, function(err, resPackitem) {
             if (err) {
-                return res.status(400).json({ message: 'Object could not be updated.' });
+                return res.status(400).json({ message: `Object could not be ${!id ? "created" : "updated."}`});
             }
             else {
-                return res.status(200).json({ message: 'Object has been updated.' });
+                return res.status(200).json({ message: `Object has been ${!id ? "created" : "updated."}`});
             }
         });
-
-    } else if (parentId) {
-
-        data.subId = parentId;
-
-        PackItem.create(data)
-        .then( () => {
-            return res.status(200).json({ message: 'Object has been created.' });
-        })
-        .catch( () => {
-            return res.status(400).json({ message: 'Object could not be created.' });
-        });
-
     } else {
-        return res.status(400).json({ message: 'Object Id or parent Id is missing.' }); 
+        return res.status(400).json({ message: 'Object Id and parent Id are missing.' });
     }
-    
 });
 
 module.exports = router;

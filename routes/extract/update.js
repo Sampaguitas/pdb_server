@@ -6,6 +6,7 @@ const Certificate = require('../../models/Certificate');
 const PackItem = require('../../models/PackItem');
 const ColliPack = require('../../models/ColliPack');
 const _ = require('lodash');
+const ObjectId = require('mongodb').ObjectID;
 
 router.put('/', async (req, res) => {
 
@@ -97,11 +98,13 @@ router.put('/', async (req, res) => {
                 });
             break;
             case 'packitem':
-                selectedIds.map(function (selectedId, index) {
-                    myPromises.push(upsert(selectedId, fieldName, fieldValue, index));
+
+                selectedIds.map(function (selectedId) {
+                    myPromises.push(upsert(selectedId, fieldName, fieldValue));
                 });
                 
                 await Promise.all(myPromises).then(resMyPromises => {
+                    
                     resMyPromises.map(r => {
                         if (r.isRejected) {
                             nRejected++;
@@ -115,12 +118,14 @@ router.put('/', async (req, res) => {
                     return res.status(nRejected > 0 ? 400 : 200).json({
                         message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                     });
+
                 })
                 .catch ( () => {
                     return res.status(400).json({
                         message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                     });
                 });
+
             break;
             case 'collipack':
                 ColliPack.updateMany({
@@ -142,50 +147,29 @@ router.put('/', async (req, res) => {
 
 module.exports = router;
 
-function upsert(selectedId, fieldName, fieldValue, index) {
+function upsert(selectedId, fieldName, fieldValue) {
     return new Promise(function(resolve){
-        if (selectedId.packItemId) {
-            PackItem.findByIdAndUpdate(selectedId.packItemId, {
-                 $set: { [fieldName]: fieldValue } 
-                }, function (errPackItem) {
+        if (!!selectedId.packItemId || !!selectedId.subId) {
+            let query = selectedId.packItemId ? { _id: selectedId.packItemId } : { _id: new ObjectId() };
+            let update = { $set: { [fieldName]: fieldValue, subId: selectedId.subId } };
+            let options = { new: true, upsert: true };
+            PackItem.findOneAndUpdate(query, update, options, function(errPackItem) {
                 if (errPackItem) {
                     resolve({
-                        index: index,
                         isEdited: false,
                         isAdded: false,
                         isRejected: true,
                     });
                 } else {
                     resolve({
-                        index: index,
-                        isEdited: true,
-                        isAdded: false,
+                        isEdited: selectedId.packItemId ? true : false,
+                        isAdded: selectedId.packItemId ? false: true,
                         isRejected: false,
                     });
                 }
             });
-        } else if (selectedId.subId) {
-            let tempDocument = { subId: selectedId.subId };
-            tempDocument[fieldName] = fieldValue;
-            PackItem.create(tempDocument).then( () => {
-                resolve({
-                    index: index,
-                    isEdited: false,
-                    isAdded: true,
-                    isRejected: false,
-                });
-            })
-            .catch( () => {
-                resolve({
-                    index: index,
-                    isEdited: false,
-                    isAdded: false,
-                    isRejected: true,
-                });
-            });
         } else {
             resolve({
-                index: index,
                 isEdited: false,
                 isAdded: false,
                 isRejected: true, 

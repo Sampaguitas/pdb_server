@@ -11,20 +11,19 @@ router.put('/', (req, res) => {
     });
 
     const id = req.query.id
-    ColliPack.findByIdAndUpdate(id, { $set: data }, function (err, collipack) {
-        if (!collipack) {
-            return res.status(400).json({
-                message: 'ColliPack does not exist'
-                //"0201": "ColliPack does not exist",
-            });
-        }
-        else {
-            return res.status(200).json({
-                message: 'ColliPack has been updated'
-                //"0202": "ColliPack has been updated",,
-            });
-        }
-    });
+    if (!data.hasOwnProperty('plNr') && !data.hasOwnProperty('colliNr')) {
+        ColliPack.findByIdAndUpdate(id, { $set: data }, { new: true }, function (err, collipack) {
+            if (!collipack) {
+                return res.status(400).json({ message: 'ColliPack does not exist' });
+            }
+            else {
+                return res.status(200).json({ message: 'ColliPack has been updated' });
+            }
+        });
+    } else {
+        return res.status(400).json({ message: 'plNr and colliNr cannot be edited' });
+    }
+    
 });
 
 module.exports = router;

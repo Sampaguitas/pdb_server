@@ -45,20 +45,17 @@ router.put('/', (req, res) => {
                 await Promise.all(itemsWeight).then(async resItemsWeight => {
                     
                     let myCollis = resItemsWeight.reduce(function (acc, cur) {
-                        // console.log(`isRejected: ${cur.isRejected}, cur.packId: ${cur.packId}, cur.weight: ${cur.weight}`);
                         if (!cur.isRejected) {
                            if (acc.hasOwnProperty([cur.packId])) {
-                            acc[cur.packId] += cur.weight;
+                            acc[cur.packId] += cur.weight.toFixed(2);
                            } else {
-                            acc[cur.packId] = cur.weight;
+                            acc[cur.packId] = cur.weight.toFixed(2);
                            }
                         }
                         return acc;
                     }, {});
 
                     Object.keys(myCollis).forEach(function (k) {
-                        // console.log('k:', k);
-                        // console.log('myCollis[k]:', myCollis[k]);
                         collisWeight.push(setWeight(k, myCollis[k]));
                     });
 
@@ -156,7 +153,6 @@ function getweight(erp, pcs, mtrs, packId, uom, vlArtNo, vlArtNoX) {
 }
 
 function calcWeight(tempUom, pcs, mtrs, weight) {
-    // console.log(`tempUom: ${tempUom}, pcs: ${pcs}, mtrs: ${mtrs}, weight: ${weight}`)
     switch(tempUom) {
         case 'pcs': return pcs * weight || 0;
         case 'mtrs': return mtrs * weight || 0;

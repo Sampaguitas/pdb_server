@@ -61,15 +61,15 @@ ProjectSchema.virtual("pos", {
     justOne: false
 });
 
-// ProjectSchema.virtual("subs", {
-//     ref: "subs",
-//     localField: "_id",
-//     foreignField: "projectId",
-//     justOne: false
-// });
-
 ProjectSchema.virtual("collitypes", {
     ref: "collitypes",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
+ProjectSchema.virtual("collipacks", {
+    ref: "collipacks",
     localField: "_id",
     foreignField: "projectId",
     justOne: false

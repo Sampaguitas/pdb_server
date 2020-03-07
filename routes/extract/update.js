@@ -27,8 +27,6 @@ router.put('/', async (req, res) => {
     let nAdded = 0;
     let nRejected = 0;
 
-    console.log('selectedIds:', selectedIds);
-
     if (!_.isUndefined(selectedIds) && !_.isEmpty(selectedIds) && !!collection || !!fieldName ) {
 
         selectedIds.forEach(element => {
@@ -39,60 +37,43 @@ router.put('/', async (req, res) => {
             element.colliPackId && !colliPackIds.includes(element.colliPackId) && colliPackIds.push(element.colliPackId);
         });
 
-        // if(!collection || !fieldName) {
-        //     return res.status(400).json({ message: 'this Field cannot be updated.' });
-        // } else {
-            switch(collection){
-                case 'po':
-                    Po.updateMany({
-                         _id: { $in : poIds } 
+        switch(collection){
+            case 'po':
+                Po.updateMany({
+                        _id: { $in : poIds } 
+                    },
+                    { $set: { [fieldName]: fieldValue } 
+                })
+                .then( () => {
+                    return res.status(200).json({message: 'Successfully updated.'});
+                })
+                .catch( () => {
+                    return res.status(400).json({ message: 'this Field cannot be updated.' });
+                });
+            break;
+            case 'sub':
+                if(fieldName === 'nfi' && !_.isUndefined(rfiDateAct)) {
+                    Sub.updateMany({
+                        _id: { $in : subIds } 
                         },
-                        { $set: { [fieldName]: fieldValue } 
+                        { $set: {
+                            [fieldName]: fieldValue,
+                            rfiDateAct: rfiDateAct
+                        } 
                     })
                     .then( () => {
                         return res.status(200).json({message: 'Successfully updated.'});
                     })
                     .catch( () => {
-                        return res.status(400).json({ message: 'this Field cannot be updated.' });
-                    });
-                break;
-                case 'sub':
-                    if(fieldName === 'nfi' && !_.isUndefined(rfiDateAct)) {
-                        Sub.updateMany({
-                            _id: { $in : subIds } 
-                            },
-                            { $set: {
-                                [fieldName]: fieldValue,
-                                rfiDateAct: rfiDateAct
-                            } 
-                        })
-                        .then( () => {
-                            return res.status(200).json({message: 'Successfully updated.'});
-                        })
-                        .catch( () => {
-                            return res.status(400).json({ message: 'Could not assign NFI.' });
-                        }); 
-                    } else {
-                        Sub.updateMany({
-                            _id: { $in : subIds } 
-                            },
-                            { $set: {
-                                [fieldName]: fieldValue
-                            } 
-                        })
-                        .then( () => {
-                            return res.status(200).json({message: 'Successfully updated.'});
-                        })
-                        .catch( () => {
-                            return res.status(400).json({ message: 'Field cannot be updated.' });
-                        });
-                    }
-                break;
-                case 'certificate':
-                    Certificate.updateMany({
-                        _id: { $in : certificateIds } 
+                        return res.status(400).json({ message: 'Could not assign NFI.' });
+                    }); 
+                } else {
+                    Sub.updateMany({
+                        _id: { $in : subIds } 
                         },
-                        { $set: { [fieldName]: fieldValue } 
+                        { $set: {
+                            [fieldName]: fieldValue
+                        } 
                     })
                     .then( () => {
                         return res.status(200).json({message: 'Successfully updated.'});
@@ -100,15 +81,61 @@ router.put('/', async (req, res) => {
                     .catch( () => {
                         return res.status(400).json({ message: 'Field cannot be updated.' });
                     });
-                break;
-                case 'packitem':
-    
-                    selectedIds.map(function (selectedId) {
-                        myPromises.push(upsert(selectedId, fieldName, fieldValue));
-                    });
+                }
+            break;
+            case 'certificate':
+                Certificate.updateMany({
+                    _id: { $in : certificateIds } 
+                    },
+                    { $set: { [fieldName]: fieldValue } 
+                })
+                .then( () => {
+                    return res.status(200).json({message: 'Successfully updated.'});
+                })
+                .catch( () => {
+                    return res.status(400).json({ message: 'Field cannot be updated.' });
+                });
+            break;
+            case 'packitem':
+
+                selectedIds.map(function (selectedId) {
+                    myPromises.push(upsert(selectedId, fieldName, fieldValue));
+                });
+                
+                await Promise.all(myPromises).then(resMyPromises => {
                     
-                    await Promise.all(myPromises).then(resMyPromises => {
+                    resMyPromises.map(r => {
+                        if (r.isRejected) {
+                            nRejected++;
+                        } else if (r.isEdited) {
+                            nEdited++;
+                        } else if (r.isAdded) {
+                            nAdded++;
+                        }
+                    });
                         
+                    return res.status(nRejected > 0 ? 400 : 200).json({
+                        message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
+                    });
+
+                })
+                .catch ( () => {
+                    return res.status(400).json({
+                        message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
+                    });
+                });
+
+            break;
+            case 'collipack':
+                if (fieldName === 'plNr' || fieldName === 'colliNr') {
+                    return res.status(400).json({ message: 'plNr and colliNr cannot be edited.' });
+                } else {
+                    selectedIds.map(function (selectedId) {
+                        myPromises.push(editColliPack(selectedId, fieldName, fieldValue));
+                    });
+
+                    await Promise.all(myPromises).then(resMyPromises => {
+                    
                         resMyPromises.map(r => {
                             if (r.isRejected) {
                                 nRejected++;
@@ -129,56 +156,10 @@ router.put('/', async (req, res) => {
                             message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                         });
                     });
-    
-                break;
-                case 'collipack':
-                    if (fieldName === 'plNr' || fieldName === 'colliNr') {
-                        return res.status(400).json({ message: 'plNr and colliNr cannot be edited.' });
-                    } else {
-                        selectedIds.map(function (selectedId) {
-                            myPromises.push(editColliPack(selectedId, fieldName, fieldValue));
-                        });
-    
-                        await Promise.all(myPromises).then(resMyPromises => {
-                        
-                            resMyPromises.map(r => {
-                                if (r.isRejected) {
-                                    nRejected++;
-                                } else if (r.isEdited) {
-                                    nEdited++;
-                                } else if (r.isAdded) {
-                                    nAdded++;
-                                }
-                            });
-                                
-                            return res.status(nRejected > 0 ? 400 : 200).json({
-                                message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
-                            });
-        
-                        })
-                        .catch ( () => {
-                            return res.status(400).json({
-                                message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
-                            });
-                        });
-    
-                        // ColliPack.updateMany({
-                        //     _id: { $in : colliPackIds } 
-                        //     },
-                        //     { $set: { [fieldName]: fieldValue } 
-                        // })
-                        // .then( () => {
-                        //     return res.status(200).json({message: 'Successfully updated.'});
-                        // })
-                        // .catch( () => {
-                        //     return res.status(400).json({ message: 'this Field cannot be updated.' });
-                        // });
-                    }
-                    
-                break;
-                default: return res.status(400).json({ message: 'this Field cannot be updated.' });
-            }
-        // }
+                }
+            break;
+            default: return res.status(400).json({ message: 'this Field cannot be updated.' });
+        }
     } else {
         return res.status(400).json({ message: 'this Field cannot be updated.' });
     }

@@ -132,6 +132,15 @@ const ColliPackSchema = new Schema({
     }
 });
 
+ColliPackSchema.virtual("packitems", {
+    ref: "packitems",
+    localField: "_id",
+    foreignField: "collipacks",
+    justOne: false
+});
+
+ColliPackSchema.set('toJSON', { virtuals: true });
+
 ColliPackSchema.post('findOneAndUpdate', function(doc, next) {
         doc.volume = getCbm(doc.length, doc.width, doc.height);
         doc.save();

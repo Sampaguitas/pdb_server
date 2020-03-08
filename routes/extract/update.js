@@ -118,12 +118,7 @@ router.put('/', async (req, res) => {
                         message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                     });
 
-                })
-                // .catch ( () => {
-                //     return res.status(400).json({
-                //         message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
-                //     });
-                // });
+                });
 
             break;
             case 'collipack':
@@ -150,12 +145,7 @@ router.put('/', async (req, res) => {
                             message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                         });
     
-                    })
-                    // .catch ( () => {
-                    //     return res.status(400).json({
-                    //         message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
-                    //     });
-                    // });
+                    });
                 }
             break;
             default: return res.status(400).json({ message: 'this Field cannot be updated.' });
@@ -172,7 +162,6 @@ module.exports = router;
 function editColliPack(selectedId, fieldName, fieldValue) {
     return new Promise(function (resolve) {
         if (!!selectedId.colliPackId) {
-            // console.log('colliPackId:', selectedId.colliPackId);
             let query = { _id: selectedId.colliPackId };
             let update = { $set: { [fieldName]: fieldValue } };
             let options = { new: true };
@@ -198,7 +187,7 @@ function editColliPack(selectedId, fieldName, fieldValue) {
                 isRejected: true, 
             });
         }
-    })
+    });
 }
 
 

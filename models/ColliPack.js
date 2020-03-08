@@ -145,7 +145,7 @@ ColliPackSchema.post('findOneAndUpdate', function(doc, next) {
         doc.volume = getCbm(doc.length, doc.width, doc.height);
         doc.save();
     next();
-})
+});
 
 module.exports = ColliPack = mongoose.model('collipacks', ColliPackSchema);
 

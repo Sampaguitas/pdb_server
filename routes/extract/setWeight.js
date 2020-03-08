@@ -47,9 +47,9 @@ router.put('/', (req, res) => {
                     let myCollis = resItemsWeight.reduce(function (acc, cur) {
                         if (!cur.isRejected) {
                            if (acc.hasOwnProperty([cur.packId])) {
-                            acc[cur.packId] += cur.weight.toFixed(2);
+                            acc[cur.packId] += Math.round((cur.weight + Number.EPSILON) * 100) / 100;
                            } else {
-                            acc[cur.packId] = cur.weight.toFixed(2);
+                            acc[cur.packId] = Math.round((cur.weight + Number.EPSILON) * 100) / 100;
                            }
                         }
                         return acc;
@@ -99,7 +99,7 @@ function setWeight(packId, netWeight) {
 
 function getweight(erp, pcs, mtrs, packId, uom, vlArtNo, vlArtNoX) {
     return new Promise(function(resolve) {
-        if (!!vlArtNo && !!vlArtNoX) {
+        if (!vlArtNo && !vlArtNoX) {
             resolve({
                 weight: 0,
                 packId: packId,

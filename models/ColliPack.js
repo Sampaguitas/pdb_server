@@ -135,7 +135,7 @@ const ColliPackSchema = new Schema({
 ColliPackSchema.virtual("packitems", {
     ref: "packitems",
     localField: "_id",
-    foreignField: "collipacks",
+    foreignField: "packId",
     justOne: false
 });
 

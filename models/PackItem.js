@@ -151,13 +151,7 @@ PackItemSchema.virtual("sub", {
 
 PackItemSchema.set('toJSON', { virtuals: true });
 
-// PackItemSchema.post('save', function(doc, next) {
-// // console.log('docs:', doc);
-// next();
-// });
-
 PackItemSchema.post('findOneAndUpdate', function(doc, next) {
-    let otherColiPromise = [];
     doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
         if (!err && !!res.sub.po.projectId) {
             let projectId = res.sub.po.projectId;
@@ -178,80 +172,7 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
                             doc.packId = undefined;
                             doc.save();
                         }
-
-                            // //find all collipack that had same plNr and colliNr in that project but different colliPackId,
-                            // let conditions = { plNr: res.plNr, colliNr: res.colliNr, projectId: projectId, _id: { $ne: resColliPack._id } };
-                            // ColliPack.find(conditions, async function (errOtherColis, resOtherColis) {
-                            //     if (errOtherColis || _.isEmpty(resOtherColis)) {
-                            //         console.log('no other collis');
-                            //         //if no other collis: assign that colli id to our packitem and save
-                            //         doc.packId = resColliPack._id;
-                            //         doc.save();
-                            //     } else {
-                            //         //if other collis: 
-                            //         resOtherColis.map(otherColi => {
-                            //             // 1) assign that colli id to all other packitems,
-                            //             otherColiPromise.push(updateOtherItems(otherColi, resColliPack._id));
-                            //         });
-                            //         await Promise.all(otherColiPromise).then(onfulfilled => {
-                            //             // 2) then delete other collis
-                            //             console.log('conditions:', conditions);
-                            //             ColliPack.deleteMany(conditions, function() {
-                            //                 // 3) then assign that colli id to that packitem and save.
-                            //                 doc.packId = resColliPack._id;
-                            //                 doc.save();
-                            //             });
-                            //         });
-                            //     }
-                            // });
-                            
-                        //     //if that packitem already had a packId (different than the colli id):
-                        //     if (!_.isUndefined(res.packId) && res.packId != resColliPack._id) {
-                        //         let tempId = res.packId;
-                        //         //we look how many documents have the that old packId
-                        //         PackItem.countDocuments({ packId: res.packId, _id: { $ne: res._id } }, function(err, count) {
-                        //             //if no other documents had that packid (except this document):
-                        //             if (count === 0) {
-                        //                 //delete that colli from the collipack collection.
-                        //                 ColliPack.findByIdAndDelete(tempId, function () {
-                        //                     //then assign that colli id to our packitem and save
-                        //                     doc.packId = resColliPack._id;
-                        //                     doc.save();
-                        //                 });
-                        //             } else {
-                        //                 //else assign that colli id to our packitem and save
-                        //                 doc.packId = resColliPack._id;
-                        //                 doc.save();
-                        //             }
-                        //         });
-                        //     } else {
-                        //         //else assign that colli id to our packitem and save
-                        //         doc.packId = resColliPack._id;
-                        //         doc.save();
-                        //     } 
-                        // } 
                     });
-                //if new packitem does not have both plNr & colliNr but already have a packid:
-                // } else if (res.packId) {
-                    // // //count how many documents have the same packid in the collection.
-                    // let tempId = res.packId;
-                    // PackItem.countDocuments({ packId: doc.packId, _id: { $ne: res._id } }, function (err, count) {
-                    //     //if no other documents had that packid (except this document):
-                    //     if (count === 0) {
-                    //         //delete that colli from the collipack collection.
-                    //         ColliPack.findByIdAndDelete(tempId, function () {
-                    //             //then remove the link to that old colli
-                    //             doc.packId = undefined;
-                    //             doc.save();
-                    //         });
-                    //     } else {
-                    //         //else remove the link to that old colli
-                    //         doc.packId = undefined;
-                    //         doc.save();
-                    //     } 
-                    // });
-                    
-
                 } else {
                     doc.packId = undefined;
                     doc.save();
@@ -371,33 +292,6 @@ function removeDirtyCollis(projectId) {
 
 function doesHave(array, plNr, colliNr) {
     return !!array.find(e => e.plNr == plNr && e.colliNr == colliNr);
-}
-
-
-function updateOtherItems(collipack, newPackId) {
-    return new Promise(function(resolve, reject) {
-        let filter = { packId: collipack._id }
-        let update = { $set: { packId: newPackId } }
-        PackItem.updateMany(filter, update, function(err, res) {
-            if (err) {
-                console.log('isRejected');
-                resolve({
-                    isUpdated: false,
-                    isRejected: true
-                });
-            } else {
-                console.log('isUpdated');
-                resolve({
-                    isUpdated: true,
-                    isRejected: false
-                });
-            }
-        });
-    });
-}
-
-function updatePackId() {
-
 }
 
 module.exports = PackItem = mongoose.model('packitems', PackItemSchema);

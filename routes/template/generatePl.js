@@ -253,79 +253,24 @@ function getLines(docDef, docfields, locale) {
         // let arrayLines = [];
         // let arrayRow = [];
         let myRowPromises = [];
+        let arrayColli = [];
+        let hasColli = false;
 
         if(docDef.project.collipacks) {
             docDef.project.collipacks.map(collipack => {
                 if(collipack.packitems){
                     collipack.packitems.map(packitem => {
-                        myRowPromises.push(getRow(docDef, docfields, collipack, packitem));
-                        // arrayRow = [];
-                        // let article = getArticle(docDef.project.erp.name, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX);
-                        // docfields.map(docfield => {
-                        //     switch(docfield.fields.fromTbl) {
-                        //         case 'project':
-                        //             arrayRow.push({
-                        //                 val: docDef.project[docfield.fields.name] || '',
-                        //                 row: docfield.row,
-                        //                 col: docfield.col,
-                        //                 type: docfield.fields.type
-                        //             });
-                        //             break;
-                        //         case 'collipack':
-                        //             arrayRow.push({
-                        //                 val: collipack[docfield.fields.name] || '',
-                        //                 row: docfield.row,
-                        //                 col: docfield.col,
-                        //                 type: docfield.fields.type
-                        //             });
-                        //             break;
-                        //         case 'packitem':
-                        //             arrayRow.push({
-                        //                 val: packitem[docfield.fields.name] || '',
-                        //                 row: docfield.row,
-                        //                 col: docfield.col,
-                        //                 type: docfield.fields.type
-                        //             });
-                        //             break;
-                        //         case 'sub':
-                        //             arrayRow.push({
-                        //             val: packitem.sub[docfield.fields.name] || '',
-                        //             row: docfield.row,
-                        //             col: docfield.col,
-                        //             type: docfield.fields.type
-                        //             });
-                        //             break;
-                        //         case 'po':
-                        //             arrayRow.push({
-                        //             val: packitem.sub.po[docfield.fields.name] || '',
-                        //             row: docfield.row,
-                        //             col: docfield.col,
-                        //             type: docfield.fields.type
-                        //             });
-                        //             break;
-                        //         case 'article':
-                        //             arrayRow.push({
-                        //                 val: article[docfield.fields.name] || '',
-                        //                 row: docfield.row,
-                        //                 col: docfield.col,
-                        //                 type: docfield.fields.type
-                        //             });
-                        //             break;
-                        //         default: arrayRow.push({
-                        //             val: '',
-                        //             row: docfield.row,
-                        //             col: docfield.col,
-                        //             name: docfield.fields.name,
-                        //             type: 'String'
-                        //         });
-                        //     }
-                        // });
-                    // arrayLines.push(arrayRow);
+                        //check if we already have a line with the same colliNr
+                        hasColli = arrayColli.includes(packitem.colliNr);
+                        if (!hasColli) {
+                            arrayColli.push(packitem.colliNr);
+                        }
+
+                        myRowPromises.push(getRow(docDef, docfields, collipack, packitem, hasColli));
                     });
                 }
             });
             await Promise.all(myRowPromises).then(arrayLines => {
-                // console.log('arrayLines:', arrayLines);
                 resolve(arrayLines);
             });
         } else {
@@ -334,11 +279,10 @@ function getLines(docDef, docfields, locale) {
     });
 }
 
-function getRow(docDef, docfields, collipack, packitem) {
+function getRow(docDef, docfields, collipack, packitem, hasColli) {
     return new Promise(function(resolve) {
         let arrayRow = [];
         getArticle(docDef.project.erp.name, packitem.pcs, packitem.mtrs, packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
-            console.log('article:', article);
             docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
                     case 'project':
@@ -350,12 +294,21 @@ function getRow(docDef, docfields, collipack, packitem) {
                         });
                         break;
                     case 'collipack':
-                        arrayRow.push({
-                            val: collipack[docfield.fields.name] || '',
-                            row: docfield.row,
-                            col: docfield.col,
-                            type: docfield.fields.type
-                        });
+                        if (hasColli && !['colliNr'].includes(docfield.fields.name)) {
+                            arrayRow.push({
+                                val: '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        } else {
+                            arrayRow.push({
+                                val: collipack[docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        }
                         break;
                     case 'packitem':
                         arrayRow.push({

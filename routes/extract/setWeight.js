@@ -132,7 +132,7 @@ function getweight(erp, pcs, mtrs, packId, uom, vlArtNo, vlArtNoX) {
                         isRejected: true,
                         reason: 'An error occured.'
                     });
-                } else if (_.isEmpty(article)) {
+                } else if (_.isNull(article)) {
                     resolve({
                         weight: 0,
                         packId: packId,

@@ -21,13 +21,13 @@ const ColliPackSchema = new Schema({
     height: {
         type: Number,
     },
-    grossWeight: {
+    grossWeight: { //one
         type: Number,
     },
-    netWeight: {
+    netWeight: { //one
         type: Number,
     },
-    volume: {
+    volume: { //one
         type: Number,
     },
     bundlesQty: {

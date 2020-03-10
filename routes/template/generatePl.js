@@ -76,21 +76,21 @@ router.get('/', function (req, res) {
             };
             var wb = new Excel.Workbook();
             wb.xlsx.read(s3.getObject(params).createReadStream())
-            .then(function(workbook) {
+            .then(async function(workbook) {
 
                 const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
                 const docFieldSoh = filterDocFiled(docDef.docfields, 'Sheet1', 'Header');
                 const firstColSol = getColumnFirst(docFieldSol);
                 const lastColSol = getColumnLast(docFieldSol);
-                const soh = getLines(docDef, docFieldSoh, locale);
-                const sol = getLines(docDef, docFieldSol, locale);
+                const soh = await getLines(docDef, docFieldSoh, locale);
+                const sol = await getLines(docDef, docFieldSol, locale);
 
                 const docFieldStl = filterDocFiled(docDef.docfields, 'Sheet2', 'Line');
                 const docFieldSth = filterDocFiled(docDef.docfields, 'Sheet2', 'Header');
                 const firstColStl = getColumnFirst(docFieldStl);
                 const lastColStl = getColumnLast(docFieldStl);
-                const sth = getLines(docDef, docFieldSth, locale);
-                const stl = getLines(docDef, docFieldStl, locale);
+                const sth = await getLines(docDef, docFieldSth, locale);
+                const stl = await getLines(docDef, docFieldStl, locale);
 
                 
                 
@@ -248,85 +248,162 @@ function TypeToString(fieldValue, fieldType, locale) {
 }
 
 function getLines(docDef, docfields, locale) {
-    let arrayLines = [];
-    let arrayRow = [];
-    
-    if(docDef.project.collipacks) {
-        docDef.project.collipacks.map(async collipack => {
-            if(collipack.packitems){
-                collipack.packitems.map(async packitem => {
-                    arrayRow = [];
-                    // getArticle(docDef.project.erp, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
-                        docfields.map(docfield => {
-                            switch(docfield.fields.fromTbl) {
-                                case 'project':
-                                    arrayRow.push({
-                                        val: docDef.project[docfield.fields.name] || '',
-                                        row: docfield.row,
-                                        col: docfield.col,
-                                        type: docfield.fields.type
-                                    });
-                                    break;
-                                case 'collipack':
-                                    arrayRow.push({
-                                        val: collipack[docfield.fields.name] || '',
-                                        row: docfield.row,
-                                        col: docfield.col,
-                                        type: docfield.fields.type
-                                    });
-                                    break;
-                                case 'packitem':
-                                    arrayRow.push({
-                                        val: packitem[docfield.fields.name] || '',
-                                        row: docfield.row,
-                                        col: docfield.col,
-                                        type: docfield.fields.type
-                                    });
-                                    break;
-                                case 'sub':
-                                    arrayRow.push({
-                                    val: packitem.sub[docfield.fields.name] || '',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                    });
-                                    break;
-                                case 'po':
-                                    arrayRow.push({
-                                    val: packitem.sub.po[docfield.fields.name] || '',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                    });
-                                    break;
-                                // case 'article':
-                                //     arrayRow.push({
-                                //         val: article[docfield.fields.name] || '',
-                                //         row: docfield.row,
-                                //         col: docfield.col,
-                                //         type: docfield.fields.type
-                                //     });
-                                //     break;
-                                default: arrayRow.push({
-                                    val: '',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    name: docfield.fields.name,
-                                    type: 'String'
-                                });
-                            }
-                        });
-                    // });
-                arrayLines.push(arrayRow);
-                });
-            }
-        });
-      return arrayLines;
-    }
+    return new Promise(async function (resolve) {
+
+        // let arrayLines = [];
+        // let arrayRow = [];
+        let myRowPromises = [];
+
+        if(docDef.project.collipacks) {
+            docDef.project.collipacks.map(collipack => {
+                if(collipack.packitems){
+                    collipack.packitems.map(packitem => {
+                        myRowPromises.push(getRow(docDef, docfields, collipack, packitem));
+                        // arrayRow = [];
+                        // let article = getArticle(docDef.project.erp.name, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX);
+                        // docfields.map(docfield => {
+                        //     switch(docfield.fields.fromTbl) {
+                        //         case 'project':
+                        //             arrayRow.push({
+                        //                 val: docDef.project[docfield.fields.name] || '',
+                        //                 row: docfield.row,
+                        //                 col: docfield.col,
+                        //                 type: docfield.fields.type
+                        //             });
+                        //             break;
+                        //         case 'collipack':
+                        //             arrayRow.push({
+                        //                 val: collipack[docfield.fields.name] || '',
+                        //                 row: docfield.row,
+                        //                 col: docfield.col,
+                        //                 type: docfield.fields.type
+                        //             });
+                        //             break;
+                        //         case 'packitem':
+                        //             arrayRow.push({
+                        //                 val: packitem[docfield.fields.name] || '',
+                        //                 row: docfield.row,
+                        //                 col: docfield.col,
+                        //                 type: docfield.fields.type
+                        //             });
+                        //             break;
+                        //         case 'sub':
+                        //             arrayRow.push({
+                        //             val: packitem.sub[docfield.fields.name] || '',
+                        //             row: docfield.row,
+                        //             col: docfield.col,
+                        //             type: docfield.fields.type
+                        //             });
+                        //             break;
+                        //         case 'po':
+                        //             arrayRow.push({
+                        //             val: packitem.sub.po[docfield.fields.name] || '',
+                        //             row: docfield.row,
+                        //             col: docfield.col,
+                        //             type: docfield.fields.type
+                        //             });
+                        //             break;
+                        //         case 'article':
+                        //             arrayRow.push({
+                        //                 val: article[docfield.fields.name] || '',
+                        //                 row: docfield.row,
+                        //                 col: docfield.col,
+                        //                 type: docfield.fields.type
+                        //             });
+                        //             break;
+                        //         default: arrayRow.push({
+                        //             val: '',
+                        //             row: docfield.row,
+                        //             col: docfield.col,
+                        //             name: docfield.fields.name,
+                        //             type: 'String'
+                        //         });
+                        //     }
+                        // });
+                    // arrayLines.push(arrayRow);
+                    });
+                }
+            });
+            await Promise.all(myRowPromises).then(arrayLines => {
+                // console.log('arrayLines:', arrayLines);
+                resolve(arrayLines);
+            });
+        } else {
+            resolve([]);
+        }
+    });
 }
 
+function getRow(docDef, docfields, collipack, packitem) {
+    return new Promise(function(resolve) {
+        let arrayRow = [];
+        getArticle(docDef.project.erp.name, packitem.pcs, packitem.mtrs, packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
+            console.log('article:', article);
+            docfields.map(docfield => {
+                switch(docfield.fields.fromTbl) {
+                    case 'project':
+                        arrayRow.push({
+                            val: docDef.project[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                        break;
+                    case 'collipack':
+                        arrayRow.push({
+                            val: collipack[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                        break;
+                    case 'packitem':
+                        arrayRow.push({
+                            val: packitem[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                        break;
+                    case 'sub':
+                        arrayRow.push({
+                        val: packitem.sub[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                        });
+                        break;
+                    case 'po':
+                        arrayRow.push({
+                        val: packitem.sub.po[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                        });
+                        break;
+                    case 'article':
+                        arrayRow.push({
+                            val: article[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                        break;
+                    default: arrayRow.push({
+                        val: '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        name: docfield.fields.name,
+                        type: 'String'
+                    });
+                }
+            });
+            resolve(arrayRow);
+        });
+    });
+}
 
-function getArticle(erp, vlArtNo, vlArtNoX) {
+function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {
     return new Promise(function (resolve) {
         if (!vlArtNo && !vlArtNoX) {
             resolve({
@@ -334,22 +411,41 @@ function getArticle(erp, vlArtNo, vlArtNoX) {
                 netWeight: '', 
             });
         } else {
-            let conditions = !!vlArtNo ? { erp: erp, vlArtNo : vlArtNo } : { erp: erp, vlArtNoX : vlArtNoX };
+            let conditions = vlArtNo ? { erp: erp, vlArtNo : vlArtNo } : { erp: erp, vlArtNoX : vlArtNoX };
             Article.findOne(conditions, function (err, article) {
-                if(err) {
+                let tempUom = 'pcs';
+                if (!!uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(uom.toUpperCase())) {
+                    tempUom = 'mtrs';
+                } else if (!!uom && ['F', 'FT', 'FEET', 'FEETS'].includes(uom.toUpperCase())) {
+                    tempUom = 'feets';
+                } else if (!!uom && uom.toUpperCase() === 'MT') {
+                    tempUom = 'mt';
+                }
+
+                if(err || _.isNull(article)) {
                     resolve({
                         hsCode: '',
                         netWeight: '', 
                     });
                 } else {
                     resolve({
-                        hsCode: article.hsCode || '',
-                        netWeight: article.netWeight || '',
+                        hsCode: article.hsCode,
+                        netWeight: calcWeight(tempUom, pcs, mtrs, article.netWeight)
                     });
                 }
             });
         }
     });
+}
+
+function calcWeight(tempUom, pcs, mtrs, weight) {
+    switch(tempUom) {
+        case 'pcs': return pcs * weight || 0;
+        case 'mtrs': return mtrs * weight || 0;
+        case 'feets': return mtrs * 0.3048 * weight || 0;
+        case 'mt': return mtrs / 1000 || 0;
+        default: return 0;
+    }
 }
 
 

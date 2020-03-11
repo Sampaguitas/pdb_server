@@ -113,7 +113,7 @@ router.get('/', function (req, res) {
                     sol.map(function (line, lineIndex) {
                         line.map(function (cell) {
                             if (cell.col && cell.val) {
-                                worksheet.getCell(alphabet(cell.col) + (docDef.row1 + lineIndex)).value = cell.val; 
+                                worksheet.getCell(alphabet(cell.col) + (docDef.row1 + lineIndex)).value = cell.val;
                             }
                         });
                     });
@@ -338,18 +338,18 @@ function getRow(docDef, docfields, collipack, packitem, hasColli) {
                         break;
                     case 'sub':
                         arrayRow.push({
-                        val: packitem.sub[docfield.fields.name] || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
+                            val: packitem.sub[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
                         });
                         break;
                     case 'po':
                         arrayRow.push({
-                        val: packitem.sub.po[docfield.fields.name] || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
+                            val: packitem.sub.po[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
                         });
                         break;
                     case 'article':

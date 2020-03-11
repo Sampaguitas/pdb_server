@@ -263,9 +263,12 @@ function getLines(docDef, docfields, locale) {
                         //check if we already have a line with the same colliNr
                         hasColli = arrayColli.includes(packitem.colliNr);
                         if (!hasColli) {
+                            if (!_.isEmpty(arrayColli)) {
+                                //if new colli but not the first one then add empty row;
+                                myRowPromises.push(emptyRow(docfields));
+                            }
                             arrayColli.push(packitem.colliNr);
                         }
-
                         myRowPromises.push(getRow(docDef, docfields, collipack, packitem, hasColli));
                     });
                 }
@@ -276,6 +279,21 @@ function getLines(docDef, docfields, locale) {
         } else {
             resolve([]);
         }
+    });
+}
+
+function emptyRow(docfields) {
+    return new Promise(function (resolve) {
+        let arrayRow = [];
+        docfields.map(docfield => {
+            arrayRow.push({
+                val: '',
+                row: docfield.row,
+                col: docfield.col,
+                type: docfield.fields.type 
+            });
+        });
+        resolve(arrayRow);
     });
 }
 

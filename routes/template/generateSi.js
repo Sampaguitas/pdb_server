@@ -247,6 +247,20 @@ function TypeToString(fieldValue, fieldType, locale) {
   }
 }
 
+//---group(1)----params row: 1 or 2 or 3
+//po.description
+//po.material
+//---display(1)---
+
+//---group(2)----params row: 1 or 2 or 3
+//po.size
+//po.sch
+//---display(2)---
+
+function getGroups(docfields) {
+    
+}
+
 function getLines(docDef, docfields, locale) {
     return new Promise(async function (resolve) {
 

@@ -301,13 +301,23 @@ function getLines (resProject, fieldnames, screenId) {
                     fieldnames.map( (fieldname, index) => {
                       switch(fieldname.fields.fromTbl) {
                         case 'po':
-                          arrayRow.push({
-                            val: getValue(fieldname.fields.name, po),
-                            col: index + 5,
-                            type: fieldname.fields.type,
-                            align: fieldname.align,
-                            edit: fieldname.edit
-                          });
+                          if (['project', 'projectNr'].includes(fieldname.fields.name)) {
+                            arrayRow.push({
+                              val: fieldname.fields.name === 'project' ? getValue('name', resProject) || '' : getValue('number', resProject) || '',
+                              col: index + 5,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          } else {
+                            arrayRow.push({
+                              val: getValue(fieldname.fields.name, po),
+                              col: index + 5,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          }
                           break;
                         case 'sub':
                           arrayRow.push({
@@ -371,13 +381,23 @@ function getLines (resProject, fieldnames, screenId) {
                   fieldnames.map( (fieldname, index) => {
                     switch(fieldname.fields.fromTbl) {
                       case 'po':
-                        arrayRow.push({
-                          val: getValue(fieldname.fields.name, po),
-                          col: index + 5,
-                          type: fieldname.fields.type,
-                          align: fieldname.align,
-                          edit: fieldname.edit
-                        });
+                        if (['project', 'projectNr'].includes(fieldname.fields.name)) {
+                          arrayRow.push({
+                            val: fieldname.fields.name === 'project' ? getValue('name', resProject) || '' : getValue('number', resProject) || '',
+                            col: index + 5,
+                            type: fieldname.fields.type,
+                            align: fieldname.align,
+                            edit: fieldname.edit
+                          });
+                        } else {
+                          arrayRow.push({
+                            val: getValue(fieldname.fields.name, po),
+                            col: index + 5,
+                            type: fieldname.fields.type,
+                            align: fieldname.align,
+                            edit: fieldname.edit
+                          });
+                        }
                         break;
                       case 'sub':
                         arrayRow.push({

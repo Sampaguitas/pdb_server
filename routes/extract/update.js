@@ -39,18 +39,22 @@ router.put('/', async (req, res) => {
 
         switch(collection){
             case 'po':
-                Po.updateMany({
-                        _id: { $in : poIds } 
-                    },
-                    { $set: { [fieldName]: fieldValue } 
-                })
-                .then( () => {
-                    return res.status(200).json({message: 'Successfully updated.'});
-                })
-                .catch( () => {
-                    return res.status(400).json({ message: 'this Field cannot be updated.' });
-                });
-            break;
+                if (fieldName === 'project' || fieldName === 'projectNr') {
+                    return res.status(400).json({ message: 'Project name and project number cannot be edited.' });
+                } else {
+                    Po.updateMany({
+                            _id: { $in : poIds } 
+                        },
+                        { $set: { [fieldName]: fieldValue } 
+                    })
+                    .then( () => {
+                        return res.status(200).json({message: 'Successfully updated.'});
+                    })
+                    .catch( () => {
+                        return res.status(400).json({ message: 'this Field cannot be updated.' });
+                    });
+                }
+                break;
             case 'sub':
                 if(fieldName === 'nfi' && !_.isUndefined(rfiDateAct)) {
                     Sub.updateMany({
@@ -82,7 +86,7 @@ router.put('/', async (req, res) => {
                         return res.status(400).json({ message: 'Field cannot be updated.' });
                     });
                 }
-            break;
+                break;
             case 'certificate':
                 Certificate.updateMany({
                     _id: { $in : certificateIds } 
@@ -95,7 +99,7 @@ router.put('/', async (req, res) => {
                 .catch( () => {
                     return res.status(400).json({ message: 'Field cannot be updated.' });
                 });
-            break;
+                break;
             case 'packitem':
 
                 selectedIds.map(function (selectedId) {
@@ -119,8 +123,7 @@ router.put('/', async (req, res) => {
                     });
 
                 });
-
-            break;
+                break;
             case 'collipack':
                 if (fieldName === 'plNr' || fieldName === 'colliNr') {
                     return res.status(400).json({ message: 'plNr and colliNr cannot be edited.' });
@@ -147,7 +150,7 @@ router.put('/', async (req, res) => {
     
                     });
                 }
-            break;
+                break;
             default: return res.status(400).json({ message: 'this Field cannot be updated.' });
         }
     } else {

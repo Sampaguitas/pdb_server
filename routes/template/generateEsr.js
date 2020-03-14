@@ -303,21 +303,22 @@ function getLines(docDef, docfields, locale) {
               arrayRow = [];
               docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
-                  case 'project':
+                  case 'po':
+                    if (['project', 'projectNr'].includes(docfield.fields.name)) {
                       arrayRow.push({
-                        val: docDef.project[docfield.fields.name] || '',
+                        val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
                         row: docfield.row,
                         col: docfield.col,
                         type: docfield.fields.type
                       });
-                    break;
-                  case 'po':
-                    arrayRow.push({
-                      val: po[docfield.fields.name] || '',
-                      row: docfield.row,
-                      col: docfield.col,
-                      type: docfield.fields.type
-                    });
+                    } else {
+                      arrayRow.push({
+                        val: po[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    }
                     break;
                   case 'sub':
                     if(docfield.fields.name === 'shippedQty') {
@@ -357,7 +358,7 @@ function getLines(docDef, docfields, locale) {
                     val: '',
                     row: docfield.row,
                     col: docfield.col,
-                    name: docfield.fields.name,
+                    // name: docfield.fields.name,
                     type: 'String'
                   });
                 }
@@ -368,21 +369,22 @@ function getLines(docDef, docfields, locale) {
             arrayRow = [];
             docfields.map(docfield => {
               switch(docfield.fields.fromTbl) {
-                case 'project':
-                      arrayRow.push({
-                        val: docDef.project[docfield.fields.name] || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
-                      });
-                    break;
                 case 'po':
-                  arrayRow.push({
-                    val: po[docfield.fields.name] || '',
-                    row: docfield.row,
-                    col: docfield.col,
-                    type: docfield.fields.type
-                  });
+                  if (['project', 'projectNr'].includes(docfield.fields.name)) {
+                    arrayRow.push({
+                      val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
+                  } else {
+                    arrayRow.push({
+                      val: po[docfield.fields.name] || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
+                  }
                   break;
                 case 'sub':
                   if(docfield.fields.name === 'shippedQty') {
@@ -405,7 +407,7 @@ function getLines(docDef, docfields, locale) {
                   val: '',
                   row: docfield.row,
                   col: docfield.col,
-                  name: docfield.fields.name,
+                  // name: docfield.fields.name,
                   type: 'String'
                 });
               }

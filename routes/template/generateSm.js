@@ -115,16 +115,19 @@ router.get('/', function (req, res) {
                         collipack.packitems.map(packitem => {
                             docDef.docfields.map(docfield => {
                                 switch(docfield.fields.fromTbl) {
-                                    case 'project': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = docDef.project[docfield.fields.name] || '';
-                                        break;
                                     case 'collipack': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = collipack[docfield.fields.name] || '';
                                         break;
                                     case 'packitem': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem[docfield.fields.name] || '';
                                         break;
                                     case 'sub': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem.sub[docfield.fields.name] || '';
                                         break;
-                                    case 'po': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem.sub.po[docfield.fields.name] || '';
-                                        break;
+                                    case 'po': 
+                                        if (['project', 'projectNr'].includes(docfield.fields.name)) {
+                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '';
+                                        } else {
+                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem.sub.po[docfield.fields.name] || '';
+                                        }    
+                                    break;
                                     default: workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = '';
                                 }
                             });

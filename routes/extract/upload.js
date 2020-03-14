@@ -172,7 +172,7 @@ router.post('/', upload.single('file'), function (req, res) {
   }
 
   function update(row, tempPo, tempSub, tempPackItem, hasPackitems) {
-    return new Promise (function (resolve, reject) {
+    return new Promise (function (resolve) {
         Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
           if (errNewPo || !resNewPo) {
             resolve({

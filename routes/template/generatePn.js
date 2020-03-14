@@ -278,14 +278,6 @@ function getRow(docDef, docfields, collipack, packitem) {
         getArticle(docDef.project.erp.name, packitem.pcs, packitem.mtrs, packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
             docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
-                    case 'project':
-                        arrayRow.push({
-                            val: docDef.project[docfield.fields.name] || '',
-                            row: docfield.row,
-                            col: docfield.col,
-                            type: docfield.fields.type
-                        });
-                        break;
                     case 'collipack':
                         arrayRow.push({
                             val: collipack[docfield.fields.name] || '',
@@ -311,12 +303,21 @@ function getRow(docDef, docfields, collipack, packitem) {
                         });
                         break;
                     case 'po':
-                        arrayRow.push({
-                        val: packitem.sub.po[docfield.fields.name] || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
-                        });
+                        if (['project', 'projectNr'].includes(docfield.fields.name)) {
+                            arrayRow.push({
+                                val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        } else {
+                            arrayRow.push({
+                                val: packitem.sub.po[docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        }
                         break;
                     case 'article':
                         arrayRow.push({
@@ -330,7 +331,7 @@ function getRow(docDef, docfields, collipack, packitem) {
                         val: '',
                         row: docfield.row,
                         col: docfield.col,
-                        name: docfield.fields.name,
+                        // name: docfield.fields.name,
                         type: 'String'
                     });
                 }

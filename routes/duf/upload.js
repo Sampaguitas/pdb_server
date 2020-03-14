@@ -5,6 +5,7 @@ var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
 fs = require('fs');
 const FieldName = require('../../models/FieldName');
+const Project = require('../../models/Project');
 const Po = require('../../models/Po');
 const Sub = require('../../models/Sub');
 var Excel = require('exceljs');
@@ -39,11 +40,24 @@ router.post('/', upload.single('file'), function (req, res) {
       nEdited: nEdited
     });
   } else {
-    FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
-    .populate('fields')
-    .sort({forShow:'asc'})
-    .exec(function (errFieldNames, resFieldNames) {
-      if (errFieldNames || !resFieldNames) {
+    // FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
+    Project.findById(projectId)
+    .populate({
+      path: 'fieldnames',
+      match: {
+        screenId: '5cd2b646fd333616dc360b6d',
+        forShow: {$exists: true, $nin: ['', 0]}
+      },
+      options: { sort: {forShow:'asc'} },
+      populate: {
+        path: 'fields'
+      }
+    })
+    // .populate('fields')
+    // .sort({forShow:'asc'})
+    // .exec(function (errFieldNames, resFieldNames) {
+    .exec(function (errProject, resProject) {
+      if (errProject || !resProject) {
         return res.status(400).json({
             message: 'An error has occured, please check with your administrator.',
             rejections: rejections,
@@ -91,11 +105,11 @@ router.post('/', upload.single('file'), function (req, res) {
                 //assign projectId
                 tempPo.projectId = projectId;
 
-                resFieldNames.map(resFieldName => {
-                  let cell = alphabet(resFieldName.forShow) + row;
-                  let fromTbl = resFieldName.fields.fromTbl;
-                  let type = resFieldName.fields.type;
-                  let key = resFieldName.fields.name;
+                resProject.fieldnames.map(fieldname => {
+                  let cell = alphabet(fieldname.forShow) + row;
+                  let fromTbl = fieldname.fields.fromTbl;
+                  let type = fieldname.fields.type;
+                  let key = fieldname.fields.name;
                   let value = worksheet.getCell(cell).value
                   
                   if (type === 'String' && value === 0) {
@@ -108,7 +122,9 @@ router.post('/', upload.single('file'), function (req, res) {
                   
                   switch (fromTbl) {
                     case 'po':
+                      // if (!['project', 'projectNr'].includes(key)) {
                       tempPo[key] = value;
+                      // }
                       break;
                     case 'sub':
                       tempSub[key] = value;
@@ -117,7 +133,7 @@ router.post('/', upload.single('file'), function (req, res) {
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(upsert(projectId, row, tempPo, tempSub));
+                  rowPromises.push(upsert(projectId, row, tempPo, tempSub, resProject.number));
                 }).catch(errPromises => {
                   if(!_.isEmpty(errPromises)) {
                     rejections.push(errPromises);
@@ -173,7 +189,7 @@ router.post('/', upload.single('file'), function (req, res) {
     })
   }
 
-  function upsert(projectId, row, tempPo, tempSub) {
+  function upsert(projectId, row, tempPo, tempSub, projectNr) {
     return new Promise (function (resolve, reject) {
       let poQuery = {};
       
@@ -202,6 +218,14 @@ router.post('/', upload.single('file'), function (req, res) {
           isEdited: false,
           isAdded: false,
           reason: 'Fields ("clPo", "clPoRev", "clPoItem", "clCode") or ("vlSo", "vlSoItem") should not be empty.'
+        });
+      } else if (tempPo.hasOwnProperty('projectNr') && tempPo.projectNr != projectNr) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Field projectNr does not match current project number.'
         });
       } else {
         Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){

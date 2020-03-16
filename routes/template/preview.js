@@ -23,17 +23,10 @@ aws.config.update({
   region: region
 });
 
-
-//DocDef **
-//Project **
-//DocField **
-//Field
-
 router.get('/', function (req, res) {
   
   const docDef = req.query.docDef;
   let myPromises = [];
-  // DocDef.findById(docDef, function(errDocField, resDocDef){
   DocDef.findById(docDef)
   .populate([
     {
@@ -54,64 +47,47 @@ router.get('/', function (req, res) {
     } else if (_.isEmpty(resDocDef.docfields)) {
       return res.status(400).json({message: 'Could not retrive document fields.'});
     } else {
-      // Project.findById(resDocDef.projectId, function (errProject, resProject) {
-        // if (errProject) {
-        //   return res.status(400).json({message: errProject});
-        // } else if (!resProject) {
-        //   return res.status(400).json({message: 'an error occured'});
-        // } else {
-          var s3 = new aws.S3();
-          var params = {
-              Bucket: awsBucketName,
-              Key: path.join('templates', String(resDocDef.project.number), resDocDef.field),
-          };
-          var wb = new Excel.Workbook();
-          wb.xlsx.read(s3.getObject(params).createReadStream())
-          .then(workbook => {
-            // DocField.find({docdefId: docDef}, function(errDocField, resDocField){
-              // if (errDocField){
-              //   return res.status(400).json({message: 'an error occured'});
-              // } else {
-                // workbook.properties.date1904 = true;
-                // Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
-                  resDocDef.docfields.map(docfield => {
-                    myPromises.push(getField(resDocDef, docfield))
-                  });
-                  Promise.all(myPromises).then(function (fields) {
-                    fields.filter(n => n);
-                    fields.map(field => {
-                      const worksheet = getWorksheet(field.worksheet, workbook);
-                      var cell = worksheet.getCell(`${field.address}`); 
-                      with(cell){
-                        value = {
-                          'richText': [
-                            {
-                              'font': {
-                                'size': 12,
-                                'color': {'argb': 'FFFFFFFF'},
-                                'name': 'Arial',
-                                'scheme': 'minor'
-                              },
-                              'text': `${field.custom}(${field.param})`
-                            },
-                          ]
-                        };
-                        style = Object.create(cell.style); //shallow-clone the style, break references
-                        fill = {
-                          'type': 'pattern',
-                          'pattern':'solid',
-                          'fgColor': {argb:'FFED1C24'}
-                        };
-                      }
-                    });
-                    workbook.xlsx.write(res);
-                  });
-                // });
-              // }
-            // });
+      var s3 = new aws.S3();
+      var params = {
+          Bucket: awsBucketName,
+          Key: path.join('templates', String(resDocDef.project.number), resDocDef.field),
+      };
+      var wb = new Excel.Workbook();
+      wb.xlsx.read(s3.getObject(params).createReadStream())
+      .then(workbook => {
+        resDocDef.docfields.map(docfield => {
+          myPromises.push(getField(resDocDef, docfield))
+        });
+        Promise.all(myPromises).then(function (fields) {
+          fields.filter(n => n);
+          fields.map(field => {
+            const worksheet = getWorksheet(field.worksheet, workbook);
+            var cell = worksheet.getCell(`${field.address}`); 
+            with(cell){
+              value = {
+                'richText': [
+                  {
+                    'font': {
+                      'size': 12,
+                      'color': {'argb': 'FFFFFFFF'},
+                      'name': 'Arial',
+                      'scheme': 'minor'
+                    },
+                    'text': `${field.custom}(${field.param})`
+                  },
+                ]
+              };
+              style = Object.create(cell.style); //shallow-clone the style, break references
+              fill = {
+                'type': 'pattern',
+                'pattern':'solid',
+                'fgColor': {argb:'FFED1C24'}
+              };
+            }
           });
-        // }
-      // });
+          workbook.xlsx.write(res);
+        });
+      });
     }
   });
 });
@@ -124,20 +100,6 @@ function getField(resDocDef, docfield) {
       address: getFieldAddress(docfield, resDocDef),
       worksheet: getFieldSheet(docfield)
     });
-  });
-}
-
-function promeses(resDocDef, resDocField) {
-  return resDocField.map(async docField => {
-    const resField = await Field.findById(docField.fieldId);
-    if (resField) {
-      var obj = {
-        text: resField.custom,
-        address: getFieldAddress(docField, resDocDef),
-        worksheet: getFieldSheet(docField)
-      };
-      return obj;
-    }
   });
 }
 

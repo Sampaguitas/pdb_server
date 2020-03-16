@@ -14,6 +14,7 @@ const Project = require('../../models/Project');
 var Excel = require('exceljs');
 fs = require('fs');
 const stream = require('stream');
+const _ = require('lodash');
 
 
 aws.config.update({
@@ -22,36 +23,61 @@ aws.config.update({
   region: region
 });
 
+
+//DocDef **
+//Project **
+//DocField **
+//Field
+
 router.get('/', function (req, res) {
   
   const docDef = req.query.docDef;
-
-    DocDef.findById(docDef, function(errDocField, resDocDef){
-      if (errDocField) {
-        return res.status(400).json({message: errDocField});
-      } else if (!resDocDef) {
-        return res.status(400).json({message: 'an error occured'});
-      } else {
-        Project.findById(resDocDef.projectId, function (errProject, resProject) {
-          if (errProject) {
-            return res.status(400).json({message: errProject});
-          } else if (!resProject) {
-            return res.status(400).json({message: 'an error occured'});
-          } else {
-            var s3 = new aws.S3();
-            var params = {
-                Bucket: awsBucketName,
-                Key: path.join('templates', String(resProject.number), resDocDef.field),
-            };
-            var wb = new Excel.Workbook();
-            wb.xlsx.read(s3.getObject(params).createReadStream())
-            .then(workbook => {
-              DocField.find({docdefId: docDef}, function(errDocField, resDocField){
-                if (errDocField){
-                  return res.status(400).json({message: 'an error occured'});
-                } else {
-                  // workbook.properties.date1904 = true;
-                  Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
+  let myPromises = [];
+  // DocDef.findById(docDef, function(errDocField, resDocDef){
+  DocDef.findById(docDef)
+  .populate([
+    {
+      path: 'project'
+    },
+    {
+      path: 'docfields',
+      populate: {
+        path: 'fields'
+      }
+    } 
+  ])
+  .exec(function (errDocDef, resDocDef) {
+    if (errDocDef || !resDocDef) {
+      return res.status(400).json({message: 'An error occured'});
+    } else if (!resDocDef.project || _.isUndefined(resDocDef.project.number)) {
+      return res.status(400).json({message: 'Could not retrive project information.'});
+    } else if (_.isEmpty(resDocDef.docfields)) {
+      return res.status(400).json({message: 'Could not retrive document fields.'});
+    } else {
+      // Project.findById(resDocDef.projectId, function (errProject, resProject) {
+        // if (errProject) {
+        //   return res.status(400).json({message: errProject});
+        // } else if (!resProject) {
+        //   return res.status(400).json({message: 'an error occured'});
+        // } else {
+          var s3 = new aws.S3();
+          var params = {
+              Bucket: awsBucketName,
+              Key: path.join('templates', String(resDocDef.project.number), resDocDef.field),
+          };
+          var wb = new Excel.Workbook();
+          wb.xlsx.read(s3.getObject(params).createReadStream())
+          .then(workbook => {
+            // DocField.find({docdefId: docDef}, function(errDocField, resDocField){
+              // if (errDocField){
+              //   return res.status(400).json({message: 'an error occured'});
+              // } else {
+                // workbook.properties.date1904 = true;
+                // Promise.all(promeses(resDocDef, resDocField)).then( function (fields) {
+                  resDocDef.docfields.map(docfield => {
+                    myPromises.push(getField(resDocDef, docfield))
+                  });
+                  Promise.all(myPromises).then(function (fields) {
                     fields.filter(n => n);
                     fields.map(field => {
                       const worksheet = getWorksheet(field.worksheet, workbook);
@@ -66,7 +92,7 @@ router.get('/', function (req, res) {
                                 'name': 'Arial',
                                 'scheme': 'minor'
                               },
-                              'text': `${field.text}`
+                              'text': `${field.custom}(${field.param})`
                             },
                           ]
                         };
@@ -80,14 +106,26 @@ router.get('/', function (req, res) {
                     });
                     workbook.xlsx.write(res);
                   });
-                }
-              });
-            });
-          }
-        });
-        }
-    });
+                // });
+              // }
+            // });
+          });
+        // }
+      // });
+    }
+  });
 });
+
+function getField(resDocDef, docfield) {
+  return new Promise(function(resolve) {
+    resolve({
+      custom: docfield.fields.custom || '',
+      param: docfield.param || '',
+      address: getFieldAddress(docfield, resDocDef),
+      worksheet: getFieldSheet(docfield)
+    });
+  });
+}
 
 function promeses(resDocDef, resDocField) {
   return resDocField.map(async docField => {
@@ -119,13 +157,14 @@ function getWorksheet(worksheet, workbook) {
   }
 }
 
-function getFieldAddress (docField, resDocDef) {
-  if (docField.location === 'Header') {
-    return alphabet(docField.col) + docField.row;
-  } else if (docField.worksheet !== 'Sheet2') {
-    return alphabet(docField.col) + resDocDef.row1;
+function getFieldAddress (docfield, resDocDef) {
+  let tempFieldRow = docfield.row || 1;
+  if (docfield.location === 'Header') {
+    return alphabet(docfield.col) + docfield.row;
+  } else if (docfield.worksheet !== 'Sheet2') {
+    return alphabet(docfield.col) + (resDocDef.row1 + tempFieldRow - 1);
   } else {
-    return alphabet(docField.col) + resDocDef.row2;
+    return alphabet(docfield.col) + (resDocDef.row2 + tempFieldRow - 1);
   }
 }
 

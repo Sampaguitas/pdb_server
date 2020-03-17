@@ -78,74 +78,142 @@ router.get('/', function (req, res) {
             wb.xlsx.read(s3.getObject(params).createReadStream())
             .then(async function(workbook) {
 
+                // console.log('--------------------------');
+                // console.log(docDef.project.collipacks);
+
+                let spColli = docDef.project.collipacks.reduce(function(acc, cur) {
+                    if (!!cur.type && !acc.hasOwnProperty(cur.type.toUpperCase())){
+                        acc[cur.type.toUpperCase()] = { spColliQty: 1, spColliWeight: cur.grossWeight || 0 }
+                    } else if (!!cur.type && acc.hasOwnProperty(cur.type.toUpperCase())){
+                        acc[cur.type.toUpperCase()].spColliQty += 1;
+                        acc[cur.type.toUpperCase()].spColliWeight += cur.grossWeight || 0;
+                    }
+                    return acc;
+                }, {});
+
                 const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
                 const docFieldSoh = filterDocFiled(docDef.docfields, 'Sheet1', 'Header');
                 const firstColSol = getColumnFirst(docFieldSol);
                 const lastColSol = getColumnLast(docFieldSol);
-                const soh = await getLines(docDef, docFieldSoh, locale);
-                const sol = await getLines(docDef, docFieldSol, locale);
+                const soh = await getLines(docDef, docFieldSoh, locale, spColli);
+                const sol = await getLines(docDef, docFieldSol, locale, spColli);
 
                 const docFieldStl = filterDocFiled(docDef.docfields, 'Sheet2', 'Line');
                 const docFieldSth = filterDocFiled(docDef.docfields, 'Sheet2', 'Header');
                 const firstColStl = getColumnFirst(docFieldStl);
                 const lastColStl = getColumnLast(docFieldStl);
-                const sth = await getLines(docDef, docFieldSth, locale);
-                const stl = await getLines(docDef, docFieldStl, locale);
+                const sth = await getLines(docDef, docFieldSth, locale, spColli);
+                const stl = await getLines(docDef, docFieldStl, locale, spColli);
+
 
                 
-                
+
                 workbook.eachSheet(function(worksheet, sheetId) {
-                if (sheetId === 1 && sol && firstColSol && lastColSol) {
-                    //fill all headers first
-                    soh.map(function (head) {
-                        head.map(function (cell) {
-                            if (cell.col && cell.row && cell.val) {
-                                worksheet.getCell(alphabet(cell.col) + cell.row).value = cell.val;
-                            }
+                    if (sheetId === 1 && docDef.row1) {
+                        //fill all headers first
+                        soh.map(function (head) {
+                            head.map(function (cell) {
+                                if (cell.col && cell.row && cell.val) {
+                                    worksheet.getCell(alphabet(cell.col) + cell.row).value = cell.val;
+                                }
+                            });
                         });
-                    });
-                    //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
-                    //totals and headers suposed to be below our table will be shifted down...
-                    if (sol.length > 1) {
-                        worksheet.duplicateRow(docDef.row1, sol.length -1, true);
-                    }
-                    //fill all Lines from our grid in the inserted rows
-                    sol.map(function (line, lineIndex) {
-                        line.map(function (cell) {
-                            if (cell.col && cell.val) {
-                                worksheet.getCell(alphabet(cell.col) + (docDef.row1 + lineIndex)).value = cell.val; 
-                            }
-                        });
-                    });
-                    //set up page for printing
-                    wsPageSetup(docDef.row1, worksheet, lastColSol);
 
-                } else if (sheetId === 2 && stl && firstColStl && lastColStl) {
-                    //fill all headers first (second page)
-                    sth.map(function (head) {
-                        head.map(function (cell) {
-                            if (cell.col && cell.row && cell.val) {
-                                worksheet.getCell(alphabet(cell.col) + cell.row).value = cell.val;
+                        let startRow = docDef.row1;
+                        let nRows = 3;
+                        let nLines = 1;
+                        let columnCount = worksheet.columnCount;
+                        //insert as many rows as we have line item * rows in our grid starting (keeping formulas and format of the last row from the first line)
+                        //starting from the last row of our first line item
+                        worksheet.duplicateRow(startRow + nRows - 1, nRows * (nLines - 1) , true);
+                        //copy the formulas from each row of the first line item to the other line items
+                        for (var col = 1; col < columnCount + 1; col++) {
+                            for (var line = 1; line < nLines; line++) {
+                                for (var row = 0; row < nRows; row++) {
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).value = worksheet.getCell(alphabet(col) + (startRow + row)).value;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).numFmt = worksheet.getCell(alphabet(col) + (startRow + row)).numFmt;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).font = worksheet.getCell(alphabet(col) + (startRow + row)).font;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).alignment = worksheet.getCell(alphabet(col) + (startRow + row)).alignment;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).border = worksheet.getCell(alphabet(col) + (startRow + row)).border;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).fill = worksheet.getCell(alphabet(col) + (startRow + row)).fill;
+                                }
                             }
+                        }
+                    } else if (sheetId === 2 && docDef.row2) {
+                        // fill all headers first (second page)
+                        sth.map(function (head) {
+                            head.map(function (cell) {
+                                if (cell.col && cell.row && cell.val) {
+                                    worksheet.getCell(alphabet(cell.col) + cell.row).value = cell.val;
+                                }
+                            });
                         });
-                    });
-                    //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
-                    //totals and headers suposed to be below our table will be shifted down...
-                    if (stl.length > 1) {
-                        worksheet.duplicateRow(docDef.row2, stl.length -1, true);
+
+                        let startRow = docDef.row2;
+                        let nRows = 3;
+                        let nLines = 1;
+                        let columnCount = worksheet.columnCount;
+                        //insert as many rows as we have line item * rows in our grid starting (keeping formulas and format of the last row from the first line)
+                        //starting from the last row of our first line item
+                        worksheet.duplicateRow(startRow + nRows - 1, nRows * (nLines - 1) , true);
+                        //copy the formulas from each row of the first line item to the other line items
+                        for (var col = 1; col < columnCount + 1; col++) {
+                            for (var line = 1; line < nLines; line++) {
+                                for (var row = 0; row < nRows; row++) {
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).value = worksheet.getCell(alphabet(col) + (startRow + row)).value;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).numFmt = worksheet.getCell(alphabet(col) + (startRow + row)).numFmt;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).font = worksheet.getCell(alphabet(col) + (startRow + row)).font;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).alignment = worksheet.getCell(alphabet(col) + (startRow + row)).alignment;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).border = worksheet.getCell(alphabet(col) + (startRow + row)).border;
+                                    worksheet.getCell(alphabet(col) + (startRow + (nRows * line + row))).fill = worksheet.getCell(alphabet(col) + (startRow + row)).fill;
+                                }
+                            }
+                        }
                     }
-                    //fill all Lines from our grid in the inserted rows
-                    stl.map(function (line, lineIndex) {
-                        line.map(function (cell) {
-                            if (cell.col && cell.val) {
-                                worksheet.getCell(alphabet(cell.col) + (docDef.row2 + lineIndex)).value = cell.val;
-                            }
-                        });
-                    });
-                    //set up page for printing
-                    wsPageSetup(docDef.row2, worksheet, lastColStl);
-                }
-                });
+                })
+
+                
+
+                
+                
+                // workbook.eachSheet(function(worksheet, sheetId) {
+                // if (sheetId === 1 && sol && firstColSol && lastColSol) {
+
+                //     //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
+                //     //totals and headers suposed to be below our table will be shifted down...
+                //     if (sol.length > 1) {
+                //         worksheet.duplicateRow(docDef.row1, sol.length -1, true);
+                //     }
+                //     //fill all Lines from our grid in the inserted rows
+                //     sol.map(function (line, lineIndex) {
+                //         line.map(function (cell) {
+                //             if (cell.col && cell.val) {
+                //                 worksheet.getCell(alphabet(cell.col) + (docDef.row1 + lineIndex)).value = cell.val; 
+                //             }
+                //         });
+                //     });
+                //     //set up page for printing
+                //     wsPageSetup(docDef.row1, worksheet, lastColSol);
+
+                // } else if (sheetId === 2 && stl && firstColStl && lastColStl) {
+                //     
+                //     //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
+                //     //totals and headers suposed to be below our table will be shifted down...
+                //     if (stl.length > 1) {
+                //         worksheet.duplicateRow(docDef.row2, stl.length -1, true);
+                //     }
+                //     //fill all Lines from our grid in the inserted rows
+                //     stl.map(function (line, lineIndex) {
+                //         line.map(function (cell) {
+                //             if (cell.col && cell.val) {
+                //                 worksheet.getCell(alphabet(cell.col) + (docDef.row2 + lineIndex)).value = cell.val;
+                //             }
+                //         });
+                //     });
+                //     //set up page for printing
+                //     wsPageSetup(docDef.row2, worksheet, lastColStl);
+                // }
+                // });
                 workbook.xlsx.write(res);
             });
 
@@ -261,7 +329,7 @@ function getGroups(docfields) {
 
 }
 
-function getLines(docDef, docfields, locale) {
+function getLines(docDef, docfields, locale, spColli) {
     return new Promise(async function (resolve) {
         // let arrayLines = [];
         // let arrayRow = [];
@@ -272,27 +340,40 @@ function getLines(docDef, docfields, locale) {
             docDef.project.collipacks.map(collipack => {
                 if(collipack.packitems){
                     collipack.packitems.map(packitem => {
-                        myRowPromises.push(getRow(docDef, docfields, collipack, packitem));
+                        myRowPromises.push(getRows(docDef, docfields, collipack, packitem, spColli));
                     });
                 }
             });
+
             await Promise.all(myRowPromises).then(arrayLines => {
                 resolve(arrayLines);
             });
+
         } else {
             resolve([]);
         }
+
     });
 }
 
-function getRow(docDef, docfields, collipack, packitem) {
+function getRows(docDef, docfields, collipack, packitem, spColli) {
     return new Promise(function(resolve) {
-        let arrayRow = [];
+        let arrayLine = [];
         getArticle(docDef.project.erp.name, packitem.pcs, packitem.mtrs, packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
             docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
+                    case 'storedproc':
+                        if (['spColliQty', 'spColliWeight'].includes(docfield.fields.name) && !!docfield.param && spColli.hasOwnProperty(docfield.param.toUpperCase())) {
+                            arrayLine.push({
+                                val: spColli[docfield.param.toUpperCase()][docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                            break; 
+                        }
                     case 'collipack':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: collipack[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -300,7 +381,7 @@ function getRow(docDef, docfields, collipack, packitem) {
                         });
                         break;
                     case 'packitem':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: packitem[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -308,7 +389,7 @@ function getRow(docDef, docfields, collipack, packitem) {
                         });
                         break;
                     case 'sub':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: packitem.sub[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -317,14 +398,14 @@ function getRow(docDef, docfields, collipack, packitem) {
                         break;
                     case 'po':
                         if (['project', 'projectNr'].includes(docfield.fields.name)) {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
                                 row: docfield.row,
                                 col: docfield.col,
                                 type: docfield.fields.type
                             });
                         } else {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: packitem.sub.po[docfield.fields.name] || '',
                                 row: docfield.row,
                                 col: docfield.col,
@@ -333,14 +414,14 @@ function getRow(docDef, docfields, collipack, packitem) {
                         }
                         break;
                     case 'article':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: article[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type
                         });
                         break;
-                    default: arrayRow.push({
+                    default: arrayLine.push({
                         val: '',
                         row: docfield.row,
                         col: docfield.col,
@@ -349,9 +430,40 @@ function getRow(docDef, docfields, collipack, packitem) {
                     });
                 }
             });
-            resolve(arrayRow);
+            resolve(arrayLine);
+            // resolve(lineToRows(arrayLine));
         });
     });
+}
+
+function lineToRows(arrayLine) {
+    let tempRows = [];
+    let lineObject = arrayLine.reduce(function (acc, cur) {
+        if (!!cur.row && cur.row > acc.maxRow) {
+            acc.maxRow = cur.row;
+        }
+
+        if (!!cur.row && !acc.hasOwnProperty(cur.row)) {
+            acc[cur.row] = [cur];
+        } else if (!!cur.row && acc.hasOwnProperty(cur.row)) {
+            acc[cur.row].push(cur);
+        }
+
+        return acc;
+
+    }, { maxRow: 1 });
+
+    for (var i = 1; i < lineObject.maxRow + 1; i++) {
+        if (lineObject.hasOwnProperty(i)) {
+            tempRows.push(lineObject[i]);
+        } else {
+            tempRows.push([]);
+        }
+    }
+
+    // console.log(lineObject)
+
+    return arrayLine;
 }
 
 function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {

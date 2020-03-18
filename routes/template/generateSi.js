@@ -159,6 +159,8 @@ router.get('/', function (req, res) {
                                 }
                             });
                         });
+                        // set up page for printing
+                        wsPageSetup(docDef.row1, worksheet, lastColSol);
                     } else if (sheetId === 2 && docDef.row2) {
                         // fill all headers first (second page)
                         sth.map(function (head) {
@@ -201,6 +203,16 @@ router.get('/', function (req, res) {
                                 }
                             }
                         }
+                        //fill all Lines from our grid in the inserted rows
+                        stl.map(function (line, lineIndex) {
+                            line.map(function (cell) {
+                                if (cell.col && cell.val) {
+                                    worksheet.getCell(alphabet(cell.col) + (startRow + (nRows * lineIndex) + cell.row - 1)).value = cell.val; 
+                                }
+                            });
+                        });
+                        //set up page for printing
+                        wsPageSetup(docDef.row2, worksheet, lastColStl);
                     }
                 })
 

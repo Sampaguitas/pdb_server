@@ -118,11 +118,23 @@ router.get('/', function (req, res) {
                                 }
                             });
                         });
-
-                        let startRow = docDef.row1;
-                        let nRows = 3;
-                        let nLines = 1;
+                        //get nLines and nRows per line
                         let columnCount = worksheet.columnCount;
+                        let startRow = docDef.row1;
+                        let nLines = sol.length;
+                        let nRows = sol.reduce(function(accLine, curLine) {
+                            let nRowLine = curLine.reduce(function(accCell, curCell) {
+                                if(curCell.row > accCell) {
+                                  accCell = curCell.row;
+                                }
+                              return accCell;
+                            }, 1)
+                            
+                            if(nRowLine > accLine) {
+                              accLine = nRowLine;
+                            }
+                              return accLine;
+                        }, 1);
                         //insert as many rows as we have line item * rows in our grid starting (keeping formulas and format of the last row from the first line)
                         //starting from the last row of our first line item
                         worksheet.duplicateRow(startRow + nRows - 1, nRows * (nLines - 1) , true);
@@ -148,11 +160,23 @@ router.get('/', function (req, res) {
                                 }
                             });
                         });
-
-                        let startRow = docDef.row2;
-                        let nRows = 3;
-                        let nLines = 1;
+                        //get nLines and nRows per line
                         let columnCount = worksheet.columnCount;
+                        let startRow = docDef.row2;
+                        let nLines = stl.length;
+                        let nRows = stl.reduce(function(accLine, curLine) {
+                            let nRowLine = curLine.reduce(function(accCell, curCell) {
+                                if(curCell.row > accCell) {
+                                accCell = curCell.row;
+                                }
+                            return accCell;
+                            }, 1)
+                            
+                            if(nRowLine > accLine) {
+                            accLine = nRowLine;
+                            }
+                            return accLine;
+                        }, 1);
                         //insert as many rows as we have line item * rows in our grid starting (keeping formulas and format of the last row from the first line)
                         //starting from the last row of our first line item
                         worksheet.duplicateRow(startRow + nRows - 1, nRows * (nLines - 1) , true);

@@ -115,8 +115,6 @@ router.get('/', function (req, res) {
                                 }
                             });
                         });
-                        console.log('soh:', soh)
-                        console.log('sol:', sol);
                         //get nLines and nRows per line
                         let columnCount = worksheet.columnCount;
                         let startRow = docDef.row1;
@@ -161,7 +159,7 @@ router.get('/', function (req, res) {
                         });
                         // set up page for printing
                         wsPageSetup(docDef.row1, worksheet, lastColSol);
-                    } else if (sheetId === 2 && docDef.row2) {
+                    } else if (sheetId === 2 && docDef.row2 && !_.isEmpty(stl)) {
                         // fill all headers first (second page)
                         sth.map(function (head) {
                             head.map(function (cell) {
@@ -340,7 +338,7 @@ function getLines(docDef, docfields, locale, spColli) {
         if(docDef.project.collipacks) {
             
             docDef.project.collipacks.map(collipack => {
-                console.log('collipack.packitems:', collipack.packitems);
+                // console.log('collipack.packitems:', collipack.packitems);
                 if(collipack.packitems){
                     collipack.packitems.map(function (packitem, itemIndex) {
                         myRowPromises.push(getRows(docDef, docfields, collipack, packitem, itemIndex, spColli));

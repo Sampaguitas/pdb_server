@@ -151,6 +151,14 @@ router.get('/', function (req, res) {
                                 }
                             }
                         }
+                        //fill all Lines from our grid in the inserted rows
+                        sol.map(function (line, lineIndex) {
+                            line.map(function (cell) {
+                                if (cell.col && cell.val) {
+                                    worksheet.getCell(alphabet(cell.col) + (startRow + (nRows * lineIndex) + cell.row - 1)).value = cell.val; 
+                                }
+                            });
+                        });
                     } else if (sheetId === 2 && docDef.row2) {
                         // fill all headers first (second page)
                         sth.map(function (head) {

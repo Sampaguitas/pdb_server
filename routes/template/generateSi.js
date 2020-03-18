@@ -105,11 +105,8 @@ router.get('/', function (req, res) {
                 const sth = await getLines(docDef, docFieldSth, locale, spColli);
                 const stl = await getLines(docDef, docFieldStl, locale, spColli);
 
-
-                
-
                 workbook.eachSheet(function(worksheet, sheetId) {
-                    if (sheetId === 1 && docDef.row1) {
+                    if (sheetId === 1 && docDef.row1 && !_.isEmpty(sol)) {
                         //fill all headers first
                         soh.map(function (head) {
                             head.map(function (cell) {
@@ -118,6 +115,8 @@ router.get('/', function (req, res) {
                                 }
                             });
                         });
+                        console.log('soh:', soh)
+                        console.log('sol:', sol);
                         //get nLines and nRows per line
                         let columnCount = worksheet.columnCount;
                         let startRow = docDef.row1;
@@ -128,13 +127,14 @@ router.get('/', function (req, res) {
                                   accCell = curCell.row;
                                 }
                               return accCell;
-                            }, 1)
+                            }, 1);
                             
                             if(nRowLine > accLine) {
                               accLine = nRowLine;
                             }
                               return accLine;
                         }, 1);
+                        
                         //insert as many rows as we have line item * rows in our grid starting (keeping formulas and format of the last row from the first line)
                         //starting from the last row of our first line item
                         worksheet.duplicateRow(startRow + nRows - 1, nRows * (nLines - 1) , true);
@@ -180,7 +180,7 @@ router.get('/', function (req, res) {
                                 accCell = curCell.row;
                                 }
                             return accCell;
-                            }, 1)
+                            }, 1);
                             
                             if(nRowLine > accLine) {
                             accLine = nRowLine;
@@ -214,50 +214,7 @@ router.get('/', function (req, res) {
                         //set up page for printing
                         wsPageSetup(docDef.row2, worksheet, lastColStl);
                     }
-                })
-
-                
-
-                
-                
-                // workbook.eachSheet(function(worksheet, sheetId) {
-                // if (sheetId === 1 && sol && firstColSol && lastColSol) {
-
-                //     //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
-                //     //totals and headers suposed to be below our table will be shifted down...
-                //     if (sol.length > 1) {
-                //         worksheet.duplicateRow(docDef.row1, sol.length -1, true);
-                //     }
-                //     //fill all Lines from our grid in the inserted rows
-                //     sol.map(function (line, lineIndex) {
-                //         line.map(function (cell) {
-                //             if (cell.col && cell.val) {
-                //                 worksheet.getCell(alphabet(cell.col) + (docDef.row1 + lineIndex)).value = cell.val; 
-                //             }
-                //         });
-                //     });
-                //     //set up page for printing
-                //     wsPageSetup(docDef.row1, worksheet, lastColSol);
-
-                // } else if (sheetId === 2 && stl && firstColStl && lastColStl) {
-                //     
-                //     //insert as many rows as we have lines in our grid (keeping formulas and format of first row)
-                //     //totals and headers suposed to be below our table will be shifted down...
-                //     if (stl.length > 1) {
-                //         worksheet.duplicateRow(docDef.row2, stl.length -1, true);
-                //     }
-                //     //fill all Lines from our grid in the inserted rows
-                //     stl.map(function (line, lineIndex) {
-                //         line.map(function (cell) {
-                //             if (cell.col && cell.val) {
-                //                 worksheet.getCell(alphabet(cell.col) + (docDef.row2 + lineIndex)).value = cell.val;
-                //             }
-                //         });
-                //     });
-                //     //set up page for printing
-                //     wsPageSetup(docDef.row2, worksheet, lastColStl);
-                // }
-                // });
+                });
                 workbook.xlsx.write(res);
             });
 
@@ -369,9 +326,9 @@ function TypeToString(fieldValue, fieldType, locale) {
 //po.sch
 //---display(2)---
 
-function getGroups(docfields) {
+// function getGroups(docfields) {
 
-}
+// }
 
 function getLines(docDef, docfields, locale, spColli) {
     return new Promise(async function (resolve) {
@@ -381,10 +338,12 @@ function getLines(docDef, docfields, locale, spColli) {
         let arrayColli = [];
 
         if(docDef.project.collipacks) {
+            
             docDef.project.collipacks.map(collipack => {
+                console.log('collipack.packitems:', collipack.packitems);
                 if(collipack.packitems){
-                    collipack.packitems.map(packitem => {
-                        myRowPromises.push(getRows(docDef, docfields, collipack, packitem, spColli));
+                    collipack.packitems.map(function (packitem, itemIndex) {
+                        myRowPromises.push(getRows(docDef, docfields, collipack, packitem, itemIndex, spColli));
                     });
                 }
             });
@@ -400,10 +359,20 @@ function getLines(docDef, docfields, locale, spColli) {
     });
 }
 
-function getRows(docDef, docfields, collipack, packitem, spColli) {
+function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
     return new Promise(function(resolve) {
         let arrayLine = [];
-        getArticle(docDef.project.erp.name, packitem.pcs, packitem.mtrs, packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
+        
+        let tempUom = 'pcs';
+        if (!!packitem.sub.po.uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(packitem.sub.po.uom.toUpperCase())) {
+            tempUom = 'mtrs';
+        } else if (!!packitem.sub.po.uom && ['F', 'FT', 'FEET', 'FEETS'].includes(packitem.sub.po.uom.toUpperCase())) {
+            tempUom = 'feets';
+        } else if (!!packitem.sub.po.uom && packitem.sub.po.uom.toUpperCase() === 'MT') {
+            tempUom = 'mt';
+        }
+
+        getArticle(docDef.project.erp.name, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
             docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
                     case 'storedproc':
@@ -414,8 +383,36 @@ function getRows(docDef, docfields, collipack, packitem, spColli) {
                                 col: docfield.col,
                                 type: docfield.fields.type
                             });
-                            break; 
+                        } else if (docfield.fields.name === 'spAutoNr') {
+                            arrayLine.push({
+                                val: itemIndex + 1,
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        } else if (docfield.fields.name === 'spLineWeight') {
+                            arrayLine.push({
+                                val: calcWeight(tempUom, packitem.pcs, packitem.mtrs, article.netWeight),
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        } else if (docfield.fields.name === 'spPlQty') {
+                            arrayLine.push({
+                                val: tempUom === 'pcs' ? packitem.pcs : packitem.mtrs,
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        } else {
+                            arrayLine.push({
+                                val: '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: 'String'
+                            });
                         }
+                        break;
                     case 'collipack':
                         arrayLine.push({
                             val: collipack[docfield.fields.name] || '',
@@ -469,7 +466,6 @@ function getRows(docDef, docfields, collipack, packitem, spColli) {
                         val: '',
                         row: docfield.row,
                         col: docfield.col,
-                        // name: docfield.fields.name,
                         type: 'String'
                     });
                 }
@@ -480,37 +476,37 @@ function getRows(docDef, docfields, collipack, packitem, spColli) {
     });
 }
 
-function lineToRows(arrayLine) {
-    let tempRows = [];
-    let lineObject = arrayLine.reduce(function (acc, cur) {
-        if (!!cur.row && cur.row > acc.maxRow) {
-            acc.maxRow = cur.row;
-        }
+// function lineToRows(arrayLine) {
+//     let tempRows = [];
+//     let lineObject = arrayLine.reduce(function (acc, cur) {
+//         if (!!cur.row && cur.row > acc.maxRow) {
+//             acc.maxRow = cur.row;
+//         }
 
-        if (!!cur.row && !acc.hasOwnProperty(cur.row)) {
-            acc[cur.row] = [cur];
-        } else if (!!cur.row && acc.hasOwnProperty(cur.row)) {
-            acc[cur.row].push(cur);
-        }
+//         if (!!cur.row && !acc.hasOwnProperty(cur.row)) {
+//             acc[cur.row] = [cur];
+//         } else if (!!cur.row && acc.hasOwnProperty(cur.row)) {
+//             acc[cur.row].push(cur);
+//         }
 
-        return acc;
+//         return acc;
 
-    }, { maxRow: 1 });
+//     }, { maxRow: 1 });
 
-    for (var i = 1; i < lineObject.maxRow + 1; i++) {
-        if (lineObject.hasOwnProperty(i)) {
-            tempRows.push(lineObject[i]);
-        } else {
-            tempRows.push([]);
-        }
-    }
+//     for (var i = 1; i < lineObject.maxRow + 1; i++) {
+//         if (lineObject.hasOwnProperty(i)) {
+//             tempRows.push(lineObject[i]);
+//         } else {
+//             tempRows.push([]);
+//         }
+//     }
 
-    // console.log(lineObject)
+//     // console.log(lineObject)
 
-    return arrayLine;
-}
+//     return arrayLine;
+// }
 
-function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {
+function getArticle(erp, vlArtNo, vlArtNoX) {
     return new Promise(function (resolve) {
         if (!vlArtNo && !vlArtNoX) {
             resolve({
@@ -520,14 +516,14 @@ function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {
         } else {
             let conditions = vlArtNo ? { erp: erp, vlArtNo : vlArtNo } : { erp: erp, vlArtNoX : vlArtNoX };
             Article.findOne(conditions, function (err, article) {
-                let tempUom = 'pcs';
-                if (!!uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(uom.toUpperCase())) {
-                    tempUom = 'mtrs';
-                } else if (!!uom && ['F', 'FT', 'FEET', 'FEETS'].includes(uom.toUpperCase())) {
-                    tempUom = 'feets';
-                } else if (!!uom && uom.toUpperCase() === 'MT') {
-                    tempUom = 'mt';
-                }
+                // let tempUom = 'pcs';
+                // if (!!uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(uom.toUpperCase())) {
+                //     tempUom = 'mtrs';
+                // } else if (!!uom && ['F', 'FT', 'FEET', 'FEETS'].includes(uom.toUpperCase())) {
+                //     tempUom = 'feets';
+                // } else if (!!uom && uom.toUpperCase() === 'MT') {
+                //     tempUom = 'mt';
+                // }
 
                 if(err || _.isNull(article)) {
                     resolve({
@@ -537,7 +533,8 @@ function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {
                 } else {
                     resolve({
                         hsCode: article.hsCode,
-                        netWeight: calcWeight(tempUom, pcs, mtrs, article.netWeight)
+                        netWeight: article.netWeight
+                        // calcWeight(tempUom, pcs, mtrs, article.netWeight)
                     });
                 }
             });

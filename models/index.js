@@ -31,7 +31,6 @@ require('./Screen');
 require('./Sub');
 require('./Supplier');
 require('./User');
-require('./UserSetting');
 
 
 

@@ -405,17 +405,6 @@ const userSetAdmin = require('./routes/user/setAdmin');
 app.put('/user/setAdmin', passport.authenticate('jwt', { session: false }), userSetAdmin);
 const userSetSpAdmin = require('./routes/user/setSpAdmin');
 app.put('/user/setSpAdmin', passport.authenticate('jwt', { session: false }), userSetSpAdmin);
-//usersetting
-const usersettingCreate = require('./routes/usersetting/create');
-app.post('/usersetting/create', passport.authenticate('jwt', { session: false }), usersettingCreate);
-const usersettingDelete = require('./routes/usersetting/delete');
-app.delete('/usersetting/delete', passport.authenticate('jwt', { session: false }), usersettingDelete);
-const usersettingFindAll = require('./routes/usersetting/findAll');
-app.get('/usersetting/findAll', passport.authenticate('jwt', { session: false }), usersettingFindAll);
-const usersettingFindOne = require('./routes/usersetting/findOne');
-app.get('/usersetting/findOne', passport.authenticate('jwt', { session: false }), usersettingFindOne);
-const usersettingUpdate = require('./routes/usersetting/update');
-app.put('/usersetting/update', passport.authenticate('jwt', { session: false }), usersettingUpdate);
 //template
 const templateDeleteFile = require('./routes/template/deleteFile');
 app.delete('/template/deleteFile', passport.authenticate('jwt', { session: false }), templateDeleteFile);

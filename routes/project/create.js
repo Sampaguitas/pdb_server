@@ -3,6 +3,7 @@ const router = express.Router();
 const Project = require('../../models/Project');
 const Counter = require('../../models/Counter');
 const Access = require('../../models/Access');
+const ColliType = require('../../models/ColliType');
 const Supplier = require('../../models/Supplier');
 const Field = require('../../models/Field');
 const FieldName = require('../../models/FieldName');
@@ -117,6 +118,25 @@ router.post('/', async (req, res) => {
                     .catch( () => console.log("Supplier could not be created"));
                 }); //map
             } //if statement
+
+            let oldColliTypes = await ColliType.find({projectId: req.body.copyId});
+            if(!oldColliTypes) {
+                return console.log("there was no old ColliType");
+            } else {
+                oldColliTypes.map(oldColliType => {
+                    const newColliType = new ColliType({
+                        type: oldColliType.type,
+                        length: oldColliType.length,
+                        width: oldColliType.width,
+                        height: oldColliType.height,
+                        pkWeight: oldColliType.pkWeight,
+                        projectId: oldColliType.projectId
+                    });
+                    newColliType.save()
+                    .then(console.log("new ColliType has been created"))
+                    .catch( () => console.log("ColliType could not be created"));
+                });
+            }
 
             let oldDocDefs = await DocDef.find({projectId: req.body.copyId});
             if(!oldDocDefs) {

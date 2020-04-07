@@ -101,7 +101,8 @@ function updateColliPack(packId, netWeight, type, length, width, height, pkWeigh
                 netWeight: netWeight
             }
         }
-        ColliPack.findByIdAndUpdate(packId, update, function(err) {
+        let options = { new: true };
+        ColliPack.findByIdAndUpdate(packId, update, options, function(err) {
             if(err) {
                 resolve({
                     isRejected: true,

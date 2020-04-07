@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 //Create Schema
 const ColliTypeSchema = new Schema({
     type: {
-        type: String
+        type: String,
+        required: true
     },
     length: {
         type: Number
@@ -20,7 +21,8 @@ const ColliTypeSchema = new Schema({
     },
     projectId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects'   
+        ref: 'projects',
+        required: true  
     },
     daveId: {
         type: Number,

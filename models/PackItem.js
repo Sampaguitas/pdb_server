@@ -162,10 +162,6 @@ PackItemSchema.post('findOneAndDelete', function(doc, next) {
     next();
 });
 
-// PackItemSchema.pre('findOneAndDelete', function(doc) {
-//     console.log('docs:', docs);
-//     // next();
-// });
 
 PackItemSchema.post('findOneAndUpdate', function(doc, next) {
     doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {

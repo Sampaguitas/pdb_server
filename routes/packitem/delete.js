@@ -15,7 +15,7 @@ router.delete('/', async (req, res) => {
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {
-        selectedIds.map(selectedId => !!selectedId.packItemId && myPromises.push(remove(selectedId.packItemId)));
+        selectedIds.map(selectedId => !!selectedId.packItemId && myPromises.push(removePackItem(selectedId.packItemId)));
         
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {
@@ -31,12 +31,9 @@ router.delete('/', async (req, res) => {
     }
 });
 
-module.exports = router;
-
-
-function remove(packItemId) {
+function removePackItem(id) {
     return new Promise(function(resolve) {
-        condition = { _id: packItemId};
+        condition = { _id: id};
         PackItem.findOneAndDelete(condition, function (err) {
             if(err) {
                 resolve({
@@ -50,3 +47,5 @@ function remove(packItemId) {
         });
     });
 }
+
+module.exports = router;

@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const PackItem = require('./PackItem');
+const Po = require('./Po');
+const _ = require('lodash');
 
 //Create Schema
 const SubSchema = new Schema({
@@ -238,5 +241,25 @@ SubSchema.virtual("po", {
 });
 
 SubSchema.set('toJSON', { virtuals: true });
+
+
+SubSchema.post('findOneAndDelete', function(doc, next) {
+    doc.populate([{path: 'packitems'}, {path: 'po', populate: {path: 'subs'}}], function(err, res) {
+        
+        if (!err && !_.isEmpty(res.packitems)) {
+            let packItemIds = res.packitems.reduce(function(acc, cur) {
+                acc.push(cur._id)
+                return acc;
+            },[]);
+            packItemIds.map(packItemId=> PackItem.findOneAndDelete({ _id: packItemId}));
+        }
+
+        if (_.isEmpty(res.po.subs)) {
+            Po.findOneAndDelete({ _id: res.poId });
+        }
+        
+    });
+    next();
+});
 
 module.exports = Sub = mongoose.model('subs', SubSchema);

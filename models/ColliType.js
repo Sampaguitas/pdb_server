@@ -29,4 +29,5 @@ const ColliTypeSchema = new Schema({
     }
 });
 
+
 module.exports = ColliType = mongoose.model('collitypes', ColliTypeSchema);

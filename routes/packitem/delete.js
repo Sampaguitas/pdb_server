@@ -1,24 +1,52 @@
 const express = require('express');
 const router = express.Router();
 const PackItem = require('../../models/PackItem');
-const fault = require('../../utilities/Errors');
+const _ = require('lodash');
 
-router.delete('/', (req, res) => {
-    const id = req.query.id
-    PackItem.findByIdAndRemove(id, function (err, packitem) {
-        if (!packitem) {
-            return res.status(400).json({
-                message: fault(1101).message
-                //"1101": "PackItem does not exist",
+
+
+router.delete('/', async (req, res) => {
+
+    const selectedIds = req.body.selectedIds;
+    let myPromises = [];
+    let nRejected = 0;
+    let nDeleted = 0;
+
+    if (_.isEmpty(selectedIds)) {
+        return res.status(400).json({message: 'You need to pass an Id.'});
+    } else {
+        selectedIds.map(selectedId => !!selectedId.packItemId && myPromises.push(remove(selectedId.packItemId)));
+        
+        await Promise.all(myPromises).then(function (resPromises) {
+            resPromises.map(function (resPromise) {
+                if (resPromise.isRejected) {
+                    nRejected += nRejected + 1;
+                } else {
+                    nDeleted += nDeleted + 1;
+                }
             });
-        }
-        else {
-            return res.status(200).json({
-                message: fault(1103).message
-                //"1103": "PackItem has been deleted",
-            });
-        }
-    });
+            res.status(!!nRejected ? 400 : 200).json({message: `${nDeleted} item(s) deleted, ${nRejected} item(s) rejected.`});
+        });
+
+    }
 });
 
 module.exports = router;
+
+
+function remove(packItemId) {
+    return new Promise(function(resolve) {
+        condition = { _id: packItemId};
+        PackItem.findOneAndDelete(condition, function (err) {
+            if(err) {
+                resolve({
+                    isRejected: true
+                });
+            } else {
+                resolve({
+                    isRejected: false
+                });
+            }
+        });
+    });
+}

@@ -151,6 +151,22 @@ PackItemSchema.virtual("sub", {
 
 PackItemSchema.set('toJSON', { virtuals: true });
 
+
+PackItemSchema.post('findOneAndDelete', function(doc, next) {
+    doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
+        if (!err && !!res.sub.po.projectId) {
+            let projectId = res.sub.po.projectId;
+            removeDirtyCollis(projectId);
+        }
+    });
+    next();
+});
+
+// PackItemSchema.pre('findOneAndDelete', function(doc) {
+//     console.log('docs:', docs);
+//     // next();
+// });
+
 PackItemSchema.post('findOneAndUpdate', function(doc, next) {
     doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
         if (!err && !!res.sub.po.projectId) {

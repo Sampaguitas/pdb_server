@@ -18,20 +18,6 @@ router.delete('/', (req, res) => {
             }
         });
     }
-    // ColliType.findByIdAndRemove(id, function (err, collitype) {
-    //     if (!collitype) {
-    //         return res.status(400).json({
-    //             message: 'ColliType does not exist'
-    //             //"0301": "ColliType does not exist",
-    //         });
-    //     }
-    //     else {
-    //         return res.status(200).json({
-    //             message: 'ColliType has been deleted'
-    //             //"0303": "ColliType has been deleted",
-    //         });
-    //     }
-    // });
 });
 
 module.exports = router;

@@ -52,13 +52,13 @@ router.put('/', (req, res) => {
                 await Promise.all(itemsWeight).then(async resItemsWeight => {
                     
                     let myCollis = resItemsWeight.reduce(function (acc, cur) {
-                        if (!cur.isRejected) {
+                        // if (!cur.isRejected) {
                            if (acc.hasOwnProperty([cur.packId])) {
-                            acc[cur.packId] += cur.weight;
+                                acc[cur.packId] += cur.weight;
                            } else {
-                            acc[cur.packId] = cur.weight;
+                                acc[cur.packId] = cur.weight;
                            }
-                        }
+                        // }
                         return acc;
                     }, {});
 
@@ -90,7 +90,7 @@ module.exports = router;
 
 function updateColliPack(packId, netWeight, type, length, width, height, pkWeight) {
     return new Promise(function (resolve) {
-        let grossWeight = netWeight + pkWeight;
+        let grossWeight = !!netWeight ? netWeight + pkWeight : 0;
         let update = {
             $set: {
                 type: type,

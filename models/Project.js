@@ -33,20 +33,6 @@ const ProjectSchema = new Schema({
     },
 });
 
-ProjectSchema.pre("save", function (next) {
-    var self = this;
-    Counter.findOneAndUpdate({_id: 'projectNumber'}, {$inc: { seq: 1} }, function(error, counter)   {
-        if(error)
-            return next(error);
-        self.number = counter.seq;
-        next();
-    });
-});
-
-ProjectSchema.post('save', function(doc) {
-    console.log('%s has been saved', doc._id);
-  });
-
 ProjectSchema.virtual("accesses", {
     ref: "accesses",
     localField: "_id",
@@ -61,15 +47,15 @@ ProjectSchema.virtual("pos", {
     justOne: false
 });
 
-ProjectSchema.virtual("collitypes", {
-    ref: "collitypes",
+ProjectSchema.virtual("collipacks", {
+    ref: "collipacks",
     localField: "_id",
     foreignField: "projectId",
     justOne: false
 });
 
-ProjectSchema.virtual("collipacks", {
-    ref: "collipacks",
+ProjectSchema.virtual("collitypes", {
+    ref: "collitypes",
     localField: "_id",
     foreignField: "projectId",
     justOne: false
@@ -96,6 +82,20 @@ ProjectSchema.virtual("currency", {
     justOne: true
 });
 
+ProjectSchema.virtual("docdefs", {
+    ref: "docdefs",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
+ProjectSchema.virtual("docfields", {
+    ref: "docfields",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
 ProjectSchema.virtual("suppliers", {
     ref: "suppliers",
     localField: "_id",
@@ -117,21 +117,36 @@ ProjectSchema.virtual("fieldnames", {
     justOne: false
 });
 
-ProjectSchema.virtual("docdefs", {
-    ref: "docdefs",
+ProjectSchema.virtual("settings", {
+    ref: "settings",
     localField: "_id",
     foreignField: "projectId",
     justOne: false
 });
 
-ProjectSchema.virtual("docfields", {
-    ref: "docfields",
+ProjectSchema.virtual("suppliers", {
+    ref: "suppliers",
     localField: "_id",
     foreignField: "projectId",
     justOne: false
 });
+
 
 ProjectSchema.set('toJSON', { virtuals: true });
+
+ProjectSchema.pre("save", function (next) {
+    var self = this;
+    Counter.findOneAndUpdate({_id: 'projectNumber'}, {$inc: { seq: 1} }, function(error, counter)   {
+        if(error)
+            return next(error);
+        self.number = counter.seq;
+        next();
+    });
+});
+
+ProjectSchema.post('save', function(doc) {
+    console.log('%s has been saved', doc._id);
+});
 
 
 //module.exports = mongoose.model('Projects', ProjectSchema);

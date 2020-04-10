@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Sub = require('../../models/Sub');
+const Warehouse = require('../../models/Warehouse');
 const _ = require('lodash');
 
 router.delete('/', async (req, res) => {
@@ -13,7 +13,7 @@ router.delete('/', async (req, res) => {
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {
-        selectedIds.map(selectedId => !!selectedId.subId && myPromises.push(removeSub(selectedId.subId)));
+        selectedIds.map(selectedId => !!selectedId.warehouseId && myPromises.push(removeWarehouse(selectedId.warehouseId)));
         
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {
@@ -25,14 +25,13 @@ router.delete('/', async (req, res) => {
             });
             res.status(!!nRejected ? 400 : 200).json({message: `${nDeleted} item(s) deleted, ${nRejected} item(s) rejected.`});
         });
-
     }
 });
 
-function removeSub(id) {
+function removeWarehouse(id) {
     return new Promise(function(resolve) {
         condition = { _id: id};
-        Sub.findOneAndDelete(condition, function (err) {
+        Warehouse.findOneAndDelete(condition, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

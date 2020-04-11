@@ -28,9 +28,9 @@ const LocationSchema = new Schema({
         maxlength: 3,
         required: true
     },
-    isTube: {
-        type: Boolean,
-        default: true
+    tc: {
+        type: String,
+        maxlength: 1,
         //tube or component
     },
     type: {

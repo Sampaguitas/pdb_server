@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
                 row: req.body.row,
                 row: req.body.row,
                 height: req.body.height,
-                isTube: req.body.isTube,
+                tc: req.body.tc,
                 type: req.body.type,
                 warehouseId: req.body.warehouseId,
             });

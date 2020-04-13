@@ -9,7 +9,8 @@ const WarehouseSchema = new Schema({
     },
     projectId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'projects' 
+        ref: 'projects',
+        required: true,
     }
 
 });

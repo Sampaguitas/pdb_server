@@ -5,7 +5,7 @@ const _ = require('lodash');
 
 router.delete('/', async (req, res) => {
     // const id = req.query.id
-    const selectedIds = req.body.selectedIds;
+    const selectedIds = req.body.selectedIds
     let myPromises = [];
     let nRejected = 0;
     let nDeleted = 0;
@@ -13,7 +13,7 @@ router.delete('/', async (req, res) => {
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {
-        selectedIds.map(selectedId => !!selectedId.warehouseId && myPromises.push(removeWarehouse(selectedId.warehouseId)));
+        selectedIds.map(selectedId => myPromises.push(removeWarehouse(selectedId)));
         
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {

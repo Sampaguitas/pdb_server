@@ -3,7 +3,6 @@ const router = express.Router();
 const Warehouse = require('../../models/Warehouse');
 
 router.post('/', (req, res) => {
-
             const newWarehouse = new Warehouse({
                 //_id: req.body.id,
                 name: req.body.name,

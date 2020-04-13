@@ -6,14 +6,13 @@ router.post('/', (req, res) => {
 
             const newLocation = new Location({
                 //_id: req.body.id,
-                area: req.body.area,
                 hall: req.body.hall,
                 row: req.body.row,
                 row: req.body.row,
                 height: req.body.height,
                 tc: req.body.tc,
                 type: req.body.type,
-                warehouseId: req.body.warehouseId,
+                areaId: req.body.areaId,
             });
 
             newLocation

@@ -16,8 +16,8 @@ const WarehouseSchema = new Schema({
 
 // { timestamps: true}
 
-WarehouseSchema.virtual('locations', {
-    ref: 'locations',
+WarehouseSchema.virtual('areas', {
+    ref: 'areas',
     localField: '_id',
     foreignField: 'warehouseId',
     justOne: false

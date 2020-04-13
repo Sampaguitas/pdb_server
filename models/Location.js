@@ -3,11 +3,6 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const LocationSchema = new Schema({
-    area: {
-        type: Number,
-        maxlength: 1,
-        required: true
-    },
     hall: {
         type: Number,
         maxlength: 1,
@@ -34,37 +29,36 @@ const LocationSchema = new Schema({
         //tube or component
     },
     type: {
-        type: Number
+        type: String
         //pallet, shelf, block...
     },
-    warehouseId: {
+    areaId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'warehouses' 
+        ref: 'areas' 
     }
 });
 
-LocationSchema.virtual('name').get(function() {
+// LocationSchema.virtual('name').get(function() {
 
-    if (!!this.height) {
-        return this.area + '/' + this.hall + this.row + '-' + leadingChar(this.col, '0', 3) + '-' + this.height;
-    } else {
-        return this.area + '/' + this.hall + this.row + '-' + leadingChar(this.col, '0', 3);
-    }
-});
+//     if (!!this.height) {
+//         return this.area + '/' + this.hall + this.row + '-' + leadingChar(this.col, '0', 3) + '-' + this.height;
+//     } else {
+//         return this.area + '/' + this.hall + this.row + '-' + leadingChar(this.col, '0', 3);
+//     }
+// });
 
-LocationSchema.virtual('warehouse', {
-    ref: 'warehouses',
-    localField: 'warehouseId',
+// function leadingChar(string, char, length) {
+//     return string.toString().length > length ? string : char.repeat(length - string.toString().length) + string;
+// }
+
+LocationSchema.virtual('area', {
+    ref: 'areas',
+    localField: 'areaId',
     foreignField: '_id',
-    justOne: false
+    justOne: true
 });
 
 LocationSchema.set('toJson', { virtuals: true });
 
-// { timestamps: true}
-
 module.exports = Location = mongoose.model('locations', LocationSchema);
 
-function leadingChar(string, char, length) {
-    return string.toString().length > length ? string : char.repeat(length - string.toString().length) + string;
-}

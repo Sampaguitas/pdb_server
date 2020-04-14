@@ -13,7 +13,7 @@ router.delete('/', async (req, res) => {
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {
-        selectedIds.map(selectedId => !!selectedId.areaId && myPromises.push(removeArea(selectedId.areaId)));
+        selectedIds.map(selectedId => myPromises.push(removeArea(selectedId)));
         
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {

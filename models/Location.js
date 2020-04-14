@@ -58,7 +58,7 @@ LocationSchema.virtual('area', {
     justOne: true
 });
 
-LocationSchema.set('toJson', { virtuals: true });
+LocationSchema.set('toJSON', { virtuals: true });
 
 module.exports = Location = mongoose.model('locations', LocationSchema);
 

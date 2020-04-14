@@ -24,6 +24,6 @@ WarehouseSchema.virtual('areas', {
     justOne: false
 });
 
-WarehouseSchema.set('toJson', { virtuals: true });
+WarehouseSchema.set('toJSON', { virtuals: true });
 
 module.exports = Warehouse = mongoose.model('warehouses', WarehouseSchema);

@@ -13,7 +13,8 @@ const AreaSchema = new Schema({
     },
     warehouseId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'warehouses' 
+        ref: 'warehouses',
+        required: true
     }
 });
 
@@ -31,7 +32,7 @@ AreaSchema.virtual('locations', {
     justOne: false
 });
 
-AreaSchema.set('toJson', { virtuals: true });
+AreaSchema.set('toJSON', { virtuals: true });
 
 module.exports = Area = mongoose.model('areas', AreaSchema);
 

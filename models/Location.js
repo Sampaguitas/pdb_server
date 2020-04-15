@@ -21,35 +21,19 @@ const LocationSchema = new Schema({
     height: {
         type: Number,
         maxlength: 3,
-        required: true
     },
     tc: {
         type: String,
         maxlength: 1,
-        //tube or component
     },
     type: {
-        type: String
-        //pallet, shelf, block...
+        type: String,
     },
     areaId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'areas' 
     }
 });
-
-// LocationSchema.virtual('name').get(function() {
-
-//     if (!!this.height) {
-//         return this.area + '/' + this.hall + this.row + '-' + leadingChar(this.col, '0', 3) + '-' + this.height;
-//     } else {
-//         return this.area + '/' + this.hall + this.row + '-' + leadingChar(this.col, '0', 3);
-//     }
-// });
-
-// function leadingChar(string, char, length) {
-//     return string.toString().length > length ? string : char.repeat(length - string.toString().length) + string;
-// }
 
 LocationSchema.virtual('area', {
     ref: 'areas',

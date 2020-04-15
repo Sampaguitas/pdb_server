@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
                 //_id: req.body.id,
                 hall: req.body.hall,
                 row: req.body.row,
-                row: req.body.row,
+                col: req.body.col,
                 height: req.body.height,
                 tc: req.body.tc,
                 type: req.body.type,

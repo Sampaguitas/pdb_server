@@ -17,11 +17,13 @@ router.get('/', (req, res) => {
         },
         populate: {
             path: 'locations',
-            sort: {
-                hall: 'asc',
-                row: 'asc',
-                col: 'asc',
-                height: 'asc'
+            options: {
+                sort: {
+                    hall: 'asc',
+                    row: 'asc',
+                    col: 'asc',
+                    height: 'asc'
+                }
             }
         }
     })

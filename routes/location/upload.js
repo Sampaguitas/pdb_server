@@ -4,37 +4,36 @@ var multer = require('multer');
 var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
 fs = require('fs');
-const FieldName = require('../../models/FieldName');
-const Project = require('../../models/Project');
-const Po = require('../../models/Po');
-const Sub = require('../../models/Sub');
+const Warehouse = require('../../models/Warehouse');
+const Area = require('../../models/Area');
+const Location = require('../../models/Location');
 var Excel = require('exceljs');
 var _ = require('lodash');
 
 router.post('/', upload.single('file'), function (req, res) {
   
   const projectId = req.body.projectId;
-  const projectNr = req.body.projectNr
   const file = req.file;
 
   let fieldnames = [
     { forShow: 1, fields: { type: 'String', name: 'warehouse', custom: 'Warehouse', fromTbl: 'location' }},
     { forShow: 2, fields: { type: 'String', name: 'areaNr', custom: 'Area Nr', fromTbl: 'location' }},
-    { forShow: 2, fields: { type: 'String', name: 'area', custom: 'Area Name', fromTbl: 'location' }},
-    { forShow: 3, fields: { type: 'String', name: 'hall', custom: 'Sub Area/Hall', fromTbl: 'location' }},
-    { forShow: 4, fields: { type: 'String', name: 'row', custom: 'Row', fromTbl: 'location' }},
-    { forShow: 5, fields: { type: 'String', name: 'col', custom: 'Location/Col', fromTbl: 'location' }},
-    { forShow: 6, fields: { type: 'String', name: 'height', custom: 'Depth/Height', fromTbl: 'location' }},
-    { forShow: 7, fields: { type: 'String', name: 'tc', custom: 'TC', fromTbl: 'location' }},
-    { forShow: 8, fields: { type: 'String', name: 'type', custom: 'Loc Type', fromTbl: 'location' }},
+    { forShow: 3, fields: { type: 'String', name: 'area', custom: 'Area Name', fromTbl: 'location' }},
+    { forShow: 4, fields: { type: 'String', name: 'hall', custom: 'Sub Area/Hall', fromTbl: 'location' }},
+    { forShow: 5, fields: { type: 'String', name: 'row', custom: 'Row', fromTbl: 'location' }},
+    { forShow: 6, fields: { type: 'String', name: 'col', custom: 'Location/Col', fromTbl: 'location' }},
+    { forShow: 7, fields: { type: 'String', name: 'height', custom: 'Depth/Height', fromTbl: 'location' }},
+    { forShow: 8, fields: { type: 'String', name: 'tc', custom: 'TC', fromTbl: 'location' }},
+    { forShow: 9, fields: { type: 'String', name: 'type', custom: 'Loc Type', fromTbl: 'location' }},
   ];
 
 
   let colPromises = [];
   let rowPromises = [];
 
-  let tempPo = {};
-  let tempSub = {};
+  let tempWh = {};
+  let tempArea = {};
+  let tempLoc = {};
   
   let rejections = [];
   let nProcessed = 0;
@@ -44,9 +43,9 @@ router.post('/', upload.single('file'), function (req, res) {
 
   let nonPrintable = /[\t\r\n]/mg;
   
-  if (!projectId || !projectNr || !file) {
+  if (!projectId || !file) {
     res.status(400).json({
-      message: 'File, projectId or projectNr is missing.',
+      message: 'File or projectId is missing.',
       rejections: rejections,
       nProcessed: nProcessed,
       nRejected: nRejected,
@@ -54,33 +53,6 @@ router.post('/', upload.single('file'), function (req, res) {
       nEdited: nEdited
     });
   } else {
-    // FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
-    // Project.findById(projectId)
-    // .populate({
-    //   path: 'fieldnames',
-    //   match: {
-    //     screenId: '5cd2b646fd333616dc360b6d',
-    //     forShow: {$exists: true, $nin: ['', 0]}
-    //   },
-    //   options: { sort: {forShow:'asc'} },
-    //   populate: {
-    //     path: 'fields'
-    //   }
-    // })
-    // // .populate('fields')
-    // // .sort({forShow:'asc'})
-    // // .exec(function (errFieldNames, resFieldNames) {
-    // .exec(function (errProject, resProject) {
-      // if (errProject || !resProject) {
-      //   return res.status(400).json({
-      //       message: 'An error has occured, please check with your administrator.',
-      //       rejections: rejections,
-      //       nProcessed: nProcessed,
-      //       nRejected: nRejected,
-      //       nAdded: nAdded,
-      //       nEdited: nEdited
-      //   });
-      // } else {
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => {
 
@@ -113,13 +85,14 @@ router.post('/', upload.single('file'), function (req, res) {
                 colPromises = [];
 
                 //initialise objects
-                for (var member in tempPo) delete tempPo[member];
-                for (var member in tempSub) delete tempSub[member];
+                for (var member in tempWh) delete tempWh[member];
+                for (var member in tempArea) delete tempArea[member];
+                for (var member in tempLoc) delete tempLoc[member];
                 
                 //assign projectId
-                tempPo.projectId = projectId;
+                tempWh.projectId = projectId;
 
-                resProject.fieldnames.map(fieldname => {
+                fieldnames.map(fieldname => {
                   let cell = alphabet(fieldname.forShow) + row;
                   let fromTbl = fieldname.fields.fromTbl;
                   let type = fieldname.fields.type;
@@ -135,19 +108,20 @@ router.post('/', upload.single('file'), function (req, res) {
                   colPromises.push(testFormat(row, cell, type, value));
                   
                   switch (fromTbl) {
-                    case 'warehouse':
-                      // if (!['project', 'projectNr'].includes(key)) {
-                      tempWh[key] = value;
-                      // }
-                      break;
-                    case 'sub':
-                      tempSub[key] = value;
+                    case 'location':
+                      if (['warehouse'].includes(key)) {
+                        tempWh[key] = value;
+                      } else if (['areaNr', 'area'].includes(key)) {
+                        tempArea[key] = value;
+                      } else if (['hall', 'row', 'col', 'height', 'tc', 'type'].includes(key)) {
+                        tempLoc[key] = value;
+                      }
                       break;
                   }
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(upsert(projectId, row, tempPo, tempSub, projectNr));
+                  rowPromises.push(upsert(row, tempWh, tempArea, tempLoc));
                 }).catch(errPromises => {
                   if(!_.isEmpty(errPromises)) {
                     rejections.push(errPromises);
@@ -203,85 +177,95 @@ router.post('/', upload.single('file'), function (req, res) {
     // })
   }
 
-  function upsert(projectId, row, tempPo, tempSub, projectNr) {
-    return new Promise (function (resolve, reject) {
-      let poQuery = {};
-      
-      if (tempPo.vlSo && tempPo.vlSoItem) {
-        poQuery = {
-          projectId: projectId, 
-          vlSo: tempPo.vlSo, 
-          vlSoItem: tempPo.vlSoItem
-        };
-      } else if (tempPo.clPo && tempPo.clPoRev && tempPo.clPoItem && tempPo.clCode) {
-        poQuery = {
-          projectId: projectId,
-          clPo: tempPo.clPo,
-          clPoRev: tempPo.clPoRev,
-          clPoItem: tempPo.clPoItem,
-          clCode: tempPo.clCode
-        };
-      } else {
-          poQuery = {};
-      }
+  function upsert(row, tempWh, tempArea, tempLoc) {
+    return new Promise (function (resolve) {
 
-      if (_.isEmpty(poQuery)) {
+      if (!tempWh.warehouse) {
         resolve({
           row: row,
           isRejected: true,
           isEdited: false,
           isAdded: false,
-          reason: 'Fields ("clPo", "clPoRev", "clPoItem", "clCode") or ("vlSo", "vlSoItem") should not be empty.'
+          reason: 'Warehouse should not be empty.'
         });
-      } else if (tempPo.hasOwnProperty('projectNr') && tempPo.projectNr != projectNr) {
+      } else if (!tempArea.area || !tempArea.areaNr) {
         resolve({
           row: row,
           isRejected: true,
           isEdited: false,
           isAdded: false,
-          reason: 'Field projectNr does not match current project number.'
+          reason: 'Area Nr and Area Name should not be empty.'
+        });
+      } else if (!tempLoc.hall || !tempLoc.row || !tempLoc.col || !tempLoc.tc || !tempLoc.type) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Sub Area/Hall, Row, Location/Col, TC and Loc Type should not be empty.'
         });
       } else {
-        Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){
-          if (errNewPo || !resNewPo) {
+        let filterWh = { warehouse: tempWh.warehouse, projectId: tempWh.projectId }
+        Warehouse.findOneAndUpdate(filterWh, tempWh, { new: true, upsert: true, rawResult: true}, function(errNewWh, resNewWh){
+          if (errNewWh || !resNewWh) {
             resolve({
               row: row,
               isRejected: true,
               isEdited: false,
               isAdded: false,
-              reason: 'Fields from Table Po could not be saved.'
+              reason: 'Fields from Table Warehouse could not be saved.'
             });
-          } else {
-            //assign poId and Split Qty
-            tempSub.poId = resNewPo.value._id;
-            tempSub.splitQty = resNewPo.value.qty;
-            Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
-              if (errNewSub || !resNewSub) {
+          } 
+          else {
+            //assign warehouseId
+            tempArea.warehouseId = resNewWh.value._id;
+            let filterArea = { areaNr: tempArea.areaNr, area: tempArea.area, warehouseId: tempArea.warehouseId }
+            Area.findOneAndUpdate(filterArea, tempArea, { new: true, upsert: true, rawResult: true }, function(errNewArea, resNewArea) {
+              if (errNewArea || !resNewArea) {
                 resolve({
                   row: row,
                   isRejected: true,
                   isEdited: false,
                   isAdded: false,
-                  reason: 'Fields from Table Sub could not be saved.'
+                  reason: 'Fields from Table Area could not be saved.'
                 });
               } else {
-                if (resNewPo.lastErrorObject.updatedExisting) {
-                  resolve({
-                    row: row,
-                    isRejected: false,
-                    isEdited: true,
-                    isAdded: false,
-                    reason: ''
-                  });
-                } else {
-                  resolve({
-                    row: row,
-                    isRejected: false,
-                    isEdited: false,
-                    isAdded: true,
-                    reason: ''
-                  });
+                //assign areaId
+                tempLoc.areaId = resNewArea.value._id;
+                let filterLoc = {
+                  hall: tempLoc.hall,
+                  row: tempLoc.row,
+                  col: tempLoc.col,
+                  height: tempLoc.height,
+                  areaId: tempLoc.areaId
                 }
+                Location.findOneAndUpdate(filterLoc, tempLoc, { new: true, upsert: true, rawResult: true }, function(errNewLoc, resNewLoc) {
+                  if (errNewLoc || !resNewArea) {
+                    resolve({
+                      row: row,
+                      isRejected: true,
+                      isEdited: false,
+                      isAdded: false,
+                      reason: 'Fields from Table Location could not be saved.'
+                    });
+                  } else if (resNewLoc.lastErrorObject.updatedExisting) {
+                    resolve({
+                      row: row,
+                      isRejected: false,
+                      isEdited: true,
+                      isAdded: false,
+                      reason: ''
+                    });
+                  } else {
+                    resolve({
+                      row: row,
+                      isRejected: false,
+                      isEdited: false,
+                      isAdded: true,
+                      reason: ''
+                    });
+                  }
+                });
               }
             });
           }

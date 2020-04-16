@@ -25,13 +25,16 @@ const LocationSchema = new Schema({
     tc: {
         type: String,
         maxlength: 1,
+        required: true
     },
     type: {
         type: String,
+        required: true
     },
     areaId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'areas' 
+        ref: 'areas',
+        required: true 
     }
 });
 

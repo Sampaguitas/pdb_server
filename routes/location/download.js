@@ -7,14 +7,14 @@ router.get('/', function (req, res) {
     let fieldnames = [
         { forShow: 1, fields: { type: 'String', name: 'warehouse', custom: 'Warehouse', fromTbl: 'location' }},
         { forShow: 2, fields: { type: 'String', name: 'areaNr', custom: 'Area Nr', fromTbl: 'location' }},
-        { forShow: 2, fields: { type: 'String', name: 'area', custom: 'Area Name', fromTbl: 'location' }},
-        { forShow: 3, fields: { type: 'String', name: 'hall', custom: 'Sub Area/Hall', fromTbl: 'location' }},
-        { forShow: 4, fields: { type: 'String', name: 'row', custom: 'Row', fromTbl: 'location' }},
-        { forShow: 5, fields: { type: 'String', name: 'col', custom: 'Location/Col', fromTbl: 'location' }},
-        { forShow: 6, fields: { type: 'String', name: 'height', custom: 'Depth/Height', fromTbl: 'location' }},
-        { forShow: 7, fields: { type: 'String', name: 'tc', custom: 'TC', fromTbl: 'location' }},
-        { forShow: 8, fields: { type: 'String', name: 'type', custom: 'Loc Type', fromTbl: 'location' }},
-      ];
+        { forShow: 3, fields: { type: 'String', name: 'area', custom: 'Area Name', fromTbl: 'location' }},
+        { forShow: 4, fields: { type: 'String', name: 'hall', custom: 'Sub Area/Hall', fromTbl: 'location' }},
+        { forShow: 5, fields: { type: 'String', name: 'row', custom: 'Row', fromTbl: 'location' }},
+        { forShow: 6, fields: { type: 'String', name: 'col', custom: 'Location/Col', fromTbl: 'location' }},
+        { forShow: 7, fields: { type: 'String', name: 'height', custom: 'Depth/Height', fromTbl: 'location' }},
+        { forShow: 8, fields: { type: 'String', name: 'tc', custom: 'TC', fromTbl: 'location' }},
+        { forShow: 9, fields: { type: 'String', name: 'type', custom: 'Loc Type', fromTbl: 'location' }},
+    ];
 
     workbook = new Excel.Workbook();
     var worksheet = workbook.addWorksheet('My Sheet');

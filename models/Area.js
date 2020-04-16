@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const AreaSchema = new Schema({
-    number: {
+    areaNr: {
         type: Number,
         maxlength: 1,
         required: true
     },
-    name: {
+    area: {
         type: String,
         required: true
     },

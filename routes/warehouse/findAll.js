@@ -6,13 +6,13 @@ const _ = require('lodash');
 router.get('/', (req, res) => {
     Warehouse.find({projectId: req.query.projectId})
     .sort({
-        name: 'asc',
+        warehouse: 'asc',
     })
     .populate({
         path: 'areas',
         options: {
             sort: {
-                number: 'asc'
+                areaNr: 'asc'
             }
         },
         populate: {

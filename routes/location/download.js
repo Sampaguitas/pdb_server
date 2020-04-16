@@ -4,23 +4,25 @@ var Excel = require('exceljs');
 fs = require('fs');
 
 router.get('/', function (req, res) {
-    let fieldNames = [
-        { forShow: 1, fields: { name: 'warehouse', custom: 'Warehouse' }},
-        { forShow: 2, fields: { name: 'area', custom: 'Area' }},
-        { forShow: 3, fields: { name: 'hall', custom: 'Sub Area/Hall' }},
-        { forShow: 4, fields: { name: 'row', custom: 'Row' }},
-        { forShow: 5, fields: { name: 'col', custom: 'Location/Col' }},
-        { forShow: 6, fields: { name: 'height', custom: 'Depth/Height' }},
-        { forShow: 7, fields: { name: 'tc', custom: 'TC' }},
-        { forShow: 8, fields: { name: 'type', custom: 'Loc Type' }},
-    ];
+    let fieldnames = [
+        { forShow: 1, fields: { type: 'String', name: 'warehouse', custom: 'Warehouse', fromTbl: 'location' }},
+        { forShow: 2, fields: { type: 'String', name: 'areaNr', custom: 'Area Nr', fromTbl: 'location' }},
+        { forShow: 2, fields: { type: 'String', name: 'area', custom: 'Area Name', fromTbl: 'location' }},
+        { forShow: 3, fields: { type: 'String', name: 'hall', custom: 'Sub Area/Hall', fromTbl: 'location' }},
+        { forShow: 4, fields: { type: 'String', name: 'row', custom: 'Row', fromTbl: 'location' }},
+        { forShow: 5, fields: { type: 'String', name: 'col', custom: 'Location/Col', fromTbl: 'location' }},
+        { forShow: 6, fields: { type: 'String', name: 'height', custom: 'Depth/Height', fromTbl: 'location' }},
+        { forShow: 7, fields: { type: 'String', name: 'tc', custom: 'TC', fromTbl: 'location' }},
+        { forShow: 8, fields: { type: 'String', name: 'type', custom: 'Loc Type', fromTbl: 'location' }},
+      ];
+
     workbook = new Excel.Workbook();
     var worksheet = workbook.addWorksheet('My Sheet');
     worksheet.getRow(1).height = 30;
-    fieldNames.map(fieldName => {
-        let cell = worksheet.getCell(`${alphabet(fieldName.forShow) + 1}`);
+    fieldnames.map(fieldname => {
+        let cell = worksheet.getCell(`${alphabet(fieldname.forShow) + 1}`);
         with (cell) {
-            value = fieldName.fields.custom,
+            value = fieldname.fields.custom,
             style = Object.create(cell.style), //shallow-clone the style, break references
             border ={
                 top: {style:'hair'},

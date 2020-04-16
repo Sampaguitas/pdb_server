@@ -6,8 +6,8 @@ router.post('/', (req, res) => {
 
             const newArea = new Area({
                 //_id: req.body.id,
-                number: req.body.number,
-                name: req.body.name,
+                areaNr: req.body.areaNr,
+                area: req.body.area,
                 warehouseId: req.body.warehouseId,
             });
 

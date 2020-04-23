@@ -53,196 +53,204 @@ router.post('/', upload.single('file'), function (req, res) {
       nEdited: nEdited
     });
   } else {
-        var workbook = new Excel.Workbook();
-        workbook.xlsx.load(file.buffer).then(wb => {
+    var workbook = new Excel.Workbook();
+    workbook.xlsx.load(file.buffer).then(wb => {
 
-          var worksheet = wb.getWorksheet(1);
-          let rowCount = worksheet.rowCount;
-          
-          if (rowCount < 2) {
-            return res.status(400).json({
-              message: 'The Duf File seems to be empty.',
-              rejections: rejections,
-              nProcessed: nProcessed,
-              nRejected: nRejected,
-              nAdded: nAdded,
-              nEdited: nEdited
-            });
-          } else if (rowCount > 801) {
-            return res.status(400).json({
-              message: 'Try to upload less than 800 rows at the time.',
-              rejections: rejections,
-              nProcessed: nProcessed,
-              nRejected: nRejected,
-              nAdded: nAdded,
-              nEdited: nEdited
-            });
-          } else {
- 
-            (async function() {
-              for (let row = 2; row < rowCount + 1 ; row++) {
+      var worksheet = wb.getWorksheet(1);
+      let rowCount = worksheet.rowCount;
+      
+      if (rowCount < 2) {
+        return res.status(400).json({
+          message: 'The Duf File seems to be empty.',
+          rejections: rejections,
+          nProcessed: nProcessed,
+          nRejected: nRejected,
+          nAdded: nAdded,
+          nEdited: nEdited
+        });
+      } else if (rowCount > 801) {
+        return res.status(400).json({
+          message: 'Try to upload less than 800 rows at the time.',
+          rejections: rejections,
+          nProcessed: nProcessed,
+          nRejected: nRejected,
+          nAdded: nAdded,
+          nEdited: nEdited
+        });
+      } else {
 
-                colPromises = [];
+        (async function() {
+          for (let row = 2; row < rowCount + 1 ; row++) {
 
-                //initialise objects
-                for (var member in tempWh) delete tempWh[member];
-                for (var member in tempArea) delete tempArea[member];
-                for (var member in tempLoc) delete tempLoc[member];
-                
-                //assign projectId
-                tempWh.projectId = projectId;
+            colPromises = [];
 
-                fieldnames.map(fieldname => {
-                  let cell = alphabet(fieldname.forShow) + row;
-                  let fromTbl = fieldname.fields.fromTbl;
-                  let type = fieldname.fields.type;
-                  let key = fieldname.fields.name;
-                  let value = worksheet.getCell(cell).value
-                  
-                  if (type === 'String' && value === 0) {
-                    value = '0'
-                  } else if (nonPrintable.test(value)) {
-                    value = value.replace(nonPrintable, '');
-                  }
-                  
-                  colPromises.push(testFormat(row, cell, type, value));
-                  
-                  switch (fromTbl) {
-                    case 'location':
-                      if (['warehouse'].includes(key)) {
-                        tempWh[key] = value;
-                      } else if (['areaNr', 'area'].includes(key)) {
-                        tempArea[key] = value;
-                      } else if (['hall', 'row', 'col', 'height', 'tc', 'type'].includes(key)) {
-                        tempLoc[key] = value;
-                      }
-                      break;
-                  }
-                });// end map
+            //initialise objects
+            for (var member in tempWh) delete tempWh[member];
+            for (var member in tempArea) delete tempArea[member];
+            for (var member in tempLoc) delete tempLoc[member];
+            
+            //assign projectId
+            tempWh.projectId = projectId;
 
-                await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(upsert(row, tempWh, tempArea, tempLoc));
-                }).catch(errPromises => {
-                  if(!_.isEmpty(errPromises)) {
-                    rejections.push(errPromises);
-                  }
-                  nRejected++;
-                });//end colPromises.all promise
-
-                nProcessed++;
-              } //end for loop
-
-              await Promise.all(rowPromises).then(resRowPromises => {
-                resRowPromises.map(r => {
-                  if (r.isRejected) {
-                    rejections.push({row: r.row, reason: r.reason});
-                    nRejected++;
-                  } else if(r.isEdited) {
-                    nEdited++;
-                  } else {
-                    nAdded++;
-                  }
-                });//end parse resRowPromise
-                return res.status(200).json({
-                  rejections: rejections,
-                  nProcessed: nProcessed,
-                  nRejected: nRejected,
-                  nAdded: nAdded,
-                  nEdited: nEdited
-                });
-              }).catch( () => {
-                return res.status(400).json({
-                  message: 'An error has occured during the upload.',
-                  rejections: rejections,
-                  nProcessed: nProcessed,
-                  nRejected: nRejected,
-                  nAdded: nAdded,
-                  nEdited: nEdited
-                });
-              });//end rowPromise.all promise
+            fieldnames.map(fieldname => {
+              let cell = alphabet(fieldname.forShow) + row;
+              let fromTbl = fieldname.fields.fromTbl;
+              let type = fieldname.fields.type;
+              let key = fieldname.fields.name;
+              let value = worksheet.getCell(cell).value
               
-            })();//end async function
-          }
-        }).catch( () => {
-          return res.status(400).json({
-              message: 'Could not load the workbook.',
+              if (type === 'String' && value === 0) {
+                value = '0'
+              } else if (nonPrintable.test(value)) {
+                value = value.replace(nonPrintable, '');
+              }
+              
+              colPromises.push(testFormat(row, cell, type, value));
+              
+              switch (fromTbl) {
+                case 'location':
+                  if (['warehouse'].includes(key)) {
+                    tempWh[key] = value;
+                  } else if (['areaNr', 'area'].includes(key)) {
+                    tempArea[key] = value;
+                  } else if (['hall', 'row', 'col', 'height', 'tc', 'type'].includes(key)) {
+                    tempLoc[key] = value;
+                  }
+                  break;
+              }
+            });// end map
+
+            await Promise.all(colPromises).then( async () => { //async 
+              rowPromises.push(upsert(row, tempWh, tempArea, tempLoc));
+            }).catch(errPromises => {
+              if(!_.isEmpty(errPromises)) {
+                rejections.push(errPromises);
+              }
+              nRejected++;
+            });//end colPromises.all promise
+            nProcessed++;
+          } //end for loop
+
+          await Promise.all(rowPromises).then(resRowPromises => {
+            resRowPromises.map(r => {
+              if (r.isRejected) {
+                rejections.push({row: r.row, reason: r.reason});
+                nRejected++;
+              } else if(r.isEdited) {
+                nEdited++;
+              } else {
+                nAdded++;
+              }
+            });//end parse resRowPromise
+            return res.status(200).json({
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,
               nAdded: nAdded,
               nEdited: nEdited
-          });
-        });//end wb load promise
-      // }
-    // })
+            });
+          }).catch( () => {
+            return res.status(400).json({
+              message: 'An error has occured during the upload.',
+              rejections: rejections,
+              nProcessed: nProcessed,
+              nRejected: nRejected,
+              nAdded: nAdded,
+              nEdited: nEdited
+            });
+          });//end rowPromise.all promise
+          
+        })();//end async function
+      }
+    }).catch( () => {
+      return res.status(400).json({
+          message: 'Could not load the workbook.',
+          rejections: rejections,
+          nProcessed: nProcessed,
+          nRejected: nRejected,
+          nAdded: nAdded,
+          nEdited: nEdited
+      });
+    });//end wb load promise
   }
 
-  function upsert(row, tempWh, tempArea, tempLoc) {
-    return new Promise (function (resolve) {
-
-      if (!tempWh.warehouse) {
+  function upsert(fileRow, tempWh, tempArea, tempLoc) {
+    return new Promise (function (resolve, reject) {
+      
+      let projectId = tempWh.projectId;
+      let warehouse = tempWh.warehouse;
+      let areaNr = tempArea.areaNr;
+      let area = tempArea.area;
+      let hall = tempLoc.hall;
+      let row = tempLoc.row;
+      let col = tempLoc.col;
+      let height = tempLoc.height;
+      let tc = tempLoc.tc;
+      let type = tempLoc.type;
+      
+      if (!warehouse) {
         resolve({
-          row: row,
+          row: fileRow,
           isRejected: true,
           isEdited: false,
           isAdded: false,
           reason: 'Warehouse should not be empty.'
         });
-      } else if (!tempArea.area || !tempArea.areaNr) {
+      } else if (!area || !areaNr) {
         resolve({
-          row: row,
+          row: fileRow,
           isRejected: true,
           isEdited: false,
           isAdded: false,
           reason: 'Area Nr and Area Name should not be empty.'
         });
-      } else if (!tempLoc.hall || !tempLoc.row || !tempLoc.col || !tempLoc.tc || !tempLoc.type) {
+      } else if (!hall || !row || !col || !tc || !type) {
         resolve({
-          row: row,
+          row: fileRow,
           isRejected: true,
           isEdited: false,
           isAdded: false,
           reason: 'Sub Area/Hall, Row, Location/Col, TC and Loc Type should not be empty.'
         });
       } else {
-        let filterWh = { warehouse: tempWh.warehouse, projectId: tempWh.projectId }
-        Warehouse.findOneAndUpdate(filterWh, tempWh, { new: true, upsert: true, rawResult: true}, function(errNewWh, resNewWh){
-          if (errNewWh || !resNewWh) {
+
+        let filterWh = { projectId: projectId, warehouse: warehouse};
+        let updateWh = { projectId: projectId, warehouse: warehouse};
+
+        Warehouse.findOneAndUpdate(filterWh, updateWh, { new: true, upsert: true }, function (errNewWh, resNewWh) {
+          if(errNewWh || !resNewWh) {
             resolve({
-              row: row,
+              row: fileRow,
               isRejected: true,
               isEdited: false,
               isAdded: false,
               reason: 'Fields from Table Warehouse could not be saved.'
             });
-          } 
-          else {
-            //assign warehouseId
-            tempArea.warehouseId = resNewWh.value._id;
-            let filterArea = { areaNr: tempArea.areaNr, area: tempArea.area, warehouseId: tempArea.warehouseId }
-            Area.findOneAndUpdate(filterArea, tempArea, { new: true, upsert: true, rawResult: true }, function(errNewArea, resNewArea) {
-              if (errNewArea || !resNewArea) {
+          } else {
+
+            let warehouseId = resNewWh._id;
+            let filterArea = { warehouseId: warehouseId, area: area, areaNr: areaNr }
+            let updateWh = { warehouseId: warehouseId, area: area, areaNr: areaNr }
+
+            Area.findOneAndUpdate(filterArea, updateWh, { new: true, upsert: true }, function(errNewArea, resNewArea) {
+              if(errNewArea || !resNewArea) {
                 resolve({
-                  row: row,
+                  row: fileRow,
                   isRejected: true,
                   isEdited: false,
                   isAdded: false,
                   reason: 'Fields from Table Area could not be saved.'
                 });
               } else {
-                //assign areaId
-                tempLoc.areaId = resNewArea.value._id;
-                let filterLoc = {
-                  hall: tempLoc.hall,
-                  row: tempLoc.row,
-                  col: tempLoc.col,
-                  height: tempLoc.height,
-                  areaId: tempLoc.areaId
-                }
-                Location.findOneAndUpdate(filterLoc, tempLoc, { new: true, upsert: true, rawResult: true }, function(errNewLoc, resNewLoc) {
-                  if (errNewLoc || !resNewArea) {
+
+                let areaId = resNewArea._id;
+                let filterLoc = { hall: hall, row: row, col: col, height: height || '', areaId: areaId };
+                let updateLoc = { hall: hall, row: row, col: col, height: height || '', tc: tc, type: type, areaId: areaId };
+
+                Location.findOneAndUpdate(filterLoc, updateLoc, { new: true, upsert: true, rawResult: true }, function(errNewLoc, resNewLoc) {
+                  if (errNewLoc || !resNewLoc) {
                     resolve({
-                      row: row,
+                      row: fileRow,
                       isRejected: true,
                       isEdited: false,
                       isAdded: false,
@@ -250,7 +258,7 @@ router.post('/', upload.single('file'), function (req, res) {
                     });
                   } else if (resNewLoc.lastErrorObject.updatedExisting) {
                     resolve({
-                      row: row,
+                      row: fileRow,
                       isRejected: false,
                       isEdited: true,
                       isAdded: false,
@@ -258,7 +266,7 @@ router.post('/', upload.single('file'), function (req, res) {
                     });
                   } else {
                     resolve({
-                      row: row,
+                      row: fileRow,
                       isRejected: false,
                       isEdited: false,
                       isAdded: true,
@@ -267,6 +275,7 @@ router.post('/', upload.single('file'), function (req, res) {
                   }
                 });
               }
+              
             });
           }
         });

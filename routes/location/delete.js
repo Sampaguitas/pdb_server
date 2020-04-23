@@ -4,7 +4,6 @@ const Location = require('../../models/Location');
 const _ = require('lodash');
 
 router.delete('/', async (req, res) => {
-    // const id = req.query.id
     const selectedIds = req.body.selectedIds;
     let myPromises = [];
     let nRejected = 0;

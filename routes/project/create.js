@@ -40,6 +40,9 @@ router.post('/', async (req, res) => {
 
         const newProject = new Project({
             name: req.body.name,
+            enableInspection: req.body.enableInspection,
+            enableShipping: req.body.enableShipping,
+            enableWarehouse: req.body.enableWarehouse,
             erpId: req.body.erpId,
             currencyId: req.body.currencyId,
             opcoId: req.body.opcoId,

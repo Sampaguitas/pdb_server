@@ -24,6 +24,9 @@ router.put('/', (req, res) => {
     Project.findByIdAndUpdate(projectId, { $set:
         {
             name: req.body.name,
+            enableInspection: req.body.enableInspection,
+            enableShipping: req.body.enableShipping,
+            enableWarehouse: req.body.enableWarehouse,
             erpId: req.body.erpId,
             currencyId: req.body.currencyId,
             opcoId: req.body.opcoId,

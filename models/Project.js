@@ -14,6 +14,15 @@ const ProjectSchema = new Schema({
         type: String,
         required: true
     },
+    enableInspection: {
+        type: Boolean
+    },
+    enableShipping: {
+        type: Boolean
+    },
+    enableWarehouse: {
+        type: Boolean
+    },
     erpId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'erps',

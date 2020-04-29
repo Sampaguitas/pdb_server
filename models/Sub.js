@@ -242,6 +242,25 @@ SubSchema.virtual("po", {
 
 SubSchema.set('toJSON', { virtuals: true });
 
+// SubSchema.post('findOneAndUpdate', function(doc, next) {
+//     console.log('inspRelDate:', doc.inspRelDate);
+//     console.log('rfiQty:', doc.rfiQty);
+//     console.log('relQty:', doc.relQty);
+//     if (!!doc.inspRelDate && !!doc.rfiQty && !doc.relQty) {
+//         doc.relQty = doc.rfiQty;
+//         doc.save();
+//     }
+//     next();
+// })
+
+SubSchema.pre('findOneAndUpdate', async function() {
+    const docToUpdate = await this.model.findOne(this.getQuery());
+    if (this._update['$set'].hasOwnProperty('inspRelDate') && !!this._update['$set'].inspRelDate) {
+        if (!_.isUndefined(docToUpdate) && !docToUpdate.inspRelDate && !docToUpdate.relQty && !!docToUpdate.rfiQty) {
+            this._update['$set'].relQty = docToUpdate.rfiQty;
+        }
+    }
+})
 
 SubSchema.post('findOneAndDelete', function(doc, next) {
     doc.populate([{path: 'packitems'}, {path: 'po', populate: {path: 'subs'}}], function(err, res) {

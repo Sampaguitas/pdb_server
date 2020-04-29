@@ -72,19 +72,40 @@ router.put('/', async (req, res) => {
                         return res.status(400).json({ message: 'Could not assign NFI.' });
                     }); 
                 } else {
-                    Sub.updateMany({
-                        _id: { $in : subIds } 
-                        },
-                        { $set: {
-                            [fieldName]: fieldValue
-                        } 
-                    })
-                    .then( () => {
-                        return res.status(200).json({message: 'Successfully updated.'});
-                    })
-                    .catch( () => {
-                        return res.status(400).json({ message: 'Field cannot be updated.' });
+                    selectedIds.map(function (selectedId) {
+                        myPromises.push(editSub(selectedId, fieldName, fieldValue));
                     });
+
+                    await Promise.all(myPromises).then(resMyPromises => {
+                    
+                        resMyPromises.map(r => {
+                            if (r.isRejected) {
+                                nRejected++;
+                            } else if (r.isEdited) {
+                                nEdited++;
+                            } else if (r.isAdded) {
+                                nAdded++;
+                            }
+                        });
+                            
+                        return res.status(nRejected > 0 ? 400 : 200).json({
+                            message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
+                        });
+    
+                    });
+                    // Sub.updateMany({
+                    //     _id: { $in : subIds } 
+                    //     },
+                    //     { $set: {
+                    //         [fieldName]: fieldValue
+                    //     } 
+                    // })
+                    // .then( () => {
+                    //     return res.status(200).json({message: 'Successfully updated.'});
+                    // })
+                    // .catch( () => {
+                    //     return res.status(400).json({ message: 'Field cannot be updated.' });
+                    // });
                 }
                 break;
             case 'certificate':
@@ -103,7 +124,7 @@ router.put('/', async (req, res) => {
             case 'packitem':
 
                 selectedIds.map(function (selectedId) {
-                    myPromises.push(upsert(selectedId, fieldName, fieldValue));
+                    myPromises.push(upsertPackItem(selectedId, fieldName, fieldValue));
                 });
                 
                 await Promise.all(myPromises).then(resMyPromises => {
@@ -193,8 +214,39 @@ function editColliPack(selectedId, fieldName, fieldValue) {
     });
 }
 
+function editSub(selectedId, fieldName, fieldValue) {
+    return new Promise(function(resolve){
+        if (!!selectedId.subId) {
+            let query = { _id: selectedId.subId };
+            let update = { $set: { [fieldName]: fieldValue } };
+            let options = { new: true };
+            Sub.findOneAndUpdate(query, update, options, function(errSub) {
+                if (errSub) {
+                    resolve({
+                        isEdited: false,
+                        isAdded: false,
+                        isRejected: true,
+                    });
+                } else {
+                    resolve({
+                        isEdited: true,
+                        isAdded: false,
+                        isRejected: false,
+                    });
+                }
+            });
+        } else {
+            resolve({
+                isEdited: false,
+                isAdded: false,
+                isRejected: true,
+            });
+        }
+    });
+}
 
-function upsert(selectedId, fieldName, fieldValue) {
+
+function upsertPackItem(selectedId, fieldName, fieldValue) {
     return new Promise(function(resolve){
         if (!!selectedId.packItemId || !!selectedId.subId) {
             let query = selectedId.packItemId ? { _id: selectedId.packItemId } : { _id: new ObjectId() };
@@ -224,3 +276,5 @@ function upsert(selectedId, fieldName, fieldValue) {
         }
     });
 }
+
+

@@ -16,12 +16,13 @@ router.put('/', (req, res) => {
             if (!sub) {
                 return res.status(400).json({ message: 'Could not update Sub information.' });
             } else {
-                if (data.inspRelDate && sub.rfiQty && !sub.relQty) {
-                    data.relQty = sub.rfiQty;
-                } else if (data.relQty && !sub.inspRelDate) {
+                // if (data.inspRelDate && sub.rfiQty && !sub.relQty) {
+                //     data.relQty = sub.rfiQty;
+                // } else 
+                if (!!data.relQty && !sub.inspRelDate) {
                     data.inspRelDate = new Date();
                 }
-                Sub.findByIdAndUpdate(id, { $set: data }, function (err, sub) {
+                Sub.findByIdAndUpdate(id, { $set: data }, { new: true }, function (err, sub) {
                     if (!sub) {
                         return res.status(400).json({ message: 'Could not update Sub information.' });
                     }
@@ -32,7 +33,7 @@ router.put('/', (req, res) => {
             }
         });
     } else {
-        Sub.findByIdAndUpdate(id, { $set: data }, function (err, sub) {
+        Sub.findByIdAndUpdate(id, { $set: data }, { new: true }, function (err, sub) {
             if (!sub) {
                 return res.status(400).json({ message: 'Could not update Sub information.' });
             }

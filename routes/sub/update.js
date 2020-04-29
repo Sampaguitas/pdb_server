@@ -5,7 +5,7 @@ const _ = require('lodash');
 
 router.put('/', (req, res) => {
     var data = {};
-    const id = recodeURI(req.query.id);
+    const id = decodeURI(req.query.id);
     
     Object.keys(req.body).forEach(function (k) {
         data[k] = decodeURI(req.body[k]);

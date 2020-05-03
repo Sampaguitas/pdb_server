@@ -10,7 +10,7 @@ router.put('/', (req, res) => {
     let erp = req.body.erp;
     let selectedIds = req.body.selectedIds;
     
-    let colliPackIds = [];
+    let collipackIds = [];
     let itemsWeight = [];
     let collisWeight = [];
     let nRejected = 0;
@@ -30,10 +30,10 @@ router.put('/', (req, res) => {
         let pkWeight = colliType.pkWeight || 0;
 
         selectedIds.forEach(element => {
-            element.colliPackId && !colliPackIds.includes(element.colliPackId) && colliPackIds.push(element.colliPackId);
+            element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
         });
 
-        PackItem.find({ packId: { $in: colliPackIds} })
+        PackItem.find({ packId: { $in: collipackIds} })
         .populate({
             path: 'sub',
             populate: {

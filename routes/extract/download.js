@@ -28,15 +28,15 @@ router.post('/', function (req, res) {
     let poIds = [];
     let subIds = [];
     let certificateIds = [];
-    let packItemIds = [];
-    let colliPackIds = [];
+    let packitemIds = [];
+    let collipackIds = [];
 
     selectedIds.forEach(element => {
         element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
         element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
         element.certificateId && !certificateIds.includes(element.certificateId) && certificateIds.push(element.certificateId);
-        element.packItemId && !packItemIds.includes(element.packItemId) && packItemIds.push(element.packItemId);
-        element.colliPackId && !colliPackIds.includes(element.colliPackId) && colliPackIds.push(element.colliPackId);
+        element.packitemId && !packitemIds.includes(element.packitemId) && packitemIds.push(element.packitemId);
+        element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
     });
 
     if (!screenId || !projectId) {
@@ -65,14 +65,14 @@ router.post('/', function (req, res) {
             match: { _id: { $in: subIds} },
             populate: {
               path: 'packitems',
-              match: { _id: { $in: packItemIds} },
+              match: { _id: { $in: packitemIds} },
               options: { sort: {  'plNr': 'asc', 'colliNr': 'asc' } }
             }
           }
         },
         {
           path: 'collipacks',
-          match: { _id: { $in: colliPackIds} }
+          match: { _id: { $in: collipackIds} }
         },
         {
           path: 'certificates',
@@ -285,14 +285,14 @@ function getLines (resProject, fieldnames, screenId) {
                       edit: true
                     });
                     arrayRow.push({
-                      val: packitem._id, //packItemId
+                      val: packitem._id, //packitemId
                       col: 3,
                       type: 'String',
                       align: 'left',
                       edit: true
                     });
                     arrayRow.push({
-                      val: '', //colliPackId
+                      val: '', //collipackId
                       col: 4,
                       type: 'String',
                       align: 'left',
@@ -365,14 +365,14 @@ function getLines (resProject, fieldnames, screenId) {
                     edit: true
                   });
                   arrayRow.push({
-                    val: '', //packItemId
+                    val: '', //packitemId
                     col: 3,
                     type: 'String',
                     align: 'left',
                     edit: true
                   });
                   arrayRow.push({
-                    val: '', //colliPackId
+                    val: '', //collipackId
                     col: 4,
                     type: 'String',
                     align: 'left',

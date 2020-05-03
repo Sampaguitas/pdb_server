@@ -19,8 +19,8 @@ router.put('/', async (req, res) => {
     let poIds = [];
     let subIds = [];
     let certificateIds = [];
-    let packItemIds = [];
-    let colliPackIds = [];
+    let packitemIds = [];
+    let collipackIds = [];
 
     let myPromises = [];
     let nEdited = 0;
@@ -33,8 +33,8 @@ router.put('/', async (req, res) => {
             element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
             element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
             element.certificateId && !certificateIds.includes(element.certificateId) && certificateIds.push(element.certificateId);
-            element.packItemId && !packItemIds.includes(element.packItemId) && packItemIds.push(element.packItemId);
-            element.colliPackId && !colliPackIds.includes(element.colliPackId) && colliPackIds.push(element.colliPackId);
+            element.packitemId && !packitemIds.includes(element.packitemId) && packitemIds.push(element.packitemId);
+            element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
         });
 
         switch(collection){
@@ -185,8 +185,8 @@ module.exports = router;
 
 function editColliPack(selectedId, fieldName, fieldValue) {
     return new Promise(function (resolve) {
-        if (!!selectedId.colliPackId) {
-            let query = { _id: selectedId.colliPackId };
+        if (!!selectedId.collipackId) {
+            let query = { _id: selectedId.collipackId };
             let update = { $set: { [fieldName]: fieldValue } };
             let options = { new: true };
             ColliPack.findOneAndUpdate(query, update, options, function(errColliPack) {
@@ -248,8 +248,8 @@ function editSub(selectedId, fieldName, fieldValue) {
 
 function upsertPackItem(selectedId, fieldName, fieldValue) {
     return new Promise(function(resolve){
-        if (!!selectedId.packItemId || !!selectedId.subId) {
-            let query = selectedId.packItemId ? { _id: selectedId.packItemId } : { _id: new ObjectId() };
+        if (!!selectedId.packitemId || !!selectedId.subId) {
+            let query = selectedId.packitemId ? { _id: selectedId.packitemId } : { _id: new ObjectId() };
             let update = { $set: { [fieldName]: fieldValue, subId: selectedId.subId } };
             let options = { new: true, upsert: true };
             PackItem.findOneAndUpdate(query, update, options, function(errPackItem) {
@@ -261,8 +261,8 @@ function upsertPackItem(selectedId, fieldName, fieldValue) {
                     });
                 } else {
                     resolve({
-                        isEdited: selectedId.packItemId ? true : false,
-                        isAdded: selectedId.packItemId ? false: true,
+                        isEdited: selectedId.packitemId ? true : false,
+                        isAdded: selectedId.packitemId ? false: true,
                         isRejected: false,
                     });
                 }

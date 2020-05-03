@@ -27,14 +27,14 @@ router.put('/', async (req, res) => {
 
     const virtuals = req.body.virtuals;
     const subId = req.query.subId;
-    const packItemId = req.query.packItemId;
+    const packitemId = req.query.packitemId;
 
     if (_.isUndefined(subId)) {
         return res.status(400).json({message:'SUB ID is missing'});
     } else if (_.isEmpty(virtuals)) {
         return res.status(400).json({message:'Wrong virtuals format'});
     } else {
-        switch(!packItemId){
+        switch(!packitemId){
             case true:
                 //create all virtuals (no existing packitem)
                 alterArray(virtuals, subId, true).map(element => {
@@ -60,7 +60,7 @@ router.put('/', async (req, res) => {
                 break
             case false:
                 //update first and update others (existing packitem)
-                PackItem.findByIdAndUpdate(packItemId, { $set: virtuals[0]})
+                PackItem.findByIdAndUpdate(packitemId, { $set: virtuals[0]})
                 .then( async () => {
                     nEdited++;
                     if(virtuals.length === 1) {

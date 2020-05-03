@@ -9,28 +9,19 @@ router.get('/', (req, res) => {
         locationId: 'asc',
         transDate: 'asc',
     })
-    .populate([
-        {
-            path:'location',
+    .populate({
+        path:'location',
+        populate: {
+            path: 'area',
             populate: {
-                path: 'area',
-                populate: {
-                    path: 'warehouse'
-                }
+                path: 'warehouse'
             }
-        },
-        {
-            path: 'po'
         }
-    ])
+    })
     .exec(function (err, transaction) {
-        if (!transaction) {
-            return res.status(400).json({ 
-                message: fault(1204).message
-                //"1204": "No transaction match",
-            });
-        }
-        else {
+        if (!!err) {
+            return res.status(400).json({ message: "An error has occured." }); 
+        } else {
             return res.json(transaction);
         }
     });

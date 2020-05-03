@@ -266,11 +266,11 @@ SubSchema.post('findOneAndDelete', function(doc, next) {
     doc.populate([{path: 'packitems'}, {path: 'po', populate: {path: 'subs'}}], function(err, res) {
         
         if (!err && !_.isEmpty(res.packitems)) {
-            let packItemIds = res.packitems.reduce(function(acc, cur) {
+            let packitemIds = res.packitems.reduce(function(acc, cur) {
                 acc.push(cur._id)
                 return acc;
             },[]);
-            packItemIds.map(packItemId=> PackItem.findOneAndDelete({ _id: packItemId}));
+            packitemIds.map(packitemId=> PackItem.findOneAndDelete({ _id: packitemId}));
         }
 
         if (_.isEmpty(res.po.subs)) {

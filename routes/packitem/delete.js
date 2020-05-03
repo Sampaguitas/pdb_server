@@ -15,7 +15,7 @@ router.delete('/', async (req, res) => {
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {
-        selectedIds.map(selectedId => !!selectedId.packItemId && myPromises.push(removePackItem(selectedId.packItemId)));
+        selectedIds.map(selectedId => !!selectedId.packitemId && myPromises.push(removePackItem(selectedId.packitemId)));
         
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {

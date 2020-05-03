@@ -11,10 +11,11 @@ const DocCountPl = require('../../models/DocCountPl');
 const DocCountPn = require('../../models/DocCountPn');
 const DocCountSi = require('../../models/DocCountSi');
 const DocCountSm = require('../../models/DocCountSm');
-
-const fault = require('../../utilities/Errors');
+const DocCountSh = require('../../models/DocCountSh');
 
 router.post('/', async (req, res) => {
+
+    console.log(req.body);
 
     // console.log('req.body:', req.body);
     if (req.body.code) {
@@ -37,8 +38,8 @@ router.post('/', async (req, res) => {
             });
             newDocDef
                 .save()
-                .then(docdef => res.json(docdef))
-                .catch(err => res.json(err));
+                .then( () => res.status(200).json({message: 'Docdef has successfully been created.'}))
+                .catch( () => res.status(400).json({message: 'An error has occured while creating docDef.'}));
     } else {
         getDocDefCode(req.body.projectId, req.body.doctypeId)
         .then(result => {
@@ -61,31 +62,11 @@ router.post('/', async (req, res) => {
             });
             newDocDef
                 .save()
-                .then(docdef => {
-                    res.json(docdef);
-                }).catch(err => {
-                    res.json(err)
-                });
-        }).catch(err => res.status(400).json({message: "an error occured"}))
-
+                .then( () => res.status(200).json({message: 'Docdef has successfully been created.'}))
+                .catch( () => res.status(400).json({message: 'An error has occured while creating docDef.'}));
+        }).catch(err => res.status(400).json({message: err}))
     }
-    // console.log('projectId', req.body.projectId);  
 });
-
-// function docCountEsr (projectId){
-//     return new Promise(function(resolve, reject) {
-//         DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doccountesr)   {  
-//             if(error) {
-//                 reject(error);
-//             } else if (!doccountesr) {
-//                 reject('no document was return from the callback');
-//             } else {
-//                 resolve('ESR' + baseTen(doccountesr.seq));
-//             } 
-//         });        
-//     });
-// }
-
 
 function baseTen(number) {
     return number.toString().length > 2 ? number : '0' + number;
@@ -97,9 +78,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('ESR' + baseTen(doc.seq));
                     }
@@ -109,9 +90,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountNfi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('NFI' + baseTen(doc.seq));
                     }
@@ -121,9 +102,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('PL' + baseTen(doc.seq));
                     }
@@ -133,9 +114,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('PN' + baseTen(doc.seq));
                     }
@@ -145,9 +126,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountPf.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('PF' + baseTen(doc.seq));
                     }
@@ -157,9 +138,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('SI' + baseTen(doc.seq));
                     }
@@ -169,9 +150,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('SM' + baseTen(doc.seq));
                     }
@@ -181,9 +162,9 @@ function getDocDefCode(projectId, doctypeId) {
             return new Promise(function(resolve, reject) {
                 DocCountInspect.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('INSPECT' + baseTen(doc.seq));
                     }
@@ -191,11 +172,11 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1928de1424114e3884ac86': //ESR00
             return new Promise(function(resolve, reject) {
-                DocCountEsr.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('ESR' + baseTen(doc.seq));
                     }
@@ -203,13 +184,25 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1928df1424114e3884ac87': //INSPREL01
             return new Promise(function(resolve, reject) {
-                DocCountInsprel.findOneAndUpdate({_id: self.projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountInsprel.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
                     if(error) {
-                        reject(error);
+                        reject('An error has occured.');
                     } else if (!doc) {
-                        reject('no document was return from the callback');
+                        reject('No document was return from the callback.');
                     } else {
                         resolve('INSPREL' + baseTen(doc.seq));
+                    }
+                });
+            });
+        case '5eacef91e7179a42f172feea': //SH01
+            return new Promise(function(resolve, reject) {
+                DocCountSh.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                    if(error) {
+                        reject('An error has occured.');
+                    } else if (!doc) {
+                        reject('No document was return from the callback.');
+                    } else {
+                        resolve('SH' + baseTen(doc.seq));
                     }
                 });
             });

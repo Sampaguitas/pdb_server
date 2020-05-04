@@ -16,12 +16,12 @@ router.put('/', (req, res) => {
     });
     
     const id = decodeURI(req.query.id);
-    
     FieldName.findByIdAndUpdate(id, { $set: data }, function (err, fieldname) {
         if (err) {
             return res.status(400).json({ message: 'Could not update fieldname.' });
         }
         else {
+            console.log(fieldname);
             return res.status(200).json({ message: 'Fieldname has been updated.' });
         }
     });

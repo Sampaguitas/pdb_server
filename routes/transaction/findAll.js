@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Transaction = require('../../models/Transaction');
-const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     Transaction.find({projectId: req.query.projectId})

@@ -13,15 +13,15 @@ const TransactionSchema = new Schema({
         type: String,
         required: true,
     },
-    nfi: {
-        type: String
-    },
-    plNr: {
-        type: Number,
-    },
-    colliNr: {
-        type: String,
-    },
+    // nfi: {
+    //     type: String
+    // },
+    // plNr: {
+    //     type: Number,
+    // },
+    // colliNr: {
+    //     type: String,
+    // },
     transComment: {
         type: String,
         required: true,
@@ -44,7 +44,7 @@ const TransactionSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'packitems',
     },
-    ProjectId: {
+    projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects',
         required: true 
@@ -79,11 +79,13 @@ TransactionSchema.virtual("packitem", {
     justOne: true
 });
 
-TransactionSchema.virtual("projectId", {
+TransactionSchema.virtual("project", {
     ref: "projects",
     localField: "ProjectId",
     foreignField: "_id",
     justOne: true
 });
+
+TransactionSchema.set('toJSON', { virtuals: true });
 
 module.exports = Transaction = mongoose.model('transactions', TransactionSchema);

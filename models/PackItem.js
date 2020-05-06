@@ -149,6 +149,13 @@ PackItemSchema.virtual("sub", {
     justOne: true
 });
 
+PackItemSchema.virtual("transactions", {
+    ref: "transactions",
+    localField: "_id",
+    foreignField: "packitemId",
+    justOne: false
+});
+
 PackItemSchema.set('toJSON', { virtuals: true });
 
 

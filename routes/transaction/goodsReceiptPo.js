@@ -75,7 +75,10 @@ function saveTransaction(po, transQty, transDate, toLocation, projectId) {
         let stockQty = getStockQty(po);
         let poQty = po.qty || 0;
         transQty = transQty ? transQty : poQty - stockQty;
-        if (transQty > packedQty - stockQty) {
+        console.log('transQty:', transQty);
+        console.log('poQty:', poQty);
+        console.log('stockQty:', stockQty);
+        if (transQty > poQty - stockQty) {
             resolve ({
                 isRejected: true,
                 isAdded: false,
@@ -87,7 +90,7 @@ function saveTransaction(po, transQty, transDate, toLocation, projectId) {
                 transType: 'Reciept',
                 transComment: `Recived: ${transQty} ${po.uom}`,
                 locationId: toLocation,
-                poId: po._Id,
+                poId: po._id,
                 projectId: projectId
             });
 
@@ -96,7 +99,7 @@ function saveTransaction(po, transQty, transDate, toLocation, projectId) {
                 isRejected: false,
                 isAdded: true,
             }))
-            .catch( () => resolve({
+            .catch( (error) => resolve({
                 isRejected: true,
                 isAdded: false,
             }));

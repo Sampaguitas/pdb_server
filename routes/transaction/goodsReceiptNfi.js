@@ -80,7 +80,7 @@ function saveTransaction(sub, transQty, transDate, toLocation, projectId) {
         let stockQty = getStockQty(sub);
         let relQty = sub.relQty || 0;
         transQty = transQty ? transQty : relQty - stockQty;
-        if (transQty > packedQty - stockQty) {
+        if (transQty > relQty - stockQty) {
             resolve ({
                 isRejected: true,
                 isAdded: false,

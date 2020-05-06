@@ -219,6 +219,13 @@ const SubSchema = new Schema({
     }
 });
 
+SubSchema.virtual("transactions", {
+    ref: "transactions",
+    localField: "_id",
+    foreignField: "subId",
+    justOne: false
+});
+
 SubSchema.virtual("certificates", {
     ref: "certificates",
     localField: "_id",
@@ -241,17 +248,6 @@ SubSchema.virtual("po", {
 });
 
 SubSchema.set('toJSON', { virtuals: true });
-
-// SubSchema.post('findOneAndUpdate', function(doc, next) {
-//     console.log('inspRelDate:', doc.inspRelDate);
-//     console.log('rfiQty:', doc.rfiQty);
-//     console.log('relQty:', doc.relQty);
-//     if (!!doc.inspRelDate && !!doc.rfiQty && !doc.relQty) {
-//         doc.relQty = doc.rfiQty;
-//         doc.save();
-//     }
-//     next();
-// })
 
 SubSchema.pre('findOneAndUpdate', async function() {
     const docToUpdate = await this.model.findOne(this.getQuery());

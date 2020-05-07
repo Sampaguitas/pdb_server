@@ -48,6 +48,9 @@ const TransactionSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects',
         required: true 
+    },
+    transferId: {
+        type: mongoose.SchemaTypes.ObjectId
     }
 });
 

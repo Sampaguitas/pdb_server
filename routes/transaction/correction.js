@@ -24,42 +24,37 @@ router.post('/', (req, res) => {
             } else if (!transactions) {
                 res.status(400).json({message: 'Could not retrive transactions.'});
             } else {
-                Location.find({_id: { $in: [fromLocationId, toLocationId] } })
+                Location.findById(locationId)
                 .populate({
                     path: 'area',
                     populate: 'warehouse'
                 })
-                .exec(async function(errLoc, locations) {
-                    if (errLoc || !locations) {
+                .exec(async function(errLoc, location) {
+                    if (errLoc || !location) {
                         res.status(400).json({message: 'Could not retreive location information.'});
                     } else {
-                        let location = locations.find(element => element._id == locationId);
-                        if (_.isUndefined(location)) {
-                            res.status(400).json({message: 'Could not retreive location information.'})
-                        } else {
-                            //fields
-                            let uom = transactions[0].po.uom;
-                            let whName = location.area.warehouse.warehouse;
-                            let areaNr = location.area.areaNr;
-                            let locHall = location.hall;
-                            let locRow = location.row;
-                            let locCol = location.col;
-                            let locHeight = location.height;
-                            let locName = `${areaNr}/${locHall}${locRow}-${leadingChar(locCol, '0', 3)}${!!locHeight ? '-' + locHeight : ''}`;
-                            //Document from
-                            let newTransaction = new Transaction({
-                                transQty: transQty,
-                                transDate: transDate,
-                                transType: 'Correction / Revalue',
-                                transComment: `Correction / Revalue: ${transQty} ${uom}`,
-                                locationId: locationId,
-                                poId: poId,
-                                projectId: projectId,
-                            });
-                            newTransaction.save()
-                            .then( () => res.status(200).json({message: `${Math.abs(transQty)} ${uom} have beem ${transQty > 0 ? 'added' : 'removed'} from location: ${whName} ${locName}`}))
-                            .catch( () => res.status(200).json({message: `Stock Qty could not be corrected/revaluated`}));
-                        }
+                        //fields
+                        let uom = transactions[0].po.uom;
+                        let whName = location.area.warehouse.warehouse;
+                        let areaNr = location.area.areaNr;
+                        let locHall = location.hall;
+                        let locRow = location.row;
+                        let locCol = location.col;
+                        let locHeight = location.height;
+                        let locName = `${areaNr}/${locHall}${locRow}-${leadingChar(locCol, '0', 3)}${!!locHeight ? '-' + locHeight : ''}`;
+                        //Document from
+                        let newTransaction = new Transaction({
+                            transQty: transQty,
+                            transDate: transDate,
+                            transType: 'Correction / Revalue',
+                            transComment: `Correction / Revalue: ${transQty} ${uom}`,
+                            locationId: locationId,
+                            poId: poId,
+                            projectId: projectId,
+                        });
+                        newTransaction.save()
+                        .then( () => res.status(200).json({message: `${Math.abs(transQty)} ${uom} ${Math.abs(transQty) === 1 ? 'has' : 'have'} been ${transQty > 0 ? 'added to' : 'removed from'} location: ${whName} ${locName}`}))
+                        .catch( () => res.status(200).json({message: `Stock Qty could not be corrected/revaluated`}));
                     }
                 });
             }

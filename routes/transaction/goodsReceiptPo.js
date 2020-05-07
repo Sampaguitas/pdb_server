@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
                         }
 
                     });
-                    res.status(nRejected ? 400 : 200).json({ message: `${nAdded} line(s) recived, ${nRejected} line(s) rejected.`});
+                    res.status(nRejected ? 400 : 200).json({ message: `${nAdded} line(s) received, ${nRejected} line(s) rejected.`});
                 });
             }
         });

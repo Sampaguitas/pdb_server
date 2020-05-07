@@ -93,7 +93,7 @@ router.post('/', (req, res) => {
                                     transferId: transferId,
                                 };
                                 Transaction.insertMany([trasferFrom, trasferTo])
-                                .then( () => res.status(200).json({ message: `${transQty} ${uom} ${transQty === 1 ? 'has' : 'have'} ben mooved from ${fromWhName} ${fromLocName} to ${toWhName} ${toLocName}`}))
+                                .then( () => res.status(200).json({ message: `${transQty} ${uom} ${transQty === 1 ? 'has' : 'have'} ben moved from ${fromWhName} ${fromLocName} to ${toWhName} ${toLocName}`}))
                                 .catch( () => res.status(400).json({ message: `Units could not be moved from ${fromWhName} ${fromLocName} to ${toWhName} ${toLocName}`}));
                             }
                         }

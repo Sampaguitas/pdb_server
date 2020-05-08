@@ -30,6 +30,7 @@ router.post('/', function (req, res) {
     let certificateIds = [];
     let packitemIds = [];
     let collipackIds = [];
+    // let locationIds = [];
 
     selectedIds.forEach(element => {
         element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
@@ -37,6 +38,7 @@ router.post('/', function (req, res) {
         element.certificateId && !certificateIds.includes(element.certificateId) && certificateIds.push(element.certificateId);
         element.packitemId && !packitemIds.includes(element.packitemId) && packitemIds.push(element.packitemId);
         element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
+        // element.locationId && !locationIds.includes(element.locationId) && locationIds.push(element.locationId);
     });
 
     if (!screenId || !projectId) {
@@ -60,15 +62,30 @@ router.post('/', function (req, res) {
           path: 'pos',
           match: { _id: { $in: poIds} },
           options: { sort: { clPo: 'asc', clPoRev: 'asc', clPoItem: 'asc' } },
-          populate: {
-            path: 'subs',
-            match: { _id: { $in: subIds} },
-            populate: {
-              path: 'packitems',
-              match: { _id: { $in: packitemIds} },
-              options: { sort: {  'plNr': 'asc', 'colliNr': 'asc' } }
+          populate: [
+            {
+              path: 'subs',
+              match: { _id: { $in: subIds} },
+              populate: {
+                path: 'packitems',
+                match: { _id: { $in: packitemIds} },
+                options: { sort: {  'plNr': 'asc', 'colliNr': 'asc' } }
+              }
+            },
+            {
+              path: 'transactions',
+              populate: {
+                path: 'location',
+                // match: { _id: { $in: locationIds} },
+                populate: {
+                  path: 'area',
+                  populate: {
+                    path: 'warehouse'
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         {
           path: 'collipacks',
@@ -424,20 +441,129 @@ function getLines (resProject, fieldnames, screenId) {
           });
         }
         break;
-      case '5cd2b642fd333616dc360b65': //Certificates
-      case '5cd2b643fd333616dc360b67': //Print Transport Documents
+      case '5ea8eefb7c213e2096462a2c':
+        if (resProject.pos) {
+          resProject.pos.map(po => {
+            virtuals(po.transactions).map(function(virtual){
+              arrayRow = [];
+              arrayRow.push({
+                val: po._id, //poId
+                col: 1,
+                type: 'String',
+                align: 'left',
+                edit: true
+              });
+              arrayRow.push({
+                val: '', //subId
+                col: 2,
+                type: 'String',
+                align: 'left',
+                edit: true
+              });
+              arrayRow.push({
+                val: '', //packitemId
+                col: 3,
+                type: 'String',
+                align: 'left',
+                edit: true
+              });
+              arrayRow.push({
+                val: '', //collipackId
+                col: 4,
+                type: 'String',
+                align: 'left',
+                edit: true
+              });
+              fieldnames.map( (fieldname, index) => {
+                switch(fieldname.fields.fromTbl) {
+                  case 'po':
+                    if (['project', 'projectNr'].includes(fieldname.fields.name)) {
+                      arrayRow.push({
+                        val: fieldname.fields.name === 'project' ? getValue('name', resProject) || '' : getValue('number', resProject) || '',
+                        col: index + 5,
+                        type: fieldname.fields.type,
+                        align: fieldname.align,
+                        edit: fieldname.edit
+                      });
+                    } else {
+                      arrayRow.push({
+                        val: getValue(fieldname.fields.name, po),
+                        col: index + 5,
+                        type: fieldname.fields.type,
+                        align: fieldname.align,
+                        edit: fieldname.edit
+                      });
+                    }
+                    break;
+                  case 'location':
+                    // console.log(getValue(fieldname.fields.name, virtual));
+                    arrayRow.push({
+                        val: getValue(fieldname.fields.name, virtual),
+                        col: index + 5,
+                        type: "String",
+                        align: 'left',
+                        edit: true
+                    });
+                    break;
+                  default: arrayRow.push({
+                    val: '',
+                    col: index + 5,
+                    type: "String",
+                    align: 'left',
+                    edit: true
+                  });
+                }
+              });
+              arrayBody.push(arrayRow);
+            });
+          });
+        }
+      // case '5cd2b642fd333616dc360b65': //Certificates
+      // case '5cd2b643fd333616dc360b67': //Print Transport Documents
     }
     
     return arrayBody;
 }
 
-function getScreenTbls (fieldnames) {
-  return fieldnames.reduce(function (acc, curr) {
-      if(!acc.includes(curr.fields.fromTbl)) {
-          acc.push(curr.fields.fromTbl)
+function virtuals(transactions) {
+  let tempResult = transactions.reduce(function(acc, cur) {
+      let found = acc.find(element => element._id === cur.loactionId);
+      if (!_.isUndefined(found)) {
+        found.stockQty += cur.transQty;
+      } else {
+        let areaNr = cur.location.area.areaNr;
+        let hall = cur.location.hall;
+        let row = cur.location.row;
+        let col = cur.location.col;
+        let height = cur.location.height;
+        acc.push({
+          _id: cur.locationId,
+          stockQty: cur.transQty || 0,
+          warehouse: cur.location.area.warehouse.warehouse,
+          area: cur.location.area.area,
+          location: `${areaNr}/${hall}${row}-${leadingChar(col, '0', 3)}${!!height ? '-' + height : ''}`,
+          locationId: cur.locationId,
+        });
       }
       return acc;
-  },[]);
+  }, []);
+
+  if (!_.isEmpty(tempResult)) {
+    return tempResult;
+  } else {
+      return [{
+          _id: '',
+          stockQty: 0,
+          warehouse: '',
+          area: '',
+          location: '',
+          locationId: '', 
+      }];
+  }
+
+}
+function leadingChar(string, char, length) {
+  return string.toString().length > length ? string : char.repeat(length - string.toString().length) + string;
 }
 
 function getValue(key, object) {

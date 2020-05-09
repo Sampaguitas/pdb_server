@@ -21,6 +21,7 @@ require('./DocType');
 require('./Erp');
 require('./Field');
 require('./FieldName');
+require('./Heat');
 require('./Locale');
 require('./Opco');
 require('./PackItem');

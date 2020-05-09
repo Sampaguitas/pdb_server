@@ -1,18 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Certificate = require('../../models/Certificate');
-const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
-    const id = req.query.id
-    Certificate.findById(id, function (err, certificate) {
-        if (!certificate) {
-            return res.status(404).json({
-                message: 'Certificate does not exist'
-                //"1901": "Certificate does not exist",
-            });
-        }
-        else {
+    Certificate.findById(req.query.id, function (err, certificate) {
+        if (err) {
+            return res.status(400).json({ message: 'An error has occured.'});
+        } else if (!certificate) {
+            return res.status(400).json({ message: 'Could not retreive the certificate.'});
+        } else {
             return res.json(certificate);
         }
     });

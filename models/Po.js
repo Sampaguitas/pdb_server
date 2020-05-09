@@ -225,6 +225,13 @@ PoSchema.virtual("subs", {
     justOne: false
 });
 
+PoSchema.virtual("heats", {
+    ref: "heats",
+    localField: "_id",
+    foreignField: "poId",
+    justOne: false
+});
+
 PoSchema.set('toJSON', { virtuals: true });
 
 module.exports = Po = mongoose.model('pos', PoSchema);

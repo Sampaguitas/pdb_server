@@ -247,6 +247,13 @@ SubSchema.virtual("po", {
     justOne: true
 });
 
+SubSchema.virtual("heats", {
+    ref: "heats",
+    localField: "_id",
+    foreignField: "poId",
+    justOne: false
+});
+
 SubSchema.set('toJSON', { virtuals: true });
 
 SubSchema.pre('findOneAndUpdate', async function() {

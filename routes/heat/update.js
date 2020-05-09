@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Certificate = require('../../models/Certificate');
+const Heat = require('../../models/Heat');
 
 router.put('/', (req, res) => {
     var data = {};
@@ -9,11 +9,11 @@ router.put('/', (req, res) => {
         data[k] = decodeURI(req.body[k]);
     });
 
-    Certificate.findByIdAndUpdate(req.query.id, { $set: data }, function (err) {
+    Heat.findByIdAndUpdate(req.query.id, { $set: data }, function (err) {
         if (err) {
             return res.status(400).json({ message: 'An error has occured.' });
         } else {
-            return res.status(200).json({ message: 'Certificate has been updated.' });
+            return res.status(200).json({ message: 'Heat has been updated.' });
         }
     });
 });

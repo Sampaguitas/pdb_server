@@ -1,0 +1,28 @@
+var express = require('express');
+const router = express.Router();
+var multer = require('multer');
+var storage = multer.memoryStorage()
+var upload = multer({ storage: storage })
+const Certificate = require('../../models/Certificate');
+var s3bucket = require('../../middleware/s3bucket');
+fs = require('fs');
+
+router.post('/', upload.single('file'), function (req, res) {
+
+  const id = req.body.id;
+  const hasFile = req.body.hasFile;
+  const projectNr = req.body.projectNr;
+  const file = req.file;
+  
+  s3bucket.uploadCif(file, projectNr, id)
+  .then(Certificate.findByIdAndUpdate(id, {hasFile: true}, function(err) {
+    if (err) {
+      res.status(400).json({ message: `File could not be ${hasFile ? 'updated' : 'added'}`})
+    } else {
+      res.status(200).json({ message: `File has successfully been ${hasFile ? 'updated' : 'added'}`})
+    }
+  }))
+  .catch( error => res.status(400).json({ message: error.message }));
+});
+
+module.exports = router;

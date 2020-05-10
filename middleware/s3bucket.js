@@ -203,6 +203,32 @@ function uploadFile(file, project) {
     }
   );
 }
+
+function uploadCif(file, projectNr, id) {
+  return new Promise(
+    function (resolve, reject) {
+      if (!project || !id){
+        reject({ message: 'projectNr or certificateId is missing.' }); //"2400": "No Project selected",
+      } else if (!file) {
+        reject({message: 'No file to be uploaded.'}); //"2401": "No file selected",
+      } else {
+        var s3 = new aws.S3();
+        var params = {
+          Bucket: awsBucketName,
+          Body: file.buffer,
+          Key: path.join('certificates', projectNr, `${id}.pdf`),
+        }; 
+        s3.upload(params, function(err, data) {
+          if (err) {
+            reject('An error occurred'); //"2405": "An error occurred",
+          } else {
+            resolve();
+          }
+        });
+      }
+    }
+  );
+}
 //   const project = req.body.project;
 //   const file = req.file;
 //   if (!project) {
@@ -245,4 +271,5 @@ module.exports = {
   duplicateProject,
   findAll,
   uploadFile,
+  uploadCif
 };

@@ -11,10 +11,9 @@ router.post('/', upload.single('file'), function (req, res) {
 
   const id = req.body.id;
   const hasFile = req.body.hasFile;
-  const projectNr = req.body.projectNr;
   const file = req.file;
   
-  s3bucket.uploadCif(file, projectNr, id)
+  s3bucket.uploadCif(file, id)
   .then(Certificate.findByIdAndUpdate(id, {hasFile: true}, function(err) {
     if (err) {
       res.status(400).json({ message: `File could not be ${hasFile ? 'updated' : 'added'}`})

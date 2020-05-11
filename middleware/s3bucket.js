@@ -204,23 +204,46 @@ function uploadFile(file, project) {
   );
 }
 
-function uploadCif(file, projectNr, id) {
+function uploadCif(file, id) {
   return new Promise(
     function (resolve, reject) {
-      if (!project || !id){
-        reject({ message: 'projectNr or certificateId is missing.' }); //"2400": "No Project selected",
+      if (!id){
+        reject({ message: 'Certificate ID is missing.' });
       } else if (!file) {
-        reject({message: 'No file to be uploaded.'}); //"2401": "No file selected",
+        reject({message: 'Please select one file to be uploaded.'});
       } else {
         var s3 = new aws.S3();
         var params = {
           Bucket: awsBucketName,
           Body: file.buffer,
-          Key: path.join('certificates', projectNr, `${id}.pdf`),
+          Key: path.join('certificates', `${id}.pdf`),
         }; 
-        s3.upload(params, function(err, data) {
+        s3.upload(params, function(err) {
           if (err) {
-            reject('An error occurred'); //"2405": "An error occurred",
+            reject({ message: 'An error occurred' });
+          } else {
+            resolve();
+          }
+        });
+      }
+    }
+  );
+}
+
+function deleteCif (id) {
+  return new Promise(
+    function (resolve, reject) {
+      if (!id) {
+        reject({ message: 'Certificate ID is missing' });
+      } else {
+        var s3 = new aws.S3();
+        var params = {
+            Bucket: awsBucketName,
+            Key: path.join('certificates', `${id}.pdf`),
+        };
+        s3.deleteObject(params, function(err) {
+          if (err) {
+            reject({ message: 'An error occurred' });   
           } else {
             resolve();
           }
@@ -271,5 +294,6 @@ module.exports = {
   duplicateProject,
   findAll,
   uploadFile,
-  uploadCif
+  uploadCif,
+  deleteCif
 };

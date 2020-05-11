@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Certificate = require('../../models/Certificate');
+var s3bucket = require('../../middleware/s3bucket');
 const _ = require('lodash');
 
 
@@ -31,18 +32,21 @@ router.delete('/', async (req, res) => {
 
 function removeCertificate(id) {
     return new Promise(function(resolve) {
-        condition = { _id: id};
-        Certificate.findOneAndDelete(condition, function (err) {
-            if(err) {
-                resolve({
-                    isRejected: true
-                });
-            } else {
-                resolve({
-                    isRejected: false
-                });
-            }
-        });
+        s3bucket.deleteCif(id)
+        .then( () => {
+            condition = { _id: id};
+            Certificate.findOneAndDelete(condition, function (err) {
+                if(err) {
+                    resolve({
+                        isRejected: true
+                    });
+                } else {
+                    resolve({
+                        isRejected: false
+                    });
+                }
+            });
+        }).catch( () => resolve({ isRejected: true }));
     });
 }
 

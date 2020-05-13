@@ -53,19 +53,33 @@ router.post('/', function (req, res) {
           clPoItem: 'asc'
         }
       },
-      populate: {
-        path: 'subs',
-        match: { _id: { $in : subIds } },
-        populate: {
-          path: 'packitems',
-          options: {
-            sort: { 
-              'plNr': 'asc',
-              'colliNr': 'asc'
+      populate: 
+      [
+        {
+          path: 'subs',
+          match: { _id: { $in : subIds } },
+          populate: {
+            path: 'packitems',
+            options: {
+              sort: { 
+                'plNr': 'asc',
+                'colliNr': 'asc'
+              }
             }
           }
+        },
+        {
+          path: 'heats',
+          options: {
+              sort: {
+                  heatNr: 'asc'
+              }
+          },
+          populate: {
+              path: 'certificate',
+          }
         }
-      },
+      ]
     },
   })
   .exec(function (err, docDef){
@@ -296,6 +310,18 @@ function getLines(docDef, docfields, locale) {
   let hasPackitems = getTables(docfields).includes('packitem');
   if(docDef.project.pos) {
     docDef.project.pos.map(po => {
+      let certificate = po.heats.reduce(function (acc, cur) {
+          if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
+            acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+          }
+          if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
+            acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+          }
+          return acc;
+      }, {
+          heatNr: '',
+          cif: ''
+      });
       if(po.subs){
         po.subs.map(sub => {
           if(!_.isEmpty(sub.packitems) && hasPackitems) {
@@ -328,6 +354,13 @@ function getLines(docDef, docfields, locale) {
                         col: docfield.col,
                         type: docfield.fields.type
                       });
+                    } else if (docfield.fields.name === 'heatNr') {
+                      arrayRow.push({
+                        val: certificate[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
                     } else {
                       arrayRow.push({
                         val: sub[docfield.fields.name] || '',
@@ -336,6 +369,14 @@ function getLines(docDef, docfields, locale) {
                         type: docfield.fields.type
                       });
                     }
+                    break;
+                  case 'certificate':
+                    arrayRow.push({
+                      val: certificate[docfield.fields.name] || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
                     break;
                   case 'packitem':
                     if(docfield.fields.name === 'plNr') {
@@ -394,6 +435,13 @@ function getLines(docDef, docfields, locale) {
                       col: docfield.col,
                       type: 'String'
                     });
+                  } else if (docfield.fields.name === 'heatNr') {
+                    arrayRow.push({
+                      val: certificate[docfield.fields.name] || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
                   } else {
                     arrayRow.push({
                       val: sub[docfield.fields.name] || '',
@@ -402,6 +450,14 @@ function getLines(docDef, docfields, locale) {
                       type: docfield.fields.type
                     });
                   }
+                  break;
+                case 'certificate':
+                  arrayRow.push({
+                    val: certificate[docfield.fields.name] || '',
+                    row: docfield.row,
+                    col: docfield.col,
+                    type: docfield.fields.type
+                  });
                   break;
                 default: arrayRow.push({
                   val: '',

@@ -55,7 +55,18 @@ router.get('/', function (req, res) {
                         populate: {
                             path: 'sub',
                             populate: {
-                                path: 'po'
+                                path: 'po',
+                                populate: {
+                                    path: 'heats',
+                                    options: {
+                                        sort: {
+                                            heatNr: 'asc'
+                                        }
+                                    },
+                                    populate: {
+                                        path: 'certificate',
+                                    }
+                                }
                             }
                         }
                     }
@@ -373,6 +384,18 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
         }
 
         getArticle(docDef.project.erp.name, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
+            let certificate = packitem.sub.po.heats.reduce(function (acc, cur) {
+                if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
+                    acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+                }
+                if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
+                    acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+                }
+                return acc;
+            }, {
+                heatNr: '',
+                cif: ''
+            });
             docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
                     case 'storedproc':
@@ -429,13 +452,30 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                             type: docfield.fields.type
                         });
                         break;
-                    case 'sub':
-                        arrayLine.push({
-                            val: packitem.sub[docfield.fields.name] || '',
+                    case 'certificate':
+                        arrayRow.push({
+                            val: certificate[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type
                         });
+                        break;
+                    case 'sub':
+                        if (docfield.fields.name === 'heatNr') {
+                            arrayRow.push({
+                                val: certificate[docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        } else {
+                            arrayRow.push({
+                                val: packitem.sub[docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        }
                         break;
                     case 'po':
                         if (['project', 'projectNr'].includes(docfield.fields.name)) {

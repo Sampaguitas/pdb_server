@@ -23,7 +23,7 @@ aws.config.update({
 router.get('/', function (req, res) {
   const docDefId = req.query.id;
   const locale = req.query.locale;
-  const selectedLocation = req.query.selectedLocation
+  const selectedLocation = req.query.selectedLocation || '000000000000000000000000';
   const inputNfi = req.query.inputNfi
 
   DocDef.findById(docDefId)
@@ -45,19 +45,32 @@ router.get('/', function (req, res) {
             clPoItem: 'asc'
           }
         },
-        populate: {
-          path: 'subs',
-          match: { nfi : inputNfi},
-          populate: {
-            path: 'certificates',
-            options: {
+        populate: [
+          {
+            path: 'subs',
+            match: { nfi : inputNfi},
+            populate: {
+              path: 'packitems',
+              options: {
                 sort: { 
-                    'cif': 'asc',
-                    'heatNr': 'asc'
+                  'plNr': 'asc',
+                  'colliNr': 'asc'
                 }
+              }
+            }
+          },
+          {
+            path: 'heats',
+            options: {
+                sort: {
+                    heatNr: 'asc'
+                }
+            },
+            populate: {
+                path: 'certificate',
             }
           }
-        },
+        ]
       },
       {
         path: 'suppliers',
@@ -277,25 +290,49 @@ function getCertificateFields (docFileds) {
 function getLines(docDef, docfields, locale) {
   let arrayLines = [];
   let arrayRow = [];
-  let hasCertificates = getTables(docfields).includes('certificate');
+  // let hasCertificates = getTables(docfields).includes('certificate');
+  let hasPackitems = getTables(docfields).includes('packitem');
   if(docDef.project.pos) {
     docDef.project.pos.map(po => {
+      let certificate = po.heats.reduce(function (acc, cur) {
+        if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
+          acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+        }
+        if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
+          acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+        }
+        return acc;
+      }, {
+          heatNr: '',
+          cif: ''
+      });
       if(po.subs){
         po.subs.map(sub => {
-          if(!_.isEmpty(sub.certificates) && hasCertificates) {
-            virtuals(sub.certificates, getCertificateFields(docfields), locale).map(virtual => {
+          // if(!_.isEmpty(sub.certificates) && hasCertificates) {
+          if(!_.isEmpty(sub.packitems) && hasPackitems) {
+            // virtuals(sub.certificates, getCertificateFields(docfields), locale).map(virtual => {
+            virtuals(sub.packitems, po.uom, getPackItemFields(docfields), locale).map(virtual => {
               arrayRow = [];
               docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
                   case 'supplier':
                     if (docDef.project.suppliers) {
                       let supplier = docDef.project.suppliers[0];
-                      arrayRow.push({
-                        val: supplier[docfield.fields.name] || '',
-                        row: docfield.row,
-                        col: docfield.col,
-                        type: docfield.fields.type
-                      });
+                      if (!_.isUndefined(supplier)) {
+                        arrayRow.push({
+                          val: supplier[docfield.fields.name] || '',
+                          row: docfield.row,
+                          col: docfield.col,
+                          type: docfield.fields.type
+                        });
+                      } else {
+                        arrayRow.push({
+                          val: '',
+                          row: docfield.row,
+                          col: docfield.col,
+                          type: docfield.fields.type
+                        });
+                      }
                     }
                     break;
                   case 'po':
@@ -316,20 +353,53 @@ function getLines(docDef, docfields, locale) {
                     }
                     break;
                   case 'sub':
+                    if(docfield.fields.name === 'shippedQty') {
+                      arrayRow.push({
+                        val: virtual.shippedQty || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    } else if (docfield.fields.name === 'heatNr') {
+                      arrayRow.push({
+                        val: certificate[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    } else {
+                      arrayRow.push({
+                        val: sub[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    }
+                    break;
+                  case 'certificate':
                     arrayRow.push({
-                      val: sub[docfield.fields.name] || '',
+                      val: certificate[docfield.fields.name] || '',
                       row: docfield.row,
                       col: docfield.col,
                       type: docfield.fields.type
                     });
                     break;
-                  case 'certificate':
-                    arrayRow.push({
-                      val: virtual[docfield.fields.name].join(' | ') || '',
-                      row: docfield.row,
-                      col: docfield.col,
-                      type: 'String'
-                    });
+                  case 'packitem':
+                    if(docfield.fields.name === 'plNr') {
+                      arrayRow.push({
+                        val: virtual.plNr || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    } else {
+                      arrayRow.push({
+                        val: virtual[docfield.fields.name].join(' | ') || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: 'String'
+                      });
+                    }
                     break;
                   default: arrayRow.push({
                     val: '',
@@ -349,12 +419,21 @@ function getLines(docDef, docfields, locale) {
                 case 'supplier':
                   if (docDef.project.suppliers) {
                     let supplier = docDef.project.suppliers[0];
-                    arrayRow.push({
-                      val: supplier[docfield.fields.name] || '',
-                      row: docfield.row,
-                      col: docfield.col,
-                      type: docfield.fields.type
-                    });
+                    if (!_.isUndefined(supplier)) {
+                      arrayRow.push({
+                        val: supplier[docfield.fields.name] || '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    } else {
+                      arrayRow.push({
+                        val: '',
+                        row: docfield.row,
+                        col: docfield.col,
+                        type: docfield.fields.type
+                      });
+                    }
                   }
                   break;
                 case 'po':
@@ -375,8 +454,32 @@ function getLines(docDef, docfields, locale) {
                   }
                   break;
                 case 'sub':
+                  if(docfield.fields.name === 'shippedQty') {
+                    arrayRow.push({
+                      val: '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: 'String'
+                    });
+                  } else if (docfield.fields.name === 'heatNr') {
+                    arrayRow.push({
+                      val: certificate[docfield.fields.name] || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
+                  } else {
+                    arrayRow.push({
+                      val: sub[docfield.fields.name] || '',
+                      row: docfield.row,
+                      col: docfield.col,
+                      type: docfield.fields.type
+                    });
+                  }
+                  break;
+                case 'certificate':
                   arrayRow.push({
-                    val: sub[docfield.fields.name] || '',
+                    val: certificate[docfield.fields.name] || '',
                     row: docfield.row,
                     col: docfield.col,
                     type: docfield.fields.type
@@ -400,22 +503,118 @@ function getLines(docDef, docfields, locale) {
   }
 }
 //locale
-function virtuals(certificates, certificateFields, locale) {
+// function virtuals(certificates, certificateFields, locale) {
+//   let tempVirtuals = [];
+//   let tempObject = {_id: '0'}
+//   certificates.map(function (certificate){
+//       certificateFields.map(function (certificateField) {
+//           if (!tempObject.hasOwnProperty(certificateField.name)) {
+//               tempObject[certificateField.name] = [TypeToString(certificate[certificateField.name], certificateField.type, locale)]
+//           } else if(!tempObject[certificateField.name].includes(TypeToString(certificate[certificateField.name], certificateField.type, locale))) {
+//               tempObject[certificateField.name].push(TypeToString(certificate[certificateField.name], certificateField.type, locale));
+//           }
+//       });
+//   });
+//   tempVirtuals.push(tempObject);
+//   return tempVirtuals;
+// }
+
+function virtuals(packitems, uom, packItemFields, locale) {
   let tempVirtuals = [];
-  let tempObject = {_id: '0'}
-  certificates.map(function (certificate){
-      certificateFields.map(function (certificateField) {
-          if (!tempObject.hasOwnProperty(certificateField.name)) {
-              tempObject[certificateField.name] = [TypeToString(certificate[certificateField.name], certificateField.type, locale)]
-          } else if(!tempObject[certificateField.name].includes(TypeToString(certificate[certificateField.name], certificateField.type, locale))) {
-              tempObject[certificateField.name].push(TypeToString(certificate[certificateField.name], certificateField.type, locale));
+  let tempUom = ['M', 'MT', 'MTR', 'MTRS', 'F', 'FT', 'FEET', 'LM'].includes(uom.toUpperCase()) ? 'mtrs' : 'pcs';
+  if (hasPackingList(packItemFields)) {
+    packitems.reduce(function (acc, cur){
+        if (cur.plNr){
+            if (!acc.includes(cur.plNr)) {
+
+                let tempObject = {};
+                tempObject['shippedQty'] = cur[tempUom];
+                packItemFields.map(function (packItemField) {
+                    if (packItemField.name === 'plNr') {
+                        tempObject['plNr'] = cur['plNr'];
+                        tempObject['_id'] = cur['plNr'];
+                    } else {
+                        tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)]
+                    }               
+                });
+                tempVirtuals.push(tempObject);
+                acc.push(cur.plNr);
+                
+            } else if (acc.includes(cur.plNr)) {
+    
+                let tempVirtual = tempVirtuals.find(element => element.plNr === cur.plNr);            
+                tempVirtual['shippedQty'] += cur[tempUom];
+                packItemFields.map(function (packItemField) {
+                    if (packItemField.name != 'plNr' && !tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                        tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                    }               
+                });
+                // acc.push(cur.plNr);
+            }
+          } else if (!acc.includes('0')) {
+            let tempObject = {_id: '0'}
+            tempObject['shippedQty'] = '';
+            packItemFields.map(function (packItemField) {
+              if (packItemField.name === 'plNr') {
+                  tempObject['plNr'] = ''
+              } else {
+                  tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)];
+              }
+            });
+            tempVirtuals.push(tempObject);
+            acc.push('0');
+          } else {
+            let tempVirtual = tempVirtuals.find(element => element._id === '0');
+            packItemFields.map(function (packItemField) {
+                if (packItemField.name != 'plNr' && !tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                    tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                }               
+            });
           }
-      });
-  });
-  tempVirtuals.push(tempObject);
+        return acc;
+    }, []);
+  } else {
+    packitems.reduce(function(acc, cur) {
+      if (cur.plNr){
+          if (!acc.includes('1')) {
+              let tempObject = {_id: '1'}
+              tempObject['shippedQty'] = cur[tempUom];
+              packItemFields.map(function (packItemField) {
+                  tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)];
+              });
+              tempVirtuals.push(tempObject);
+              acc.push('1');
+          } else {
+              let tempVirtual = tempVirtuals.find(element => element._id === '1');
+              tempVirtual['shippedQty'] += cur[tempUom];
+              packItemFields.map(function (packItemField) {
+                  if (!tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                      tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                  }
+              });
+          }
+      } else {
+          if (!acc.includes('0')) {
+              let tempObject = {_id: '0'}
+              packItemFields.map(function (packItemField) {
+                  tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)];
+              });
+              tempVirtuals.push(tempObject);
+              acc.push('0');
+          } else {
+              let tempVirtual = tempVirtuals.find(element => element._id === '0');
+              packItemFields.map(function (packItemField) {
+                  if (!tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                      tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                  }
+              });
+          }
+      }
+      return acc;
+    }, [])
+  }
   return tempVirtuals;
 }
-
 
 
 

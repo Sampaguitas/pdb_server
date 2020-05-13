@@ -73,6 +73,17 @@ router.post('/', function (req, res) {
               }
             },
             {
+              path: 'heats',
+              options: {
+                  sort: {
+                      heatNr: 'asc'
+                  }
+              },
+              populate: {
+                  path: 'certificate',
+              }
+            },
+            {
               path: 'transactions',
               populate: {
                 path: 'location',
@@ -91,10 +102,10 @@ router.post('/', function (req, res) {
           path: 'collipacks',
           match: { _id: { $in: collipackIds} }
         },
-        {
-          path: 'certificates',
-          match: { _id: { $in: subIds} }
-        }
+        // {
+        //   path: 'certificates',
+        //   match: { _id: { $in: subIds} }
+        // }
       ])
       .exec(async function(errProject, resProject) {
         if (errProject) {
@@ -282,6 +293,18 @@ function getLines (resProject, fieldnames, screenId) {
       case '5cd2b643fd333616dc360b67': //packing details
         if (resProject.pos) {
           resProject.pos.map(po => {
+            let certificate = po.heats.reduce(function (acc, cur) {
+              if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
+                acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+              }
+              if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
+                acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+              }
+              return acc;
+            }, {
+                heatNr: '',
+                cif: ''
+            });
             if (po.subs) {
               po.subs.map(sub => {
                 if (!_.isEmpty(sub.packitems)) {
@@ -337,8 +360,27 @@ function getLines (resProject, fieldnames, screenId) {
                           }
                           break;
                         case 'sub':
+                          if (fieldname.fields.name === 'heatNr') {
+                            arrayRow.push({
+                              val: getValue(fieldname.fields.name, certificate),
+                              col: index + 5,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          } else {
+                            arrayRow.push({
+                              val: getValue(fieldname.fields.name, sub),
+                              col: index + 5,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          }
+                          break;
+                        case 'certificate':
                           arrayRow.push({
-                            val: getValue(fieldname.fields.name, sub),
+                            val: getValue(fieldname.fields.name, certificate),
                             col: index + 5,
                             type: fieldname.fields.type,
                             align: fieldname.align,
@@ -417,8 +459,27 @@ function getLines (resProject, fieldnames, screenId) {
                         }
                         break;
                       case 'sub':
+                        if (fieldname.fields.name === 'heatNr') {
+                          arrayRow.push({
+                            val: getValue(fieldname.fields.name, certificate),
+                            col: index + 5,
+                            type: fieldname.fields.type,
+                            align: fieldname.align,
+                            edit: fieldname.edit
+                          });
+                        } else {
+                          arrayRow.push({
+                            val: getValue(fieldname.fields.name, sub),
+                            col: index + 5,
+                            type: fieldname.fields.type,
+                            align: fieldname.align,
+                            edit: fieldname.edit
+                          });
+                        }
+                        break;
+                      case 'certificate':
                         arrayRow.push({
-                          val: getValue(fieldname.fields.name, sub),
+                          val: getValue(fieldname.fields.name, certificate),
                           col: index + 5,
                           type: fieldname.fields.type,
                           align: fieldname.align,

@@ -55,7 +55,18 @@ router.get('/', function (req, res) {
                         populate: {
                             path: 'sub',
                             populate: {
-                                path: 'po'
+                                path: 'po',
+                                populate: {
+                                    path: 'heats',
+                                    options: {
+                                        sort: {
+                                            heatNr: 'asc'
+                                        }
+                                    },
+                                    populate: {
+                                        path: 'certificate',
+                                    }
+                                }
                             }
                         }
                     }
@@ -113,13 +124,32 @@ router.get('/', function (req, res) {
                         }
                         //3) fill colli pages
                         collipack.packitems.map(packitem => {
+                            let certificate = packitem.sub.po.heats.reduce(function (acc, cur) {
+                                if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
+                                    acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+                                }
+                                if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
+                                    acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+                                }
+                                return acc;
+                            }, {
+                                heatNr: '',
+                                cif: ''
+                            });
                             docDef.docfields.map(docfield => {
                                 switch(docfield.fields.fromTbl) {
                                     case 'collipack': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = collipack[docfield.fields.name] || '';
                                         break;
                                     case 'packitem': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem[docfield.fields.name] || '';
                                         break;
-                                    case 'sub': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem.sub[docfield.fields.name] || '';
+                                    case 'sub': 
+                                        if(docfield.fields.name === 'heatNr') {
+                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = certificate[docfield.fields.name] || '';
+                                        } else {
+                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem.sub[docfield.fields.name] || '';
+                                        }
+                                        break;
+                                    case 'certificate': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = certificate[docfield.fields.name] || '';
                                         break;
                                     case 'po': 
                                         if (['project', 'projectNr'].includes(docfield.fields.name)) {

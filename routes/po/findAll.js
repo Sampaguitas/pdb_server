@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Po = require('../../models/Po');
-const fault = require('../../utilities/Errors');
 
 router.get('/', (req, res) => {
     Po.find({projectId: req.query.projectId})
@@ -13,30 +12,29 @@ router.get('/', (req, res) => {
     .populate([
         {
             path:'subs',
-            populate: {
-                path: 'packitems',
-            }
-        },
-        {
-            path: 'heats',
-            options: {
-                sort: {
-                    heatNr: 'asc'
+            populate: [
+                {
+                    path: 'packitems',
+                },
+                {
+                    path: 'heats',
+                    options: {
+                        sort: {
+                            heatNr: 'asc'
+                        }
+                    },
+                    populate: {
+                        path: 'certificate',
+                    }
                 }
-            },
-            populate: {
-                path: 'certificate',
-            }
+            ]
+                
         }
     ])
     .exec(function (err, po) {
-        if (!po) {
-            return res.status(400).json({ 
-                message: fault(1204).message
-                //"1204": "No Po match",
-            });
-        }
-        else {
+        if (err) {
+            return res.status(400).json({  message: 'An error has occured.' });
+        } else {
             return res.json(po);
         }
     });

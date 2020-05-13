@@ -54,9 +54,11 @@ router.get('/', function (req, res) {
                         path: 'packitems',
                         populate: {
                             path: 'sub',
-                            populate: {
-                                path: 'po',
-                                populate: {
+                            populate: [
+                                {
+                                    path: 'po',
+                                },
+                                {
                                     path: 'heats',
                                     options: {
                                         sort: {
@@ -67,7 +69,7 @@ router.get('/', function (req, res) {
                                         path: 'certificate',
                                     }
                                 }
-                            }
+                            ]
                         }
                     }
                 }
@@ -384,7 +386,7 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
         }
 
         getArticle(docDef.project.erp.name, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
-            let certificate = packitem.sub.po.heats.reduce(function (acc, cur) {
+            let certificate = packitem.sub.heats.reduce(function (acc, cur) {
                 if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
                     acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
                 }

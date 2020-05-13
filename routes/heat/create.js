@@ -6,6 +6,7 @@ router.post('/', (req, res) => {
             const newHeat = new Heat({
                 heatNr: req.body.heatNr,
                 poId: req.body.poId,
+                subId: req.body.subId,
                 certificateId: req.body.certificateId,
             });
 

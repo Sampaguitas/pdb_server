@@ -54,9 +54,11 @@ router.get('/', function (req, res) {
                         path: 'packitems',
                         populate: {
                             path: 'sub',
-                            populate: {
-                                path: 'po',
-                                populate: {
+                            populate: [
+                                {
+                                    path: 'po',
+                                },
+                                {
                                     path: 'heats',
                                     options: {
                                         sort: {
@@ -67,7 +69,7 @@ router.get('/', function (req, res) {
                                         path: 'certificate',
                                     }
                                 }
-                            }
+                            ]
                         }
                     }
                 }
@@ -124,7 +126,7 @@ router.get('/', function (req, res) {
                         }
                         //3) fill colli pages
                         collipack.packitems.map(packitem => {
-                            let certificate = packitem.sub.po.heats.reduce(function (acc, cur) {
+                            let certificate = packitem.sub.heats.reduce(function (acc, cur) {
                                 if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
                                     acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
                                 }

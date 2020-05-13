@@ -226,6 +226,14 @@ SubSchema.virtual("transactions", {
     justOne: false
 });
 
+SubSchema.virtual("heats", {
+    ref: "heats",
+    localField: "_id",
+    foreignField: "subId",
+    justOne: false
+});
+
+
 SubSchema.virtual("certificates", {
     ref: "certificates",
     localField: "_id",
@@ -245,13 +253,6 @@ SubSchema.virtual("po", {
     localField: "poId",
     foreignField: "_id",
     justOne: true
-});
-
-SubSchema.virtual("heats", {
-    ref: "heats",
-    localField: "_id",
-    foreignField: "poId",
-    justOne: false
 });
 
 SubSchema.set('toJSON', { virtuals: true });

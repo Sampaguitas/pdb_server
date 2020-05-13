@@ -49,26 +49,28 @@ router.get('/', function (req, res) {
           {
             path: 'subs',
             match: { nfi : inputNfi},
-            populate: {
-              path: 'packitems',
-              options: {
-                sort: { 
-                  'plNr': 'asc',
-                  'colliNr': 'asc'
+            populate: [
+              {
+                path: 'packitems',
+                options: {
+                  sort: { 
+                    'plNr': 'asc',
+                    'colliNr': 'asc'
+                  }
+                }
+              },
+              {
+                path: 'heats',
+                options: {
+                    sort: {
+                        heatNr: 'asc'
+                    }
+                },
+                populate: {
+                    path: 'certificate',
                 }
               }
-            }
-          },
-          {
-            path: 'heats',
-            options: {
-                sort: {
-                    heatNr: 'asc'
-                }
-            },
-            populate: {
-                path: 'certificate',
-            }
+            ]
           }
         ]
       },
@@ -294,20 +296,20 @@ function getLines(docDef, docfields, locale) {
   let hasPackitems = getTables(docfields).includes('packitem');
   if(docDef.project.pos) {
     docDef.project.pos.map(po => {
-      let certificate = po.heats.reduce(function (acc, cur) {
-        if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
-          acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
-        }
-        if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
-          acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
-        }
-        return acc;
-      }, {
-          heatNr: '',
-          cif: ''
-      });
       if(po.subs){
         po.subs.map(sub => {
+          let certificate = sub.heats.reduce(function (acc, cur) {
+            if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
+              acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+            }
+            if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
+              acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+            }
+            return acc;
+          }, {
+              heatNr: '',
+              cif: ''
+          });
           // if(!_.isEmpty(sub.certificates) && hasCertificates) {
           if(!_.isEmpty(sub.packitems) && hasPackitems) {
             // virtuals(sub.certificates, getCertificateFields(docfields), locale).map(virtual => {

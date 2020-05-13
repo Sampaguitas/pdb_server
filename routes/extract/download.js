@@ -66,22 +66,24 @@ router.post('/', function (req, res) {
             {
               path: 'subs',
               match: { _id: { $in: subIds} },
-              populate: {
-                path: 'packitems',
-                match: { _id: { $in: packitemIds} },
-                options: { sort: {  'plNr': 'asc', 'colliNr': 'asc' } }
-              }
-            },
-            {
-              path: 'heats',
-              options: {
-                  sort: {
-                      heatNr: 'asc'
+              populate: [
+                {
+                  path: 'packitems',
+                  match: { _id: { $in: packitemIds} },
+                  options: { sort: {  'plNr': 'asc', 'colliNr': 'asc' } }
+                },
+                {
+                  path: 'heats',
+                  options: {
+                      sort: {
+                          heatNr: 'asc'
+                      }
+                  },
+                  populate: {
+                      path: 'certificate',
                   }
-              },
-              populate: {
-                  path: 'certificate',
-              }
+                },
+              ]
             },
             {
               path: 'transactions',
@@ -293,20 +295,20 @@ function getLines (resProject, fieldnames, screenId) {
       case '5cd2b643fd333616dc360b67': //packing details
         if (resProject.pos) {
           resProject.pos.map(po => {
-            let certificate = po.heats.reduce(function (acc, cur) {
-              if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
-                acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
-              }
-              if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
-                acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
-              }
-              return acc;
-            }, {
-                heatNr: '',
-                cif: ''
-            });
             if (po.subs) {
               po.subs.map(sub => {
+                let certificate = sub.heats.reduce(function (acc, cur) {
+                  if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
+                    acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+                  }
+                  if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
+                    acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+                  }
+                  return acc;
+                }, {
+                    heatNr: '',
+                    cif: ''
+                });
                 if (!_.isEmpty(sub.packitems)) {
                   sub.packitems.map(packitem => {
                     arrayRow = [];

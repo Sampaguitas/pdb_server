@@ -9,7 +9,13 @@ const HeatSchema = new Schema({
     },
     poId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'pos' 
+        ref: 'pos',
+        required: true
+    },
+    subId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'subs',
+        required: false
     },
     certificateId: {
         type: mongoose.SchemaTypes.ObjectId,

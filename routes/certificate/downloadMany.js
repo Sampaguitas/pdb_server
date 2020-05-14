@@ -25,6 +25,9 @@ let heatIds = [];
 let myFiles = [];
 
 router.post('/', function (req, res) {
+
+
+
   const projectId = req.body.projectId;
   const selectedIds = req.body.selectedIds;
 
@@ -36,9 +39,7 @@ router.post('/', function (req, res) {
   });
 
   // create a file to stream archive data to.
-  var archive = archiver('zip', {
-    zlib: { level: 9 } // Sets the compression level.
-  });
+  var archive = archiver('zip');
   var output = res;
 
   // output.on('close', function() {

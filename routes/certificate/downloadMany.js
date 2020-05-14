@@ -10,8 +10,6 @@ var archiver = require('archiver');
 var _ = require('lodash');
 var Project = require('../../models/Project');
 
-
-
 aws.config.update({
   accessKeyId: accessKeyId,
   secretAccessKey: secretAccessKey,
@@ -26,8 +24,6 @@ let myFiles = [];
 
 router.post('/', function (req, res) {
 
-
-
   const projectId = req.body.projectId;
   const selectedIds = req.body.selectedIds;
 
@@ -40,22 +36,16 @@ router.post('/', function (req, res) {
 
   // create a file to stream archive data to.
   var archive = archiver('zip');
-  var output = res;
 
-  // output.on('close', function() {
-  //   archive.end();
-  // });
+  //set the archive name
+  res.attachment('mtcs.zip');
 
-  // output.on('end', function() {
-  //   console.log('Data has been drained');
-  // });
-
-  // pipe archive data to the file
-  archive.pipe(output);
+  //this is the streaming magic
+  archive.pipe(res);
 
 
   if (_.isEmpty(certificateIds)) {
-    return res.status(400).json({message: 'Certificate Ids is missing.'});
+    return res.status(400).json({message: 'CertificateIds are missing.'});
   } else {
     Project.findById(projectId)
     .populate([
@@ -97,7 +87,7 @@ router.post('/', function (req, res) {
                     acc.push(cur);
                   }
                   return acc;
-                }, []);
+                }, []);  
                 heats.forEach(heat => {
                   myFiles.push(getFile(project.cifName, po, sub, heat));
                 });
@@ -108,7 +98,7 @@ router.post('/', function (req, res) {
         await Promise.all(myFiles).then(files => {
           files.map(file => {
             // append a file from stream
-            archive.append(file.stream, {name: file.name});
+            archive.append(file.stream, { name: file.name });
           });
         });
         archive.finalize();
@@ -128,10 +118,12 @@ function getFile(cifName, po, sub, heat) {
         Bucket: awsBucketName,
         Key: path.join('certificates', `${heat.certificateId}.pdf`),
     };
-    let thatStream = s3.getObject(params).createReadStream();
+    let stream = s3.getObject(params).createReadStream();
+    stream.on('end', () => stream.end());
+    stream.on('error', () => stream.end());
 
     resolve({
-      stream: thatStream,
+      stream: stream,
       name: getName(cifName, po, sub, heat)
     });
   });
@@ -155,5 +147,4 @@ function getName(cifName, po, sub, heat) {
     cifName = cifName.replace(badChars, '');
     return `${cifName}.pdf`
   }
-
 }

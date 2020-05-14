@@ -23,6 +23,9 @@ const ProjectSchema = new Schema({
     enableWarehouse: {
         type: Boolean
     },
+    cifName: {
+        type: String,
+    },
     erpId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'erps',

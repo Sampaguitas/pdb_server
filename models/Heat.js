@@ -7,6 +7,12 @@ const HeatSchema = new Schema({
         type: String,
         required: true
     },
+    inspQty: {
+        type: Number,
+    },
+    certIndex: {
+        type: String,
+    },
     poId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'pos',

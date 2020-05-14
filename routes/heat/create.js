@@ -5,6 +5,8 @@ const Heat = require('../../models/Heat');
 router.post('/', (req, res) => {
             const newHeat = new Heat({
                 heatNr: req.body.heatNr,
+                inspQty: req.body.inspQty,
+                certIndex: req.body.certIndex,
                 poId: req.body.poId,
                 subId: req.body.subId,
                 certificateId: req.body.certificateId,

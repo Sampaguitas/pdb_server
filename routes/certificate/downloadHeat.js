@@ -42,13 +42,19 @@ router.get('/', function (req, res) {
       path: 'certificate'
     }
     ])
-    .exec(async function(err, heat) {
+    .exec(function(err, heat) {
       if (err) {
         res.status(400).json({ message: 'An error has occured.' });
       } else if (!heat.certificate.hasFile) {
         res.status(400).json({ message: 'No file has been uploaded for selected certificate'});
       } else {
         getFile(heat).then(file => {
+          res.set({
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'application/pdf',
+            'Access-Control-Expose-Headers': 'Content-Disposition',
+            'Content-Disposition': `attachment; filename=${file.name}`,
+          });
           file.stream.pipe(res);
         });
       }

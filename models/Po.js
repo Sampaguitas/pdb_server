@@ -210,6 +210,13 @@ const PoSchema = new Schema({
     }
 });
 
+PoSchema.virtual("project", {
+    ref: "projects",
+    localField: "projectId",
+    foreignField: "_id",
+    justOne: true
+});
+
 PoSchema.virtual("transactions", {
     ref: "transactions",
     localField: "_id",

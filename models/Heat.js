@@ -37,6 +37,13 @@ HeatSchema.virtual('certificate', {
     justOne: true
 });
 
+HeatSchema.virtual('sub', {
+    ref: "subs",
+    localField: "subId",
+    foreignField: "_id",
+    justOne: true
+});
+
 HeatSchema.set('toJSON', { virtuals: true });
 
 module.exports = Heat = mongoose.model('heats', HeatSchema);

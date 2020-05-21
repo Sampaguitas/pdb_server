@@ -14,7 +14,7 @@ router.put('/', (req, res) => {
         if (err || !po) {
             return res.status(400).json({ message: 'An error has occured.' });
         } else {
-            return res.status(200).json({ message: 'HeatNr successfully updated.' });
+            return res.status(200).json({ message: 'Item successfully updated.' });
         }
     });
 });

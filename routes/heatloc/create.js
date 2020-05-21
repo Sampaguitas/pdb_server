@@ -27,12 +27,12 @@ router.post('/', async (req, res) => {
                 }
             });
             res.status(!!nRejected ? 400 : 200).json({
-                message: `${nAdded} lines created, ${nEdited} lines updated, ${nRejected} lines rejected.`
+                message: `${nAdded} item(s) created, ${nEdited} item(s) updated, ${nRejected} item(s) rejected.`
             });
         });
 
     } else {
-        res.status(400).json({ message: 'No documents to be created / updated.'})
+        res.status(400).json({ message: 'No items to be created / updated.'})
     }
 });
 

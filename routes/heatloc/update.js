@@ -10,7 +10,7 @@ router.put('/', (req, res) => {
 
     const id = decodeURI(req.query.id);
     
-    Warehouse.findByIdAndUpdate(id, { $set: data }, function (err, po) {
+    HeatLoc.findByIdAndUpdate(id, { $set: data }, function (err, po) {
         if (err || !po) {
             return res.status(400).json({ message: 'An error has occured.' });
         } else {

@@ -143,6 +143,19 @@ ProjectSchema.virtual("suppliers", {
     justOne: false
 });
 
+ProjectSchema.virtual("transactions", {
+    ref: "transactions",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
+// ProjectSchema.virtual("warehouses", {
+//     ref: "warehouses",
+//     localField: "_id",
+//     foreignField: "projectId",
+//     justOne: false
+// });
 
 ProjectSchema.set('toJSON', { virtuals: true });
 

@@ -14,15 +14,15 @@ router.post('/', upload.single('file'), function (req, res) {
   const project = req.body.project;
   DocDef.findOne({_id: documentId}, function (err, oldDoc) {
     if (err){
-      return res.status(400).json({message: 'unexpected error'});
+      return res.status(400).json({message: 'An error has occured.'});
     } else if(oldDoc) {
         if(!oldDoc.field) {
           DocDef.findOneAndUpdate({_id: documentId}, {field: file.originalname}, function(err, doc) {
             if (err) {
-              return res.status(400).json({message: 'unexpected error'});
+              return res.status(400).json({message: 'An error has occured.'});
             } else if (doc) {
               s3bucket.uploadFile(file, String(project))
-              .then(fulfilled => res.send(fulfilled))
+              .then( () => res.status(200).json({ message: 'File has successfully been uploaded.'}))
               .catch(error => res.status(400).json({ message: error}));
             }
           });
@@ -31,10 +31,10 @@ router.post('/', upload.single('file'), function (req, res) {
           .then( () => {
             DocDef.findOneAndUpdate({_id: documentId}, {field: file.originalname}, function(err, doc) {
               if (err) {
-                return res.status(400).json({message: 'unexpected error'});
+                return res.status(400).json({message: 'An error has occured.'});
               } else if (doc) {
                 s3bucket.uploadFile(file, String(project))
-                .then(fulfilled => res.send(fulfilled))
+                .then( () => res.status(200).json({ message: 'File has successfully been updated.'}))
                 .catch(error => res.status(400).json({ message: error}));
               }
             });

@@ -45,6 +45,13 @@ LocationSchema.virtual('area', {
     justOne: true
 });
 
+LocationSchema.virtual('transactions', {
+    ref: 'transactions',
+    localField: '_id',
+    foreignField: 'locationId',
+    justOne: false
+});
+
 LocationSchema.set('toJSON', { virtuals: true });
 
 module.exports = Location = mongoose.model('locations', LocationSchema);

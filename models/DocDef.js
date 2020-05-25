@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const DocField = require('./DocField');
+const Project = require('./Project');
+const s3bucket = require('../middleware/s3bucket');
+const _ = require('lodash');
+
 
 //Create Schema
 const DocDefSchema = new Schema({
@@ -82,5 +87,62 @@ DocDefSchema.virtual("name").get(function (){
 })
 
 DocDefSchema.set('toJSON', { virtuals: true });
+
+DocDefSchema.post('findOneAndDelete', function(doc, next) {
+    
+    let docdefId = doc._id;
+    let fileName = doc.field;
+
+    findDocFields(docdefId).then( () => {
+        deleteFile(fileName, projectId).then( () => next());
+    });
+});
+
+function deleteFile(fileName, projectId) {
+    return new Promise(function(resolve) {
+        Project.findById(projectId, function (err, project) {
+            if (err) {
+                resolve();
+            } else {
+                s3bucket.deleteFile(fileName, String(project.number))
+                .then( () => resolve());
+            }
+        })
+    });
+}
+
+function findDocFields(docdefId) {
+    return new Promise(function (resolve) {
+        if (!docdefId) {
+            resolve();
+        } else {
+            DocField.find({ docdefId: docdefId }, function (err, docfields) {
+                if (err || _.isEmpty(docfields)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    docfields.map(docfield => myPromises.push(deleteDocField(docfield._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocField(docfieldId) {
+    return new Promise(function(resolve) {
+        if (!docfieldId) {
+            resolve();
+        } else {
+            DocField.findOneAndDelete({_id : docfieldId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
 
 module.exports = DocDef = mongoose.model('docdefs',DocDefSchema);

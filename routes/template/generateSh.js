@@ -418,9 +418,10 @@ function getLines(docDef, docfields, locale) {
                 return acc;
             }, []);
 
-            // console.log('pos:', pos)
-
-            pos.forEach(po => {
+            pos.forEach( (po, poIndex) => {
+                if (poIndex > 0) {
+                    myRowPromises.push(emptyRow(docfields));
+                }
                 po.warehouses.forEach(warehouse => {
                     warehouse.locations.forEach(location => {
                         location.transactions.forEach(transaction => {

@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Heat = require('./Heat');
+const HeatLoc = require('./HeatLoc');
+var s3bucket = require('../middleware/s3bucket');
+const _ = require('lodash');
 
 //Create Schema
 const CertificateSchema = new Schema({
@@ -28,33 +31,83 @@ CertificateSchema.virtual('heats', {
 CertificateSchema.set('toJSON', { virtuals: true });
 
 CertificateSchema.post('findOneAndDelete', function (doc, next) {
-    removeHeats(doc.certificatedId)
-    .then( () => next());
+    
+    let certificateId = doc._id;
+    let cif = doc.cif;
+    let projectId = doc.projectId;
+    
+    findHeatLocs(cif, projectId).then( () => {
+        findHeats(certificateId).then( () => {
+            s3bucket.deleteCif(certificateId).then( () => next())
+        });
+    });
 });
 
-function removeHeats(certificateId) {
+function findHeatLocs(cif, projectId) {
     return new Promise(function (resolve) {
-        if (!certificateId) {
-            resolve({
-                isRejected: true,
-                reason: 'No certificateId'
-            });
+        if (!cif || !projectId) {
+            resolve();
         } else {
-            Heat.deleteMany({ certificateId: _id }, function (err) {
-                if (err) {
-                    resolve({
-                        isRejected: true,
-                        reason: 'could not delete all Heats'
-                    });
+            HeatLoc.find({ cif: cif, projectId: projectId }, function (err, heatlocs) {
+                if (err || _.isEmpty(heatlocs)) {
+                    resolve();
                 } else {
-                    resolve({
-                        isRejected: false,
-                        reason: ''
-                    });
+                    let myPromises = [];
+                    heatlocs.map(heatloc => myPromises.push(deleteHeatLoc(heatloc._id)));
+                    Promise.all(myPromises).then( () => resolve());
                 }
             });
         }
+    });
+}
 
+function deleteHeatLoc(heatlocId) {
+    return new Promise(function(resolve) {
+        if (!heatlocId) {
+            resolve();
+        } else {
+            HeatLoc.findOneAndDelete({_id : heatlocId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findHeats(certificateId) {
+    return new Promise(function (resolve) {
+        if (!certificateId) {
+            resolve();
+        } else {
+            Heat.find({ certificateId: certificateId }, function (err, heats) {
+                if (err || _.isEmpty(heats)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    heats.map(heat => myPromises.push(deleteHeat(heat._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteHeat(heatId) {
+    return new Promise(function(resolve) {
+        if (!heatId) {
+            resolve();
+        } else {
+            Heat.findOneAndDelete({_id : heatId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
     });
 }
 

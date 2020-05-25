@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const HeatLoc = require('./HeatLoc');
+const Transaction = require('./Transaction');
+const _ = require('lodash');
 
 //Create Schema
 const LocationSchema = new Schema({
@@ -53,6 +56,78 @@ LocationSchema.virtual('transactions', {
 });
 
 LocationSchema.set('toJSON', { virtuals: true });
+
+LocationSchema.post('findOneAndDelete', function(doc, next) {
+    findTransactions(doc._id).then( () => findHeatLocs(doc._id).then( () => next())); 
+});
+
+function findHeatLocs(locationId) {
+    return new Promise(function (resolve) {
+        if (!locationId) {
+            resolve();
+        } else {
+            HeatLoc.find({ locationId: locationId }, function (err, heatlocs) {
+                if (err || _.isEmpty(heatlocs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    heatlocs.map(heatloc => myPromises.push(deleteHeatLoc(heatloc._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteHeatLoc(heatlocId) {
+    return new Promise(function(resolve) {
+        if (!heatlocId) {
+            resolve();
+        } else {
+            HeatLoc.findOneAndDelete({_id : heatlocId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findTransactions(locationId) {
+    return new Promise(function (resolve) {
+        if (!locationId) {
+            resolve();
+        } else {
+            Transaction.find({ locationId: locationId }, function (err, transactions) {
+                if (err || _.isEmpty(transactions)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    transactions.map(transaction => myPromises.push(deleteTransaction(transaction._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteTransaction(transactionId) {
+    return new Promise(function(resolve) {
+        if (!transactionId) {
+            resolve();
+        } else {
+            Transaction.findOneAndDelete({_id : transactionId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
 
 module.exports = Location = mongoose.model('locations', LocationSchema);
 

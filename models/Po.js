@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Heat = require('./Heat');
+const HeatLoc = require('./HeatLoc');
+const Sub = require('./Sub');
+const Transaction = require('./Transaction');
+const _ = require('lodash');
 
 //Create Schema
 const PoSchema = new Schema({
@@ -240,5 +245,154 @@ PoSchema.virtual("heats", {
 });
 
 PoSchema.set('toJSON', { virtuals: true });
+
+
+PoSchema.post('findOneAndDelete', function(doc, next) {
+    findSubs(doc._id).then( () => {
+        findHeats(doc._id).then( () => {
+            findHeatLocs(doc._id).then( () => {
+                findTransactions(doc._id).then( () => {
+                    next()
+                });
+            });
+        });
+    }); 
+});
+
+function findSubs(poId) {
+    return new Promise(function (resolve) {
+        if (!poId) {
+            resolve();
+        } else {
+            Sub.find({ poId: poId }, function (err, subs) {
+                if (err || _.isEmpty(subs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    subs.map(sub => myPromises.push(deleteSub(sub._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteSub(subId) {
+    return new Promise(function(resolve) {
+        if (!subId) {
+            resolve();
+        } else {
+            Sub.findOneAndDelete({_id : subId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findHeats(poId) {
+    return new Promise(function (resolve) {
+        if (!poId) {
+            resolve();
+        } else {
+            Heat.find({ poId: poId }, function (err, heats) {
+                if (err || _.isEmpty(heats)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    heats.map(heat => myPromises.push(deleteHeat(heat._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteHeat(heatId) {
+    return new Promise(function(resolve) {
+        if (!heatId) {
+            resolve();
+        } else {
+            Heat.findOneAndDelete({_id : heatId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findHeatLocs(poId) {
+    return new Promise(function (resolve) {
+        if (!poId) {
+            resolve();
+        } else {
+            HeatLoc.find({ poId: poId }, function (err, heatlocs) {
+                if (err || _.isEmpty(heatlocs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    heatlocs.map(heatloc => myPromises.push(deleteHeatLoc(heatloc._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteHeatLoc(heatlocId) {
+    return new Promise(function(resolve) {
+        if (!heatlocId) {
+            resolve();
+        } else {
+            HeatLoc.findOneAndDelete({_id : heatlocId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findTransactions(poId) {
+    return new Promise(function (resolve) {
+        if (!poId) {
+            resolve();
+        } else {
+            Transaction.find({ poId: poId }, function (err, transactions) {
+                if (err || _.isEmpty(transactions)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    transactions.map(transaction => myPromises.push(deleteTransaction(transaction._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteTransaction(transactionId) {
+    return new Promise(function(resolve) {
+        if (!transactionId) {
+            resolve();
+        } else {
+            Transaction.findOneAndDelete({_id : transactionId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
 
 module.exports = Po = mongoose.model('pos', PoSchema);

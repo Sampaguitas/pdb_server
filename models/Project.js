@@ -1,6 +1,32 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Counter = require('./Counter');
+const Access = require('./Access');
+const Certificate = require('./Certificate');
+const ColliPack = require('./ColliPack');
+const ColliType = require('./ColliType');
+const DocCountEsr = require('./DocCountEsr');
+const DocCountInspect = require('./DocCountInspect');
+const DocCountInsprel = require('./DocCountInsprel');
+const DocCountNfi = require('./DocCountNfi');
+const DocCountPf = require('./DocCountPf');
+const DocCountPl = require('./DocCountPl');
+const DocCountPn = require('./DocCountPn');
+const DocCountSi = require('./DocCountSi');
+const DocCountSm = require('./DocCountSm');
+const DocCountSh = require('./DocCountSh');
+const DocDef = require('./DocDef');
+const DocField = require('./DocField');
+const Field = require('./Field');
+const FieldName = require('./FieldName');
+const HeatLoc = require('./HeatLoc');
+const Po = require('./Po');
+const Setting = require('./Setting');
+const Supplier = require('./Supplier');
+const Transaction = require('./Transaction');
+const Warehouse = require('./Warehouse');
+const s3bucket = require('../middleware/s3bucket');
+const _ = require('lodash');
 
 //Create Schema
 const ProjectSchema = new Schema({
@@ -150,13 +176,6 @@ ProjectSchema.virtual("transactions", {
     justOne: false
 });
 
-// ProjectSchema.virtual("warehouses", {
-//     ref: "warehouses",
-//     localField: "_id",
-//     foreignField: "projectId",
-//     justOne: false
-// });
-
 ProjectSchema.set('toJSON', { virtuals: true });
 
 ProjectSchema.pre("save", function (next) {
@@ -173,6 +192,877 @@ ProjectSchema.post('save', function(doc) {
     console.log('%s has been saved', doc._id);
 });
 
+ProjectSchema.post('findOneAndDelete', function(doc, next) {
+    
+    let projectId = doc._id;
+    let projectNr = String(doc.number);
+
+    findAccesses(projectId).then( () => {
+        findCertificates(projectId).then( () => {
+            findColliPacks(projectId).then( () => {
+                findColliTypes(projectId).then( () => {
+                    findDocCountEsrs(projectId).then( () => {
+                        findDocCountInspects(projectId).then( () => {
+                            findDocCountInsprels(projectId).then( () => {
+                                findDocCountNfis(projectId).then( () => {
+                                    findDocCountPfs(projectId).then( () => {
+                                        findDocCountPls(projectId).then( () => {
+                                            findDocCountPns(projectId).then( () => {
+                                                findDocCountSis(projectId).then( () => {
+                                                    findDocCountSms(projectId).then( () => {
+                                                        findDocCountShs(projectId).then( () => {
+                                                            findDocDefs(projectId).then( () => {
+                                                                findDocFields(projectId).then( () => {
+                                                                    findFields(projectId).then( () => {
+                                                                        findFieldNames(projectId).then( () => {
+                                                                            findHeatLocs(projectId).then( () => {
+                                                                                findPos(projectId).then( () => {
+                                                                                    findSettings(projectId).then( () => {
+                                                                                        findSuppliers(projectId).then( () => {
+                                                                                            findTransactions(projectId).then( () => {
+                                                                                                findWarehouse(projectId).then( () => {
+                                                                                                    s3bucket.deleteProject(projectNr).then( () => next());
+                                                                                                });
+                                                                                            });
+                                                                                        });
+                                                                                    });
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+function findAccesses(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Access.find({ projectId: projectId }, function (err, accesses) {
+                if (err || _.isEmpty(accesses)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    accesses.map(access => myPromises.push(deleteAccess(access._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteAccess(accessId) {
+    return new Promise(function(resolve) {
+        if (!accessId) {
+            resolve();
+        } else {
+            Access.findOneAndDelete({_id : accessId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findCertificates(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Certificate.find({ projectId: projectId }, function (err, certificates) {
+                if (err || _.isEmpty(certificates)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    certificates.map(certificate => myPromises.push(deleteCertificate(certificate._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteCertificate(certificateId) {
+    return new Promise(function(resolve) {
+        if (!certificateId) {
+            resolve();
+        } else {
+            Certificate.findOneAndDelete({_id : certificateId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findColliPacks(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            ColliPack.find({ projectId: projectId }, function (err, collipacks) {
+                if (err || _.isEmpty(collipacks)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    collipacks.map(collipack => myPromises.push(deleteColliPack(collipack._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteColliPack(collipackId) {
+    return new Promise(function(resolve) {
+        if (!collipackId) {
+            resolve();
+        } else {
+            ColliPack.findOneAndDelete({_id : collipackId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findColliTypes(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            ColliType.find({ projectId: projectId }, function (err, collitypes) {
+                if (err || _.isEmpty(collitypes)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    collitypes.map(collitype => myPromises.push(deleteColliType(collitype._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteColliType(collitypeId) {
+    return new Promise(function(resolve) {
+        if (!collitypeId) {
+            resolve();
+        } else {
+            ColliType.findOneAndDelete({_id : collitypeId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountEsrs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountEsr.find({ _id: projectId }, function (err, doccountesrs) {
+                if (err || _.isEmpty(doccountesrs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountesrs.map(doccountesr => myPromises.push(deleteDocCountEsr(doccountesr._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountEsr(doccountesrId) {
+    return new Promise(function(resolve) {
+        if (!doccountesrId) {
+            resolve();
+        } else {
+            DocCountEsr.findOneAndDelete({_id : doccountesrId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountInspects(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountInspect.find({ _id: projectId }, function (err, doccountinspects) {
+                if (err || _.isEmpty(doccountinspects)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountinspects.map(doccountinspect => myPromises.push(deleteDocCountInspect(doccountinspect._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountInspect(doccountinspectId) {
+    return new Promise(function(resolve) {
+        if (!doccountinspectId) {
+            resolve();
+        } else {
+            DocCountInspect.findOneAndDelete({_id : doccountinspectId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountInsprels(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountInsprel.find({ _id: projectId }, function (err, doccountinsprels) {
+                if (err || _.isEmpty(doccountinsprels)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountinsprels.map(doccountinsprel => myPromises.push(deleteDocCountInsprel(doccountinsprel._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountInsprel(doccountinsprelId) {
+    return new Promise(function(resolve) {
+        if (!doccountinsprelId) {
+            resolve();
+        } else {
+            DocCountInsprel.findOneAndDelete({_id : doccountinsprelId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountNfis(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountNfi.find({ _id: projectId }, function (err, doccountnfis) {
+                if (err || _.isEmpty(doccountnfis)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountnfis.map(doccountnfi => myPromises.push(deleteDocCountNfi(doccountnfi._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountNfi(doccountnfiId) {
+    return new Promise(function(resolve) {
+        if (!doccountnfiId) {
+            resolve();
+        } else {
+            DocCountNfi.findOneAndDelete({_id : doccountnfiId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountPfs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountPf.find({ _id: projectId }, function (err, doccountpfs) {
+                if (err || _.isEmpty(doccountpfs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountpfs.map(doccountpf => myPromises.push(deleteDocCountPf(doccountpf._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountPf(doccountpfId) {
+    return new Promise(function(resolve) {
+        if (!doccountpfId) {
+            resolve();
+        } else {
+            DocCountPf.findOneAndDelete({_id : doccountpfId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountPls(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountPl.find({ _id: projectId }, function (err, doccountpls) {
+                if (err || _.isEmpty(doccountpls)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountpls.map(doccountpl => myPromises.push(deleteDocCountPl(doccountpl._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountPl(doccountplId) {
+    return new Promise(function(resolve) {
+        if (!doccountplId) {
+            resolve();
+        } else {
+            DocCountPl.findOneAndDelete({_id : doccountplId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountPns(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountPn.find({ _id: projectId }, function (err, doccountpns) {
+                if (err || _.isEmpty(doccountpns)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountpns.map(doccountpn => myPromises.push(deleteDocCountPn(doccountpn._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountPn(doccountpnId) {
+    return new Promise(function(resolve) {
+        if (!doccountpnId) {
+            resolve();
+        } else {
+            DocCountPn.findOneAndDelete({_id : doccountpnId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountSis(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountSi.find({ _id: projectId }, function (err, doccountsis) {
+                if (err || _.isEmpty(doccountsis)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountsis.map(doccountsi => myPromises.push(deleteDocCountSi(doccountsi._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountSi(doccountsiId) {
+    return new Promise(function(resolve) {
+        if (!doccountsiId) {
+            resolve();
+        } else {
+            DocCountSi.findOneAndDelete({_id : doccountsiId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountSms(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountSm.find({ _id: projectId }, function (err, doccountsms) {
+                if (err || _.isEmpty(doccountsms)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountsms.map(doccountsm => myPromises.push(deleteDocCountSm(doccountsm._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountSm(doccountsmId) {
+    return new Promise(function(resolve) {
+        if (!doccountsmId) {
+            resolve();
+        } else {
+            DocCountSm.findOneAndDelete({_id : doccountsmId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountShs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountSh.find({ _id: projectId }, function (err, doccountshs) {
+                if (err || _.isEmpty(doccountshs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountshs.map(doccountsh => myPromises.push(deleteDocCountSh(doccountsh._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountSh(doccountshId) {
+    return new Promise(function(resolve) {
+        if (!doccountshId) {
+            resolve();
+        } else {
+            DocCountSh.findOneAndDelete({_id : doccountshId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocDefs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocDef.find({ projectId: projectId }, function (err, docdefs) {
+                if (err || _.isEmpty(docdefs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    docdefs.map(docdef => myPromises.push(deleteDocDef(docdef._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocDef(docdefId) {
+    return new Promise(function(resolve) {
+        if (!docdefId) {
+            resolve();
+        } else {
+            DocDef.findOneAndDelete({_id : docdefId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocFields(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocField.find({ projectId: projectId }, function (err, docfields) {
+                if (err || _.isEmpty(docfields)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    docfields.map(docfield => myPromises.push(deleteDocField(docfield._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocField(docfieldId) {
+    return new Promise(function(resolve) {
+        if (!docfieldId) {
+            resolve();
+        } else {
+            DocField.findOneAndDelete({_id : docfieldId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findFields(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Field.find({ projectId: projectId }, function (err, fields) {
+                if (err || _.isEmpty(fields)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    fields.map(field => myPromises.push(deleteField(field._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteField(fieldId) {
+    return new Promise(function(resolve) {
+        if (!fieldId) {
+            resolve();
+        } else {
+            Field.findOneAndDelete({_id : fieldId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findFieldNames(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            FieldName.find({ projectId: projectId }, function (err, fieldnames) {
+                if (err || _.isEmpty(fieldnames)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    fieldnames.map(fieldname => myPromises.push(deleteFieldName(fieldname._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteFieldName(fieldnameId) {
+    return new Promise(function(resolve) {
+        if (!fieldnameId) {
+            resolve();
+        } else {
+            FieldName.findOneAndDelete({_id : fieldnameId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findHeatLocs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            HeatLoc.find({ projectId: projectId }, function (err, heatlocs) {
+                if (err || _.isEmpty(heatlocs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    heatlocs.map(heatloc => myPromises.push(deleteHeatLoc(heatloc._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteHeatLoc(heatlocId) {
+    return new Promise(function(resolve) {
+        if (!heatlocId) {
+            resolve();
+        } else {
+            HeatLoc.findOneAndDelete({_id : heatlocId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findPos(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Po.find({ projectId: projectId }, function (err, pos) {
+                if (err || _.isEmpty(pos)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    pos.map(po => myPromises.push(deletePo(po._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deletePo(poId) {
+    return new Promise(function(resolve) {
+        if (!poId) {
+            resolve();
+        } else {
+            Po.findOneAndDelete({_id : poId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findSettings(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Setting.find({ projectId: projectId }, function (err, settings) {
+                if (err || _.isEmpty(settings)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    settings.map(setting => myPromises.push(deleteSetting(setting._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteSetting(settingId) {
+    return new Promise(function(resolve) {
+        if (!settingId) {
+            resolve();
+        } else {
+            Setting.findOneAndDelete({_id : settingId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findSuppliers(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Supplier.find({ projectId: projectId }, function (err, suppliers) {
+                if (err || _.isEmpty(suppliers)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    suppliers.map(supplier => myPromises.push(deleteSupplier(supplier._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteSupplier(supplierId) {
+    return new Promise(function(resolve) {
+        if (!supplierId) {
+            resolve();
+        } else {
+            Supplier.findOneAndDelete({_id : supplierId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findTransactions(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Transaction.find({ projectId: projectId }, function (err, transactions) {
+                if (err || _.isEmpty(transactions)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    transactions.map(transaction => myPromises.push(deleteTransaction(transaction._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteTransaction(transactionId) {
+    return new Promise(function(resolve) {
+        if (!transactionId) {
+            resolve();
+        } else {
+            Transaction.findOneAndDelete({_id : transactionId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findWarehouse(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Warehouse.find({ projectId: projectId }, function (err, warehouses) {
+                if (err || _.isEmpty(warehouses)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    warehouses.map(warehouse => myPromises.push(deleteWarehouse(warehouse._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteWarehouse(warehouseId) {
+    return new Promise(function(resolve) {
+        if (!warehouseId) {
+            resolve();
+        } else {
+            Warehouse.findOneAndDelete({_id : warehouseId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
 
 //module.exports = mongoose.model('Projects', ProjectSchema);
 module.exports = Project = mongoose.model('projects', ProjectSchema);

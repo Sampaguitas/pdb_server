@@ -1,63 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../../models/Project');
-const Po = require('../../models/Po');
 
-const Access = require('../../models/Access');
-const Supplier = require('../../models/Supplier');
-const Setting = require('../../models/Setting');
-const Field = require('../../models/Field');
-const FieldName = require('../../models/FieldName');
-const DocDef = require('../../models/DocDef');
-const DocField = require('../../models/DocField');
-
-const DocCountEsr = require('../../models/DocCountEsr');
-const DocCountInspect = require('../../models/DocCountInspect');
-const DocCountInsprel = require('../../models/DocCountInsprel');
-const DocCountNfi = require('../../models/DocCountNfi');
-const DocCountPf = require('../../models/DocCountPf');
-const DocCountPl = require('../../models/DocCountPl');
-const DocCountPn = require('../../models/DocCountPn');
-const DocCountSi = require('../../models/DocCountSi');
-const DocCountSm = require('../../models/DocCountSm');
-
-const fault = require('../../utilities/Errors');
 const fs = require('fs');
 var path = require('path');
 var s3bucket = require('../../middleware/s3bucket');
 
 router.delete('/', (req, res) => {
-    // console.log('req.query.id:', req.query.id);
-    // const id = req.query.id
-    Project.findOne({_id: req.query.id})
-    .select('number')
-    .populate({
-        path:'pos',
-        select: '_id',
-        populate: {
-            path:'subs',
-            populate: [
-                {
-                    path: 'certificates',
-                },
-                {
-                    path: 'packitems',
-                }
-            ]
+    Project.findByIdAndDelete(req.query.id, function(err, project) {
+        if (err) {
+            return res.status(400).json({ message: 'An error has occured.'});
+        } else if (!project) {
+            return res.status(400).json({ message: 'Could not find project.' });
+        } else {
+            return res.status(200).json({ message: 'Project has successfully been deleted.'});
         }
-    })
-    .exec(function (err, project) {
-    if (err) {
-        return res.status(400).json({
-            message: 'An error has occured',
-        });
-    } else {
-        let pos = project.pos.reduce(function(acc, cur) {
-            acc.push(cur._id);
-            return acc;
-        }, [])
-        console.log(pos);
-    }
     });
 
         // {

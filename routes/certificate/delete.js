@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Certificate = require('../../models/Certificate');
-var s3bucket = require('../../middleware/s3bucket');
+// var s3bucket = require('../../middleware/s3bucket');
 const _ = require('lodash');
 
 
@@ -20,9 +20,9 @@ router.delete('/', async (req, res) => {
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {
                 if (resPromise.isRejected) {
-                    nRejected += nRejected + 1;
+                    nRejected++;
                 } else {
-                    nDeleted += nDeleted + 1;
+                    nDeleted++;
                 }
             });
             res.status(!!nRejected ? 400 : 200).json({message: `${nDeleted} item(s) deleted, ${nRejected} item(s) rejected.`});
@@ -32,21 +32,32 @@ router.delete('/', async (req, res) => {
 
 function removeCertificate(id) {
     return new Promise(function(resolve) {
-        s3bucket.deleteCif(id)
-        .then( () => {
-            condition = { _id: id};
-            Certificate.findOneAndDelete(condition, function (err) {
-                if(err) {
-                    resolve({
-                        isRejected: true
-                    });
-                } else {
-                    resolve({
-                        isRejected: false
-                    });
-                }
-            });
-        }).catch( () => resolve({ isRejected: true }));
+        Certificate.findByIdAndDelete(id, function (err) {
+            if (err) {
+                resolve({
+                    isRejected: true
+                });
+            } else {
+                resolve({
+                    isRejected: false
+                });
+            }
+        });
+        // s3bucket.deleteCif(id)
+        // .then( () => {
+        //     condition = { _id: id};
+        //     Certificate.findOneAndDelete(condition, function (err) {
+        //         if(err) {
+        //             resolve({
+        //                 isRejected: true
+        //             });
+        //         } else {
+        //             resolve({
+        //                 isRejected: false
+        //             });
+        //         }
+        //     });
+        // }).catch( () => resolve({ isRejected: true }));
     });
 }
 

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User'); //
 const ResetPassword = require('../../models/ResetPassword'); //
-const fault = require('../../utilities/Errors');
 const crypto = require('crypto');
 const moment = require('moment');
 const bcrypt = require('bcrypt');
@@ -24,16 +23,13 @@ router.post('/', (req, res) => {
     User.findOne({email})
     .then(function (user){
         if (!user) {
-            return res.status(404).json({
-                message: fault(1601).message
-                    //"1601": "User does not exist",
-            });
+            return res.status(404).json({ message: 'User does not exist.' });
         } else {
             ResetPassword.findOne({ userId: user._id, status: 0 })
             .then(function (resetPassword) {
                 if (resetPassword) {
                     console.log('position 2');
-                    ResetPassword.findByIdAndRemove(resetPassword._id, function (err, result) {
+                    ResetPassword.findByIdAndDelete(resetPassword._id, function (err, result) {
                         if (err) {
                             console.log('there was not other tokens for this user');
                         } else if (result) {
@@ -52,10 +48,7 @@ router.post('/', (req, res) => {
                 .save()
                 .then(function (item) {
                     if (!item) {
-                        return res.status(404).json({
-                            message: fault(1606).message
-                                //"1606": "Error generating hashed token",
-                        });
+                        return res.status(400).json({ message: 'Error generating hashed token.' });
                     } else {
                         let mailOptions = {
                             from: keys.myName + ' <' + keys.mailerAuthUser + '>',
@@ -71,43 +64,28 @@ router.post('/', (req, res) => {
                             '<p>' + keys.myPosition + '</p>' +
                             '<b>Van Leeuwen Pipe and Tube</b>'
                         };
-                        //https://www.vanleeuwenpdb.com/resetpwd?id=
                         transporter.sendMail(mailOptions, (err, info) => {
                             if (err) {
-                                return res.status(404).json({
-                                    message: JSON.stringify('err')
-                                });                                            
-                            } else if(info) {
-                                return res.status(200).json({
-                                    message: fault(1608).message
-                                        //"1606": "Check your email to reset your password",
-                                });
+                                return res.status(400).json({ message: 'An error has occured.' });                                            
+                            } else if (info) {
+                                return res.status(200).json({ message: 'Check your email to reset your password.' });
                             } else {
-                                return res.status(404).json({
-                                    message: fault(1609).message
-                                        //"1609": "Unable to send the email verification",
-                                });
+                                return res.status(400).json({ message: 'Unable to send the email verification.' });
                             }
-                        })
+                        });
                     }
                 })
                 .catch(error => {
-                    return res.status(404).json({
-                        message: JSON.stringify(error)
-                    });                            
+                    return res.status(400).json({ message: 'An error has occured.' });                           
                 });
             })
             .catch(error => {
-                return res.status(404).json({
-                    message: JSON.stringify(error)
-                });                
+                return res.status(400).json({ message: 'An error has occured.' });                
             });
         }
     })
-    .catch(error => {
-        return res.status(404).json({
-            message: JSON.stringify(error)
-        });        
+    .catch( () => {
+        return res.status(400).json({ message: 'An error has occured.' });       
     });
 });
 

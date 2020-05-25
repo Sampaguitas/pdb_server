@@ -4,7 +4,7 @@ var _ = require('lodash');
 var multer = require('multer');
 var storage = multer.memoryStorage();
 var multerUpload = multer({ storage: storage });
-const fault = require('../utilities/Errors');
+// const fault = require('../utilities/Errors');
 const accessKeyId = require('../config/keys').accessKeyId;
 const secretAccessKey = require('../config/keys').secretAccessKey;
 const region = require('../config/keys').region;
@@ -18,13 +18,21 @@ aws.config.update({
 });
 
 //Functions
-function deleteFile (file, project) {
+function deleteFile(file, project) {
   return new Promise(
-    function (resolve, reject) {
+    function (resolve) {
       if (!project) {
-        reject('No Project selected'); //"2400": "No Project selected",
+        // reject('No Project selected'); //"2400": "No Project selected",
+        resolve({
+          isRejected: true,
+          message: 'No Project selected.'
+        });
       } else if (!file) {
-        reject('No file selected'); //"2401": "No file selected",
+        // reject('No file selected'); //"2401": "No file selected",
+        resolve({
+          isRejected: true,
+          message: 'No file selected.'
+        });
       } else {
         var s3 = new aws.S3();
         var params = {
@@ -33,9 +41,17 @@ function deleteFile (file, project) {
         };
         s3.deleteObject(params, function(err, data) {
           if (err) {
-            reject('An error occurred'); //"2405": "An error occurred",        
+            // reject('An error occurred'); //"2405": "An error occurred",
+            resolve({
+              isRejected: true,
+              message: 'An error occurred.'
+            });        
           } else {
-            resolve('Template has been deleted'); //"2403": "Template has been deleted",
+            // resolve('Template has been deleted'); //"2403": "Template has been deleted",
+            resolve({
+              isRejected: false,
+              message: 'Template has been deleted.'
+            });
           }
         });
       }
@@ -45,9 +61,13 @@ function deleteFile (file, project) {
 
 function deleteProject(project) {
   return new Promise(
-    function (resolve, reject) {
+    function (resolve) {
       if (!project) {
-        reject('No Project selected'); //"2400": "No Project selected",
+        // reject('No Project selected'); //"2400": "No Project selected",
+        resolve({
+          isRejected: true,
+          message: 'No Project selected.'
+        });
       } else {
         var s3 = new aws.S3();
         var listParams = {
@@ -56,14 +76,22 @@ function deleteProject(project) {
         };
         s3.listObjectsV2(listParams, function(err, listData) {
           if (err) {
-            reject('An error occurred'); //"2405": "An error occurred",
+            // reject('An error occurred'); //"2405": "An error occurred",
+            resolve({
+              isRejected: true,
+              message: 'An error occurred.'
+            });
           } else if (listData.Contents) {
             var candidate = [];
             listData.Contents.map(a => {
               candidate.push({ Key: a.Key });
             });
             if (_.isEmpty(candidate)) {
-              resolve('The Project folder is already empty'); //"2406": "The Project folder is already empty",
+              // resolve('The Project folder is already empty'); //"2406": "The Project folder is already empty",
+              resolve({
+                isRejected: false,
+                message: 'The Project folder is already empty.'
+              });
             } else {
               var deleteParams = {
                 Bucket: awsBucketName,
@@ -74,14 +102,26 @@ function deleteProject(project) {
               };
               s3.deleteObjects(deleteParams, function(err, deleteData) {
                 if (err) {
-                  reject('An error occurred'); //"2405": "An error occurred",
+                  // reject('An error occurred'); //"2405": "An error occurred",
+                  resolve({
+                    isRejected: true,
+                    message: 'An error occurred.'
+                  });
                 } else {
-                  resolve('Project folder has been deleted'); //"2404": "Project folder has been deleted",
+                  // resolve('Project folder has been deleted'); //"2404": "Project folder has been deleted",
+                  resolve({
+                    isRejected: false,
+                    message: 'Project folder has successfully been deleted.'
+                  });
                 }
               });
             }
           } else {
-            reject('An error occurred'); //"2405": "An error occurred",
+            // reject('An error occurred'); //"2405": "An error occurred",
+            resolve({
+              isRejected: true,
+              message: 'An error occurred.'
+            });
           }
         });
       }
@@ -232,9 +272,13 @@ function uploadCif(file, id) {
 
 function deleteCif (id) {
   return new Promise(
-    function (resolve, reject) {
+    function (resolve) {
       if (!id) {
-        reject({ message: 'Certificate ID is missing' });
+        // reject({ message: 'Certificate ID is missing' });
+        resolve({
+          isRejected: true,
+          message: 'Certificate ID is missing.'
+        });
       } else {
         var s3 = new aws.S3();
         var params = {
@@ -243,9 +287,16 @@ function deleteCif (id) {
         };
         s3.deleteObject(params, function(err) {
           if (err) {
-            reject({ message: 'An error occurred' });   
+            // reject({ message: 'An error occurred' });
+            resolve({
+              isRejected: true,
+              message: 'An error occurred.'
+            });   
           } else {
-            resolve();
+            resolve({
+              isRejected: false,
+              message: 'Document successfully deleted.'
+            });
           }
         });
       }

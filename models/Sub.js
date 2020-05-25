@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const PackItem = require('./PackItem');
 const Po = require('./Po');
+const PackItem = require('./PackItem');
+const Heat = require('./Heat');
 const _ = require('lodash');
 
 //Create Schema
@@ -267,22 +268,97 @@ SubSchema.pre('findOneAndUpdate', async function() {
 })
 
 SubSchema.post('findOneAndDelete', function(doc, next) {
-    doc.populate([{path: 'packitems'}, {path: 'po', populate: {path: 'subs'}}], function(err, res) {
-        
-        if (!err && !_.isEmpty(res.packitems)) {
-            let packitemIds = res.packitems.reduce(function(acc, cur) {
-                acc.push(cur._id)
-                return acc;
-            },[]);
-            packitemIds.map(packitemId=> PackItem.findOneAndDelete({ _id: packitemId}));
-        }
+    // doc.populate([{path: 'packitems'}, {path: 'po', populate: {path: 'subs'}}], function(err, res) {
+        doc.populate({path: 'po', populate: {path: 'subs'}}, function(err, res) {
+            if (err) {
+                next();
+            } else {
 
-        if (_.isEmpty(res.po.subs)) {
-            Po.findOneAndDelete({ _id: res.poId });
-        }
+                if (_.isEmpty(res.po.subs)) {
+                    Po.findOneAndDelete({ _id: res.poId });
+                }
+                
+                findPackitems(doc._id).then( () => findHeats(doc._id).then( () => next())); 
+            }
         
+        // if (!err && !_.isEmpty(res.packitems)) {
+        //     let packitemIds = res.packitems.reduce(function(acc, cur) {
+        //         acc.push(cur._id)
+        //         return acc;
+        //     },[]);
+        //     packitemIds.map(packitemId=> PackItem.findOneAndDelete({ _id: packitemId}));
+        // }
+
     });
-    next();
+    // next();
 });
+
+function findPackitems(subId) {
+    return new Promise(function (resolve) {
+        if (!subId) {
+            resolve();
+        } else {
+            PackItem.find({ subId: subId }, function (err, packitems) {
+                if (err || _.isEmpty(packitems)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    packitems.map(packitem => myPromises.push(deletePackitem(packitem._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deletePackitem(packitemId) {
+    return new Promise(function(resolve) {
+        if (!packitemId) {
+            resolve();
+        } else {
+            PackItem.findOneAndDelete({_id : packitemId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findHeats(subId) {
+    return new Promise(function (resolve) {
+        if (!subId) {
+            resolve();
+        } else {
+            Heat.find({ subId: subId }, function (err, heats) {
+                if (err || _.isEmpty(heats)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    heats.map(heat => myPromises.push(deleteHeat(heat._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteHeat(heatId) {
+    return new Promise(function(resolve) {
+        if (!heatId) {
+            resolve();
+        } else {
+            Heat.findOneAndDelete({_id : heatId}, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
 
 module.exports = Sub = mongoose.model('subs', SubSchema);

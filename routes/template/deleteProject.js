@@ -6,8 +6,8 @@ router.delete('/', function (req,res){
   const project = req.body.project;
   
   s3bucket.deleteProject(String(project))
-  .then(fulfilled => res.status(200).json({ message: fulfilled }))
-  .catch(error => res.status(400).json({ message: error}));
+  .then(result => res.status(result.isRejected ? 400 : 200).json({ message: result.message }))
+  // .catch(error => res.status(400).json({ message: error}));
 });
 
 module.exports = router;

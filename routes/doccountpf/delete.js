@@ -1,22 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const DocCountPf = require('../../models/DocCountPf');
-const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
     const id = req.query.id
-    DocCountPf.findByIdAndRemove(id, function (err, doccountpf) {
-        if (!doccountpf) {
-            return res.status(400).json({
-                message: 'DocCountPf does not exist'
-                //"1801": "DocCountPf does not exist",
-            });
-        }
-        else {
-            return res.status(200).json({
-                message: 'DocCountPf has been deleted'
-                //"1803": "DocCountPf has been deleted",
-            });
+    DocCountPf.findByIdAndDelete(id, function (err, doccountpf) {
+        if (err) {
+            return res.status(400).json({ message: 'An error has occured.' });
+        } else if (!doccountpf) {
+            return res.status(400).json({ message: 'Could not find DocCountPf.' });
+        } else {
+            return res.status(200).json({ message: 'DocCountPf has successfully been deleted.' });
         }
     });
 });

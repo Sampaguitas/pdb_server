@@ -1,22 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const DocCountEsr = require('../../models/DocCountEsr');
-const fault = require('../../utilities/Errors');
 
 router.delete('/', (req, res) => {
     const id = req.query.id
-    DocCountEsr.findByIdAndRemove(id, function (err, doccountesr) {
+    DocCountEsr.findByIdAndDelete(id, function (err, doccountesr) {
+        if (err) {
+            return res.status(400).json({ message: 'An error has occured.' });
+        }
         if (!doccountesr) {
-            return res.status(400).json({
-                message: 'DocCountEsr does not exist'
-                //"1801": "DocCountEsr does not exist",
-            });
+            return res.status(400).json({ message: 'Could not find DocCountEsr.' });
         }
         else {
-            return res.status(200).json({
-                message: 'DocCountEsr has been deleted'
-                //"1803": "DocCountEsr has been deleted",
-            });
+            return res.status(200).json({ message: 'DocCountEsr has successfully been deleted.' });
         }
     });
 });

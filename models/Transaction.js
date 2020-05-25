@@ -13,15 +13,6 @@ const TransactionSchema = new Schema({
         type: String,
         required: true,
     },
-    // nfi: {
-    //     type: String
-    // },
-    // plNr: {
-    //     type: Number,
-    // },
-    // colliNr: {
-    //     type: String,
-    // },
     transComment: {
         type: String,
         required: true,
@@ -91,4 +82,36 @@ TransactionSchema.virtual("project", {
 
 TransactionSchema.set('toJSON', { virtuals: true });
 
+TransactionSchema.post('findOneAndDelete', function(doc, next) {
+    transferId = doc.transferId;
+    findSiblings(transferId).then( () => next());
+});
+
+function findSiblings(transferId) {
+    let myPromises = [];
+    return new Promise(function(resolve) {
+        mongoose.model('transactions', TransactionSchema).find({ transferId: transferId}, function(err, siblings) {
+            if(err || _.isEmpty(siblings)) {
+                resolve();
+            } else {
+                siblings.map(sibling => myPromises.push(deleteSibling(sibling._id)));
+                Promise.all(myPromises).then( () => resolve());
+            }
+        });
+    });
+}
+
+function deleteSibling(transactionId) {
+    return new Promise(function(resolve) {
+        mongoose.model('transactions', TransactionSchema).findByIdAndDelete(transactionId, function(err) {
+            if (err) {
+                resolve();
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
 module.exports = Transaction = mongoose.model('transactions', TransactionSchema);
+

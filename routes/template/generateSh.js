@@ -207,7 +207,7 @@ function alphabet(num){
 function wsPageSetup(firstRow, ws, lastCol) {
   var lastRow = ws.lastRow ? ws.lastRow._number : firstRow;
   ws.pageSetup = {
-    orientation: 'landscape',
+    // orientation: 'landscape',
     paperSize: 9,
     fitToPage: true,
     fitToWidth: 1,

@@ -47,8 +47,8 @@ router.post('/', (req, res) => {
                         if (errLoc || !locations) {
                             res.status(400).json({message: 'Could not retreive location information.'});
                         } else {
-                            let fromLocation = locations.find(element => _.isEqual(element._id,fromLocationId));
-                            let toLocation = locations.find(element => _.isqual(element._id, toLocationId));
+                            let fromLocation = locations.find(element => element._id == fromLocationId);
+                            let toLocation = locations.find(element => element._id == toLocationId);
                             if (_.isUndefined(fromLocation) || _.isUndefined(toLocation)) {
                                 res.status(400).json({message: 'Could not retreive location information.'})
                             } else {

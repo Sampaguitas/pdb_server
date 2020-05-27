@@ -20,9 +20,9 @@ router.delete('/', async (req, res) => {
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {
                 if (resPromise.isRejected) {
-                    nRejected += nRejected + 1;
+                    nRejected++;
                 } else {
-                    nDeleted += nDeleted + 1;
+                    nDeleted++;
                 }
             });
             res.status(!!nRejected ? 400 : 200).json({message: `${nDeleted} item(s) deleted, ${nRejected} item(s) rejected.`});

@@ -5,8 +5,9 @@ const Transaction = require('../../models/Transaction');
 router.get('/', (req, res) => {
     Transaction.find({projectId: req.query.projectId})
     .sort({
-        locationId: 'asc',
-        transDate: 'asc',
+        // locationId: 'asc',
+        // transDate: 'asc',
+        createdAt: 'asc',
     })
     .populate({
         path:'location',

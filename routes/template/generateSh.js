@@ -49,6 +49,11 @@ router.post('/', function (req, res) {
                 populate: {
                     path: 'transactions',
                     match: { poId: { $in: poIds } },
+                    options: {
+                        sort: {
+                            createdAt: 'asc'
+                        }
+                    },
                     // options: {
                     //     sort: {
                     //         // poId: 'asc',

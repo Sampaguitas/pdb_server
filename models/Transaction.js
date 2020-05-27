@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const _ = require('lodash');
 
 //Create Schema
 const TransactionSchema = new Schema({  
@@ -43,6 +44,9 @@ const TransactionSchema = new Schema({
     transferId: {
         type: mongoose.SchemaTypes.ObjectId
     }
+}, {
+    // Make Mongoose use Unix time (seconds since Jan 1, 1970)
+    timestamps: { currentTime: () => Math.floor(Date.now() / 1000) }
 });
 
 TransactionSchema.virtual("location", {
@@ -84,7 +88,11 @@ TransactionSchema.set('toJSON', { virtuals: true });
 
 TransactionSchema.post('findOneAndDelete', function(doc, next) {
     transferId = doc.transferId;
-    findSiblings(transferId).then( () => next());
+    if (!_.isUndefined(transferId) && !!transferId) {
+        findSiblings(transferId).then( () => next());
+    } else {
+        next();
+    }
 });
 
 function findSiblings(transferId) {
@@ -94,6 +102,7 @@ function findSiblings(transferId) {
             if(err || _.isEmpty(siblings)) {
                 resolve();
             } else {
+                console.log('siblings:', siblings);
                 siblings.map(sibling => myPromises.push(deleteSibling(sibling._id)));
                 Promise.all(myPromises).then( () => resolve());
             }

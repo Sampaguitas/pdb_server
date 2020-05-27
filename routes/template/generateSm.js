@@ -166,7 +166,8 @@ router.get('/', function (req, res) {
                         });
                         //set up page for printing
                         const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
-                        const lastColSol = getColumnLast(docFieldSol);
+                        // const lastColSol = getColumnLast(docFieldSol);
+                        const lastColSol = getColumnLast(docFieldSol, docDef.col1);
                         wsPageSetup(docDef.row1, workbook.getWorksheet(collipack.colliNr), lastColSol);
                     });
                 }
@@ -190,13 +191,15 @@ function filterDocFiled(docfields, sheet, location) {
   });
 }
 
-function getColumnLast(array){
-  if (array.length === 0) {
-    return 0;
-  } else {
-    return array.reduce( (min, r) => r.col > min ? r.col : min, array[0].col);
+function getColumnLast(array, lastCol){
+    if (!!lastCol) {
+        return lastCol;
+    } else if (array.length != 0) {
+        return array.reduce( (min, r) => r.col > min ? r.col : min, array[0].col);
+    } else {
+        return 0;
+    }
   }
-}
 
 function alphabet(num){
   var s = '', t;

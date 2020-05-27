@@ -102,15 +102,14 @@ router.post('/', function (req, res) {
         const docFieldSoh = filterDocFiled(docDef.docfields, 'Sheet1', 'Header');
         const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
         const firstColSol = getColumnFirst(docFieldSol);
-        const lastColSol = getColumnLast(docFieldSol);
-        // console.log('lastColSol:', lastColSol);
+        const lastColSol = getColumnLast(docFieldSol, docDef.col1);
         const soh = getLines(docDef, docFieldSoh, locale);
         const sol = getLines(docDef, docFieldSol, locale);
 
         const docFieldSth = filterDocFiled(docDef.docfields, 'Sheet2', 'Header');
         const docFieldStl = filterDocFiled(docDef.docfields, 'Sheet2', 'Line');
         const firstColStl = getColumnFirst(docFieldStl);
-        const lastColStl = getColumnLast(docFieldStl);
+        const lastColStl = getColumnLast(docFieldStl, docDef.col2);
         const sth = getLines(docDef, docFieldSth, locale);
         const stl = getLines(docDef, docFieldStl, locale);
 
@@ -196,11 +195,13 @@ function getColumnFirst (array) {
   }
 }
 
-function getColumnLast(array){
-  if (array.length === 0) {
-    return 0;
+function getColumnLast(array, lastCol){
+  if (!!lastCol) {
+      return lastCol;
+  } else if (array.length != 0) {
+      return array.reduce( (min, r) => r.col > min ? r.col : min, array[0].col);
   } else {
-    return array.reduce( (min, r) => r.col > min ? r.col : min, array[0].col);
+      return 0;
   }
 }
 

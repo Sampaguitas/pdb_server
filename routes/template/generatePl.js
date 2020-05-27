@@ -196,6 +196,7 @@ function getColumnLast(array, lastCol){
         return 0;
     }
 }
+
 function alphabet(num){
   var s = '', t;
 

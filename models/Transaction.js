@@ -102,7 +102,6 @@ function findSiblings(transferId) {
             if(err || _.isEmpty(siblings)) {
                 resolve();
             } else {
-                console.log('siblings:', siblings);
                 siblings.map(sibling => myPromises.push(deleteSibling(sibling._id)));
                 Promise.all(myPromises).then( () => resolve());
             }

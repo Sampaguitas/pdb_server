@@ -18,6 +18,8 @@ router.post('/', (req, res) => {
         res.status(400).json({message: 'Project Id, poId, location or transaction date is missing...'});
     } else if (fromLocationId === toLocationId) {
         res.status(400).json({message: 'Please select another location...'});
+    } else if (!!transQty && transQty < 0) {
+        res.status(400).json({ message: 'Transaction quantity should be greater than 0.' });
     } else {
         Transaction.find({poId: poId, locationId: fromLocationId})
         .populate('po', 'uom')
@@ -43,12 +45,12 @@ router.post('/', (req, res) => {
                     })
                     .exec(async function(errLoc, locations) {
                         if (errLoc || !locations) {
-                            res.status(400).json({message: 'Could not retreive location information1.'});
+                            res.status(400).json({message: 'Could not retreive location information.'});
                         } else {
-                            let fromLocation = locations.find(element => element._id == fromLocationId);
-                            let toLocation = locations.find(element => element._id == toLocationId);
+                            let fromLocation = locations.find(element => _.isEqual(element._id,fromLocationId));
+                            let toLocation = locations.find(element => _.isqual(element._id, toLocationId));
                             if (_.isUndefined(fromLocation) || _.isUndefined(toLocation)) {
-                                res.status(400).json({message: 'Could not retreive location information2.'})
+                                res.status(400).json({message: 'Could not retreive location information.'})
                             } else {
                                 //common Fields
                                 transQty = transQty ? transQty : stockQty;
@@ -75,7 +77,7 @@ router.post('/', (req, res) => {
                                     transQty: - transQty,
                                     transDate: transDate,
                                     transType: 'Transfer',
-                                    transComment: `Moved to location ${fromWhName} ${fromLocName}: ${transQty} ${uom}`,
+                                    transComment: `Moved to location ${toWhName} ${toLocName}: -${transQty} ${uom}`,
                                     locationId: fromLocationId,
                                     poId: poId,
                                     projectId: projectId,
@@ -86,7 +88,7 @@ router.post('/', (req, res) => {
                                     transQty: transQty,
                                     transDate: transDate,
                                     transType: 'Transfer',
-                                    transComment: `Moved from location ${toWhName} ${toLocName}: ${transQty} ${uom}`,
+                                    transComment: `Moved from location ${fromWhName} ${fromLocName}: ${transQty} ${uom}`,
                                     locationId: toLocationId,
                                     poId: poId,
                                     projectId: projectId,

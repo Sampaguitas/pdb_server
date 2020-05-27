@@ -26,6 +26,8 @@ router.post('/', (req, res) => {
         res.status(400).json({message: 'Please select line(s)'});
     } else if (!projectId || !toLocation || !transDate) {
         res.status(400).json({message: 'Project Id, location or transaction date is missing...'});
+    }  else if (!!transQty && transQty < 0) {
+        res.status(400).json({ message: 'Transaction quantity should be greater than 0.' });
     } else {
 
         selectedIdsGr.forEach(element => {
@@ -75,9 +77,6 @@ function saveTransaction(po, transQty, transDate, toLocation, projectId) {
         let stockQty = getStockQty(po);
         let poQty = po.qty || 0;
         transQty = transQty ? transQty : poQty - stockQty;
-        console.log('transQty:', transQty);
-        console.log('poQty:', poQty);
-        console.log('stockQty:', stockQty);
         if (transQty > poQty - stockQty) {
             resolve ({
                 isRejected: true,
@@ -87,8 +86,8 @@ function saveTransaction(po, transQty, transDate, toLocation, projectId) {
             const newTransaction = new Transaction({
                 transQty: transQty,
                 transDate: transDate,
-                transType: 'Reciept',
-                transComment: `Recived: ${transQty} ${po.uom}`,
+                transType: 'Receipt',
+                transComment: `Received: ${transQty} ${po.uom}`,
                 locationId: toLocation,
                 poId: po._id,
                 projectId: projectId
@@ -99,7 +98,7 @@ function saveTransaction(po, transQty, transDate, toLocation, projectId) {
                 isRejected: false,
                 isAdded: true,
             }))
-            .catch( (error) => resolve({
+            .catch( () => resolve({
                 isRejected: true,
                 isAdded: false,
             }));

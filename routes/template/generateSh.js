@@ -46,32 +46,30 @@ router.post('/', function (req, res) {
             },
             {
                 path: 'project',
-                populate: [
-                    {
-                        path: 'transactions',
-                        match: { poId: { $in: poIds } },
-                        options: {
-                            sort: {
-                                poId: 'asc',
-                                transDate: 'asc'
-                            }
+                populate: {
+                    path: 'transactions',
+                    match: { poId: { $in: poIds } },
+                    // options: {
+                    //     sort: {
+                    //         // poId: 'asc',
+                    //         transDate: 'asc'
+                    //     }
+                    // },
+                    populate: [
+                        {
+                            path: 'po',
                         },
-                        populate: [
-                            {
-                                path: 'po',
-                            },
-                            {
-                                path: 'location',
+                        {
+                            path: 'location',
+                            populate: {
+                                path: 'area',
                                 populate: {
-                                    path: 'area',
-                                    populate: {
-                                        path: 'warehouse'
-                                    }
+                                    path: 'warehouse'
                                 }
                             }
-                        ]
-                    }
-                ]
+                        }
+                    ]
+                }
             }
         ])
         .exec(function (err, docDef){
@@ -88,7 +86,7 @@ router.post('/', function (req, res) {
                 var wb = new Excel.Workbook();
                 wb.xlsx.read(s3.getObject(params).createReadStream())
                 .then(async function(workbook) {
-    
+
                     const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
                     const docFieldSoh = filterDocFiled(docDef.docfields, 'Sheet1', 'Header');
                     const firstColSol = getColumnFirst(docFieldSol);
@@ -110,7 +108,7 @@ router.post('/', function (req, res) {
                         //fill all headers first
                         soh.map(function (head) {
                             head.map(function (cell) {
-                                if (cell.col && cell.row && cell.val) {
+                                if (!!cell.col && !!cell.row && cell.val != '') {
                                     worksheet.getCell(alphabet(cell.col) + cell.row).value = cell.val;
                                 }
                             });
@@ -123,7 +121,7 @@ router.post('/', function (req, res) {
                         //fill all Lines from our grid in the inserted rows
                         sol.map(function (line, lineIndex) {
                             line.map(function (cell) {
-                                if (cell.col && cell.val) {
+                                if (!!cell.col && cell.val !== '') {
                                     worksheet.getCell(alphabet(cell.col) + (docDef.row1 + lineIndex)).value = cell.val;
                                 }
                             });
@@ -135,7 +133,7 @@ router.post('/', function (req, res) {
                         //fill all headers first (second page)
                         sth.map(function (head) {
                             head.map(function (cell) {
-                                if (cell.col && cell.row && cell.val) {
+                                if (!!cell.col && !!cell.row && cell.val !== '') {
                                     worksheet.getCell(alphabet(cell.col) + cell.row).value = cell.val;
                                 }
                             });
@@ -148,7 +146,7 @@ router.post('/', function (req, res) {
                         //fill all Lines from our grid in the inserted rows
                         stl.map(function (line, lineIndex) {
                             line.map(function (cell) {
-                                if (cell.col && cell.val) {
+                                if (!!cell.col && cell.val != '') {
                                     worksheet.getCell(alphabet(cell.col) + (docDef.row2 + lineIndex)).value = cell.val;
                                 }
                             });
@@ -342,11 +340,11 @@ function getLines(docDef, docfields, locale) {
     return new Promise(async function (resolve) {
 
         let myRowPromises = [];
+        let transactions = docDef.project.transactions;
 
-        if(!_.isEmpty(docDef.project.transactions)) {
-            let pos = docDef.project.transactions.reduce(function (acc, cur) {
+        if(!_.isEmpty(transactions)) {
+            let pos = transactions.reduce(function (acc, cur) {
                 if (!_.isEmpty(cur.location) && !_.isEmpty(cur.location.area) && !_.isEmpty(cur.location.area.warehouse)) {
-                    // console.log('cur.poId:', cur.poId);
                     let foundPo = acc.find(element => _.isEqual(element._id, cur.poId));
                     if (!_.isUndefined(foundPo)) {
                         foundPo.spPoQty += cur.transQty;
@@ -354,12 +352,12 @@ function getLines(docDef, docfields, locale) {
                         if (!_.isUndefined(foundWh)) {
                             foundWh.spWhQty += cur.transQty;
                             let foundLoc = foundWh.locations.find(element => _.isEqual(element._id, cur.locationId));
-                            let transCopy = Object.create({ transQty: cur.transQty, transDate: cur.transDate, transType: cur.transType, transComment: cur.transComment});
+                            let transCopy = copyObject(cur); //{ transQty: cur.transQty, transDate: cur.transDate, transType: cur.transType, transComment: cur.transComment});
                             if (!_.isUndefined(foundLoc)) {
                                 foundLoc.spLocQty += cur.transQty;
                                 foundLoc.transactions.push(transCopy);
                             } else {
-                                let locCopy = Object.create(cur.location);
+                                let locCopy = copyObject(cur.location);
                                 //add fields: name, areaNr and area to locCopy and spLocQty to locCopy
                                 locCopy.location = getLocName(cur.location, cur.location.area);
                                 locCopy.area = cur.location.area.area;
@@ -370,9 +368,9 @@ function getLines(docDef, docfields, locale) {
                                 foundWh.locations.push(locCopy);
                             }
                         } else {
-                            let whCopy = Object.create(cur.location.area.warehouse);
-                            let locCopy = Object.create(cur.location);
-                            let transCopy = Object.create({ transQty: cur.transQty, transDate: cur.transDate, transType: cur.transType, transComment: cur.transComment});
+                            let whCopy = copyObject(cur.location.area.warehouse);
+                            let locCopy = copyObject(cur.location);
+                            let transCopy = copyObject(cur); //{ transQty: cur.transQty, transDate: cur.transDate, transType: cur.transType, transComment: cur.transComment});
                             //add field: spWhQty to whCopy initial value is whCopy
                             whCopy.spWhQty = cur.transQty;
                             //add fields: name, areaNr and area to locCopy and spLocQty to locCopy
@@ -390,10 +388,10 @@ function getLines(docDef, docfields, locale) {
                         }
                     } else {
                         //objects
-                        let poCopy = Object.create(cur.po);
-                        let whCopy = Object.create(cur.location.area.warehouse);
-                        let locCopy = Object.create(cur.location);
-                        let transCopy = Object.create({ transQty: cur.transQty, transDate: cur.transDate, transType: cur.transType, transComment: cur.transComment});
+                        let poCopy = copyObject(cur.po);
+                        let whCopy = copyObject(cur.location.area.warehouse);
+                        let locCopy = copyObject(cur.location);
+                        let transCopy = copyObject(cur); //{ transQty: cur.transQty, transDate: cur.transDate, transType: cur.transType, transComment: cur.transComment});
                         //add field: spPoQty to poCopy initial value is transQty
                         poCopy.spPoQty = cur.transQty;
                         //add field: spWhQty to whCopy initial value is whCopy
@@ -409,7 +407,7 @@ function getLines(docDef, docfields, locale) {
                         whCopy.locations = [locCopy];
                         // whCopy.locations.push(locCopy);
                         //each po has warehouses
-                        poCopy.warehouses= [whCopy];
+                        poCopy.warehouses = [whCopy];
                         // poCopy.warehouses.push(whCopy);
                         //push poCopy to pos
                         acc.push(poCopy)
@@ -418,10 +416,7 @@ function getLines(docDef, docfields, locale) {
                 return acc;
             }, []);
 
-            pos.forEach( (po, poIndex) => {
-                if (poIndex > 0) {
-                    myRowPromises.push(emptyRow(docfields));
-                }
+            pos.forEach( (po, poIndex, poArray) => {
                 po.warehouses.forEach(warehouse => {
                     warehouse.locations.forEach(location => {
                         location.transactions.forEach(transaction => {
@@ -432,6 +427,9 @@ function getLines(docDef, docfields, locale) {
                     myRowPromises.push(totalWhRow(docfields, warehouse));
                 });
                 myRowPromises.push(totalPoRow(docfields, po));
+                if (poIndex < poArray.length && poArray.length > 1) {
+                    myRowPromises.push(emptyRow(docfields));
+                }
             });
 
             await Promise.all(myRowPromises).then(arrayLines => {
@@ -674,6 +672,16 @@ function getLocName(location, area) {
 
 function leadingChar(string, char, length) {
     return string.toString().length > length ? string : char.repeat(length - string.toString().length) + string;
+}
+
+function copyObject(mainObj) {
+    let objCopy = {};
+    let key;
+
+    for (key in mainObj) {
+        objCopy[key] = mainObj[key];
+    }
+    return objCopy;
 }
 
 

@@ -26,6 +26,8 @@ router.post('/', (req, res) => {
         res.status(400).json({message: 'Please select line(s)'});
     } else if (!projectId || !toLocation || !transDate) {
         res.status(400).json({message: 'Project Id, location or transaction date is missing...'});
+    }  else if (!!transQty && transQty < 0) {
+        res.status(400).json({ message: 'Transaction quantity should be greater than 0.' });
     } else {
 
         selectedIdsGr.forEach(element => {
@@ -46,9 +48,9 @@ router.post('/', (req, res) => {
         ])
         .exec(async function(err, subs) {
             if (err) {
-                res.status(400).json({message: 'An error occured'});
+                res.status(400).json({message: 'An error has occured.'});
             } else if (!subs) {
-                res.status(400).json({message: 'Could not retrive subs'});
+                res.status(400).json({message: 'Could not retrive subs.'});
             } else {
                 subs.map(function (sub) {
                     myTransactions.push(saveTransaction(sub, transQty, transDate, toLocation, projectId));
@@ -89,8 +91,8 @@ function saveTransaction(sub, transQty, transDate, toLocation, projectId) {
             const newTransaction = new Transaction({
                 transQty: transQty,
                 transDate: transDate,
-                transType: 'Reciept',
-                transComment: `NFI ${sub.nfi} Recived: ${transQty} ${sub.po.uom}`,
+                transType: 'Receipt',
+                transComment: `NFI ${sub.nfi} Received: ${transQty} ${sub.po.uom}`,
                 locationId: toLocation,
                 poId: sub.poId,
                 subId: sub._id,

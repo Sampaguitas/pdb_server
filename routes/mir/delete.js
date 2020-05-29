@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const CallOff = require('../../models/CallOff');
+const Mir = require('../../models/Mir');
 const _ = require('lodash');
 
 router.delete('/', async (req, res) => {
@@ -13,7 +13,7 @@ router.delete('/', async (req, res) => {
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {
-        selectedIds.map(selectedId => myPromises.push(removeCallOff(selectedId)));
+        selectedIds.map(selectedId => myPromises.push(removeMir(selectedId)));
         
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {
@@ -28,9 +28,9 @@ router.delete('/', async (req, res) => {
     }
 });
 
-function removeCallOff(id) {
+function removeMir(id) {
     return new Promise(function(resolve) {
-        CallOff.findByIdAndDelete(id, function (err) {
+        Mir.findByIdAndDelete(id, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

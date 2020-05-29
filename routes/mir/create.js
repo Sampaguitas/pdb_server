@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const CallOff = require('../../models/CallOff');
+const Mir = require('../../models/Mir');
 
 router.post('/', (req, res) => {
-            const newCallOff = new CallOff({
+            const newMir = new Mir({
                 //_id: req.body.id,
-                // mirNr: req.body.mirNr,
-                clCallOff: req.body.clCallOff,
+                // vlMir: req.body.vlMir,
+                clMir: req.body.clMir,
                 dateReceived: req.body.dateReceived,
                 dateExpected: req.body.dateExpected,
                 projectId: req.body.projectId,
             });
 
-            newCallOff
+            newMir
                 .save()
-                .then( () => res.status(200).json({message: 'CallOff successfully created.'}))
+                .then( () => res.status(200).json({message: 'Mir successfully created.'}))
                 .catch( () => res.status(400).json({message: 'An error has occured.'}));
 });
 module.exports = router;

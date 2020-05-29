@@ -1,26 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const CallOff = require('../../models/CallOff');
+const Mir = require('../../models/Mir');
 const _ = require('lodash');
 
 router.get('/', (req, res) => {
-    CallOff.find({projectId: req.query.projectId})
+    Mir.find({projectId: req.query.projectId})
     .sort({
         mirNr: 'asc',
     })
     .populate({
-        path: 'mirs',
+        path: 'miritems',
         options: {
             sort: {
                 lineNr: 'asc'
             }
         }
     })
-    .exec(function (err, calloffs) {
+    .exec(function (err, mirs) {
         if (err) {
             return res.status(400).json({ message: 'An error has occured.' });
         } else {
-            return res.status(200).json(calloffs);
+            return res.status(200).json(mirs);
         }
     });
 });

@@ -134,7 +134,7 @@ function deleteDocField(docfieldId) {
         if (!docfieldId) {
             resolve();
         } else {
-            DocField.findOneAndDelete({_id : docfieldId}, function (err) {
+            DocField.findByIdAndDelete(docfieldId, function (err) {
                 if (err) {
                     resolve();
                 } else {

@@ -35,8 +35,8 @@ MirSchema.set('toJSON', { virtuals: true });
 
 MirSchema.pre('save', function(next) {
     let self = this;
-    mongoose.model('mirs', MirSchema).find({ mir: self.mir, projectId: self.projectId }, function (err, mirs) {
-        if (!err && !_.isEmpty(mirs)) {
+    mongoose.model('mirs', MirSchema).findOne({ mir: self.mir, projectId: self.projectId }, function (err, mir) {
+        if (!err && !!mir) {
             self.invalidate("Mir", "MIR should be unique");
         }
         next();
@@ -70,7 +70,7 @@ function deleteMirItem(mirId) {
         if (!mirId) {
             resolve();
         } else {
-            MirItem.findOneAndDelete({_id : mirId}, function (err) {
+            MirItem.findByIdAndDelete(mirId, function (err) {
                 if (err) {
                     resolve();
                 } else {

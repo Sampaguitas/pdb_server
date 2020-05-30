@@ -63,7 +63,7 @@ function deleteLocation(locationId) {
         if (!locationId) {
             resolve();
         } else {
-            Location.findOneAndDelete({_id : locationId}, function (err) {
+            Location.findByIdAndDelete(locationId, function (err) {
                 if (err) {
                     resolve();
                 } else {

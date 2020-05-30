@@ -11,8 +11,8 @@ router.put('/', (req, res) => {
 
     const id = decodeURI(req.query.id);
     
-    Warehouse.findByIdAndUpdate(id, { $set: data }, function (err, po) {
-        if (err || !po) {
+    Warehouse.findByIdAndUpdate(id, { $set: data }, function (err, warehouse) {
+        if (err || !warehouse) {
             return res.status(400).json({ message: 'An error has occured.' });
         } else {
             return res.status(200).json({ message: 'Warehouse Successfully updated.' });

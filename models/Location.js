@@ -84,7 +84,7 @@ function deleteHeatLoc(heatlocId) {
         if (!heatlocId) {
             resolve();
         } else {
-            HeatLoc.findOneAndDelete({_id : heatlocId}, function (err) {
+            HeatLoc.findByIdAndDelete(heatlocId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -118,7 +118,7 @@ function deleteTransaction(transactionId) {
         if (!transactionId) {
             resolve();
         } else {
-            Transaction.findOneAndDelete({_id : transactionId}, function (err) {
+            Transaction.findByIdAndDelete(transactionId, function (err) {
                 if (err) {
                     resolve();
                 } else {

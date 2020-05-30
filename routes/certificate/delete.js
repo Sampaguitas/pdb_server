@@ -46,7 +46,7 @@ function removeCertificate(id) {
         // s3bucket.deleteCif(id)
         // .then( () => {
         //     condition = { _id: id};
-        //     Certificate.findOneAndDelete(condition, function (err) {
+        //     Certificate.findByIdAndDelete(id, function (err) {
         //         if(err) {
         //             resolve({
         //                 isRejected: true

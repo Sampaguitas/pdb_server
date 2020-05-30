@@ -29,8 +29,7 @@ router.delete('/', async (req, res) => {
 
 function removeLocation(id) {
     return new Promise(function(resolve) {
-        condition = { _id: id};
-        Location.findOneAndDelete(condition, function (err) {
+        Location.findByIdAndDelete(id, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

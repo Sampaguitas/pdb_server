@@ -30,8 +30,7 @@ router.delete('/', async (req, res) => {
 
 function removeHeatLoc(id) {
     return new Promise(function(resolve) {
-        condition = { _id: id};
-        HeatLoc.findOneAndDelete(condition, function (err) {
+        HeatLoc.findByIdAndDelete(id, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

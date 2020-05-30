@@ -30,8 +30,7 @@ router.delete('/', async (req, res) => {
 
 function removeArea(id) {
     return new Promise(function(resolve) {
-        condition = { _id: id};
-        Area.findOneAndDelete(condition, function (err) {
+        Area.findByIdAndDelete(id, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

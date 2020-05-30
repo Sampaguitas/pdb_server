@@ -33,8 +33,7 @@ router.delete('/', async (req, res) => {
 
 function removePackItem(id) {
     return new Promise(function(resolve) {
-        condition = { _id: id};
-        PackItem.findOneAndDelete(condition, function (err) {
+        PackItem.findByIdAndDelete(id, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

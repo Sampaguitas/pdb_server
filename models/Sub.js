@@ -275,7 +275,7 @@ SubSchema.post('findOneAndDelete', function(doc, next) {
             } else {
 
                 if (_.isEmpty(res.po.subs)) {
-                    Po.findOneAndDelete({ _id: res.poId });
+                    Po.findByIdAndDelete(res.poId);
                 }
                 
                 findPackitems(doc._id).then( () => findHeats(doc._id).then( () => next())); 
@@ -286,7 +286,7 @@ SubSchema.post('findOneAndDelete', function(doc, next) {
         //         acc.push(cur._id)
         //         return acc;
         //     },[]);
-        //     packitemIds.map(packitemId=> PackItem.findOneAndDelete({ _id: packitemId}));
+        //     packitemIds.map(packitemId=> PackItem.findByIdAndDelete(packitemId));
         // }
 
     });
@@ -316,7 +316,7 @@ function deletePackitem(packitemId) {
         if (!packitemId) {
             resolve();
         } else {
-            PackItem.findOneAndDelete({_id : packitemId}, function (err) {
+            PackItem.findByIdAndDelete(packitemId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -350,7 +350,7 @@ function deleteHeat(heatId) {
         if (!heatId) {
             resolve();
         } else {
-            Heat.findOneAndDelete({_id : heatId}, function (err) {
+            Heat.findByIdAndDelete(heatId, function (err) {
                 if (err) {
                     resolve();
                 } else {

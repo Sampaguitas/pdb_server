@@ -271,7 +271,7 @@ function deleteAccess(accessId) {
         if (!accessId) {
             resolve();
         } else {
-            Access.findOneAndDelete({_id : accessId}, function (err) {
+            Access.findByIdAndDelete(accessId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -305,7 +305,7 @@ function deleteCertificate(certificateId) {
         if (!certificateId) {
             resolve();
         } else {
-            Certificate.findOneAndDelete({_id : certificateId}, function (err) {
+            Certificate.findByIdAndDelete(certificateId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -339,7 +339,7 @@ function deleteColliPack(collipackId) {
         if (!collipackId) {
             resolve();
         } else {
-            ColliPack.findOneAndDelete({_id : collipackId}, function (err) {
+            ColliPack.findByIdAndDelete(collipackId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -373,7 +373,7 @@ function deleteColliType(collitypeId) {
         if (!collitypeId) {
             resolve();
         } else {
-            ColliType.findOneAndDelete({_id : collitypeId}, function (err) {
+            ColliType.findByIdAndDelete(collitypeId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -407,7 +407,7 @@ function deleteDocCountEsr(doccountesrId) {
         if (!doccountesrId) {
             resolve();
         } else {
-            DocCountEsr.findOneAndDelete({_id : doccountesrId}, function (err) {
+            DocCountEsr.findByIdAndDelete(doccountesrId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -441,7 +441,7 @@ function deleteDocCountInspect(doccountinspectId) {
         if (!doccountinspectId) {
             resolve();
         } else {
-            DocCountInspect.findOneAndDelete({_id : doccountinspectId}, function (err) {
+            DocCountInspect.findByIdAndDelete(doccountinspectId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -475,7 +475,7 @@ function deleteDocCountInsprel(doccountinsprelId) {
         if (!doccountinsprelId) {
             resolve();
         } else {
-            DocCountInsprel.findOneAndDelete({_id : doccountinsprelId}, function (err) {
+            DocCountInsprel.findByIdAndDelete(doccountinsprelId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -509,7 +509,7 @@ function deleteDocCountNfi(doccountnfiId) {
         if (!doccountnfiId) {
             resolve();
         } else {
-            DocCountNfi.findOneAndDelete({_id : doccountnfiId}, function (err) {
+            DocCountNfi.findByIdAndDelete(doccountnfiId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -543,7 +543,7 @@ function deleteDocCountPf(doccountpfId) {
         if (!doccountpfId) {
             resolve();
         } else {
-            DocCountPf.findOneAndDelete({_id : doccountpfId}, function (err) {
+            DocCountPf.findByIdAndDelete(doccountpfId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -577,7 +577,7 @@ function deleteDocCountPl(doccountplId) {
         if (!doccountplId) {
             resolve();
         } else {
-            DocCountPl.findOneAndDelete({_id : doccountplId}, function (err) {
+            DocCountPl.findByIdAndDelete(doccountplId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -611,7 +611,7 @@ function deleteDocCountPn(doccountpnId) {
         if (!doccountpnId) {
             resolve();
         } else {
-            DocCountPn.findOneAndDelete({_id : doccountpnId}, function (err) {
+            DocCountPn.ffindByIdAndDelete(doccountpnId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -645,7 +645,7 @@ function deleteDocCountSi(doccountsiId) {
         if (!doccountsiId) {
             resolve();
         } else {
-            DocCountSi.findOneAndDelete({_id : doccountsiId}, function (err) {
+            DocCountSi.findByIdAndDelete(doccountsiId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -679,7 +679,7 @@ function deleteDocCountSm(doccountsmId) {
         if (!doccountsmId) {
             resolve();
         } else {
-            DocCountSm.findOneAndDelete({_id : doccountsmId}, function (err) {
+            DocCountSm.findByIdAndDelete(doccountsmId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -713,7 +713,7 @@ function deleteDocCountSh(doccountshId) {
         if (!doccountshId) {
             resolve();
         } else {
-            DocCountSh.findOneAndDelete({_id : doccountshId}, function (err) {
+            DocCountSh.findByIdAndDelete(doccountshId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -747,7 +747,7 @@ function deleteDocDef(docdefId) {
         if (!docdefId) {
             resolve();
         } else {
-            DocDef.findOneAndDelete({_id : docdefId}, function (err) {
+            DocDef.findByIdAndDelete(docdefId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -781,7 +781,7 @@ function deleteDocField(docfieldId) {
         if (!docfieldId) {
             resolve();
         } else {
-            DocField.findOneAndDelete({_id : docfieldId}, function (err) {
+            DocField.findByIdAndDelete(docfieldId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -815,7 +815,7 @@ function deleteField(fieldId) {
         if (!fieldId) {
             resolve();
         } else {
-            Field.findOneAndDelete({_id : fieldId}, function (err) {
+            Field.findByIdAndDelete(fieldId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -849,7 +849,7 @@ function deleteFieldName(fieldnameId) {
         if (!fieldnameId) {
             resolve();
         } else {
-            FieldName.findOneAndDelete({_id : fieldnameId}, function (err) {
+            FieldName.findByIdAndDelete(fieldnameId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -883,7 +883,7 @@ function deleteHeatLoc(heatlocId) {
         if (!heatlocId) {
             resolve();
         } else {
-            HeatLoc.findOneAndDelete({_id : heatlocId}, function (err) {
+            HeatLoc.findByIdAndDelete(heatlocId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -917,7 +917,7 @@ function deletePo(poId) {
         if (!poId) {
             resolve();
         } else {
-            Po.findOneAndDelete({_id : poId}, function (err) {
+            Po.findByIdAndDelete(poId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -951,7 +951,7 @@ function deleteSetting(settingId) {
         if (!settingId) {
             resolve();
         } else {
-            Setting.findOneAndDelete({_id : settingId}, function (err) {
+            Setting.findByIdAndDelete(settingId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -985,7 +985,7 @@ function deleteSupplier(supplierId) {
         if (!supplierId) {
             resolve();
         } else {
-            Supplier.findOneAndDelete({_id : supplierId}, function (err) {
+            Supplier.findByIdAndDelete(supplierId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -1019,7 +1019,7 @@ function deleteTransaction(transactionId) {
         if (!transactionId) {
             resolve();
         } else {
-            Transaction.findOneAndDelete({_id : transactionId}, function (err) {
+            Transaction.findByIdAndDelete(transactionId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -1053,7 +1053,7 @@ function deleteWarehouse(warehouseId) {
         if (!warehouseId) {
             resolve();
         } else {
-            Warehouse.findOneAndDelete({_id : warehouseId}, function (err) {
+            Warehouse.findByIdAndDelete(warehouseId, function (err) {
                 if (err) {
                     resolve();
                 } else {

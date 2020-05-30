@@ -31,8 +31,7 @@ router.delete('/', async (req, res) => {
 
 function removeSub(id) {
     return new Promise(function(resolve) {
-        condition = { _id: id};
-        Sub.findOneAndDelete(condition, function (err) {
+        Sub.findByIdAndDelete(id, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

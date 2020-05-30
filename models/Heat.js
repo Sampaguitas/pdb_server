@@ -75,7 +75,7 @@ function deleteHeatLoc(heatlocId) {
         if (!heatlocId) {
             resolve();
         } else {
-            HeatLoc.findOneAndDelete({_id : heatlocId}, function (err) {
+            HeatLoc.findByIdAndDelete(heatlocId, function (err) {
                 if (err) {
                     resolve();
                 } else {

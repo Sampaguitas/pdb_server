@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Warehouse = require('../../models/Warehouse');
+const MirItem = require('../../models/MirItem');
 const _ = require('lodash');
 
 router.delete('/', async (req, res) => {
@@ -13,7 +13,7 @@ router.delete('/', async (req, res) => {
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {
-        selectedIds.map(selectedId => myPromises.push(removeWarehouse(selectedId)));
+        selectedIds.map(selectedId => myPromises.push(removeMirItem(selectedId.miritemId)));
         
         await Promise.all(myPromises).then(function (resPromises) {
             resPromises.map(function (resPromise) {
@@ -28,9 +28,9 @@ router.delete('/', async (req, res) => {
     }
 });
 
-function removeWarehouse(id) {
+function removeMirItem(id) {
     return new Promise(function(resolve) {
-        Warehouse.findByIdAndDelete(id, function (err) {
+        MirItem.findByIdAndDelete(id, function (err) {
             if(err) {
                 resolve({
                     isRejected: true

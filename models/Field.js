@@ -60,7 +60,7 @@ function deleteDocField(docfieldId) {
         if (!docfieldId) {
             resolve();
         } else {
-            DocField.findOneAndDelete({_id : docfieldId}, function (err) {
+            DocField.findByIdAndDelete(docfieldId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -94,7 +94,7 @@ function deleteFieldName(fieldnameId) {
         if (!fieldnameId) {
             resolve();
         } else {
-            FieldName.findOneAndDelete({_id : fieldnameId}, function (err) {
+            FieldName.findByIdAndDelete(fieldnameId, function (err) {
                 if (err) {
                     resolve();
                 } else {

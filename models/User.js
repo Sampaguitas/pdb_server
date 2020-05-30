@@ -80,7 +80,7 @@ function deleteAccess(accessId) {
         if (!accessId) {
             resolve();
         } else {
-            Access.findOneAndDelete({_id : accessId}, function (err) {
+            Access.findByIdAndDelete(accessId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -114,7 +114,7 @@ function deleteSetting(settingId) {
         if (!settingId) {
             resolve();
         } else {
-            Setting.findOneAndDelete({_id : settingId}, function (err) {
+            Setting.findByIdAndDelete(settingId, function (err) {
                 if (err) {
                     resolve();
                 } else {

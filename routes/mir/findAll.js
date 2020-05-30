@@ -14,6 +14,9 @@ router.get('/', (req, res) => {
             sort: {
                 lineNr: 'asc'
             }
+        },
+        populate: {
+            path: 'po'
         }
     })
     .exec(function (err, mirs) {

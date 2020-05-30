@@ -11,8 +11,8 @@ router.put('/', (req, res) => {
 
     const id = decodeURI(req.query.id);
     
-    Mir.findByIdAndUpdate(id, { $set: data }, function (err, po) {
-        if (err || !po) {
+    Mir.findByIdAndUpdate(id, { $set: data }, function (err, mir) {
+        if (err || !mir) {
             return res.status(400).json({ message: 'An error has occured.' });
         } else {
             return res.status(200).json({ message: 'Mir Successfully updated.' });

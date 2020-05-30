@@ -55,7 +55,7 @@ function deleteArea(areaId) {
         if (!areaId) {
             resolve();
         } else {
-            Area.findOneAndDelete({_id : areaId}, function (err) {
+            Area.findByIdAndDelete(areaId, function (err) {
                 if (err) {
                     resolve();
                 } else {

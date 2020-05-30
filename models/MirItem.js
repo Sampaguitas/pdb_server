@@ -12,7 +12,7 @@ const MirItemSchema = new Schema({
         type: Number,
         required: true,
     },
-    netWeight: {
+    unitWeight: {
         type: Number,
         default: 0,
     },
@@ -25,6 +25,14 @@ const MirItemSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'mirs',
         required: true,
+    }
+});
+
+MirItemSchema.virtual('totWeight').get(function() { 
+    if (!!this.qtyRequired || !!this.unitWeight) {
+        return this.qtyRequired * this.unitWeight;
+    } else {
+        return 0;
     }
 });
 

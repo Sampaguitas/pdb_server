@@ -15,7 +15,8 @@ const _ = require('lodash');
   //screenId: '5cd2b642fd333616dc360b64', //Inspection
   //screenId: '5cd2b642fd333616dc360b65', //Certificates
   //screenId: '5cd2b643fd333616dc360b67', //packing details
-  //
+  //screenId: '5ed1e76e7c213e044cc01884', //Material Issue Record
+  //screenId: '5ed1e7a67c213e044cc01888', //Material Issue Record Splitwindow
 
 router.post('/', function (req, res) {
     

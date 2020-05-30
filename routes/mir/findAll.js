@@ -6,7 +6,7 @@ const _ = require('lodash');
 router.get('/', (req, res) => {
     Mir.find({projectId: req.query.projectId})
     .sort({
-        mirNr: 'asc',
+        mir: 'asc',
     })
     .populate({
         path: 'miritems',

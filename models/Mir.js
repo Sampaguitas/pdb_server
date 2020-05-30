@@ -5,13 +5,9 @@ const _ = require('lodash');
 
 //Create Schema
 const MirSchema = new Schema({
-    vlMir: {
+    mir: {
         type: Number,
         required: true,
-    },
-    clMir: {
-        type: String,
-        required: false,
     },
     dateReceived: {
         type: Date,
@@ -39,19 +35,9 @@ MirSchema.set('toJSON', { virtuals: true });
 
 MirSchema.pre('save', function(next) {
     let self = this;
-    mongoose.model('mirs', MirSchema).find({ projectId: self.projectId }, function (err, mirs) {
-        if (err) {
-            self.invalidate("vlMir", "Could not retrive previous mirs");
-        } else if (_.isEmpty(mirs)) {
-            self.vlMir = 1;
-        } else {
-            let lastVlMir = mirs.reduce(function(acc, cur) {
-                if (cur.vlMir > acc) {
-                    acc === cur.vlMir;
-                }
-                return acc;
-            }, 1);
-            self.vlMir = lastVlMir;
+    mongoose.model('mirs', MirSchema).find({ mir: self.mir, projectId: self.projectId }, function (err, mirs) {
+        if (!err && !_.isEmpty(mirs)) {
+            self.invalidate("Mir", "MIR should be unique");
         }
         next();
     });

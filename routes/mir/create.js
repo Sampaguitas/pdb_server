@@ -4,9 +4,7 @@ const Mir = require('../../models/Mir');
 
 router.post('/', (req, res) => {
             const newMir = new Mir({
-                //_id: req.body.id,
-                // vlMir: req.body.vlMir,
-                clMir: req.body.clMir,
+                mir: req.body.mir,
                 dateReceived: req.body.dateReceived,
                 dateExpected: req.body.dateExpected,
                 projectId: req.body.projectId,

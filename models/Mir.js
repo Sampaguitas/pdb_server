@@ -6,7 +6,7 @@ const _ = require('lodash');
 //Create Schema
 const MirSchema = new Schema({
     mir: {
-        type: Number,
+        type: String,
         required: true,
     },
     dateReceived: {

@@ -8,7 +8,7 @@ const _ = require('lodash');
 const MirItemSchema = new Schema({
     lineNr: {
         type: Number,
-        required: true,
+        // required: true,
     },
     qtyRequired: {
         type: Number,
@@ -50,6 +50,20 @@ MirItemSchema.set('toJSON', { virtuals: true });
 
 MirItemSchema.pre('save', function(next) {
     let self = this;
+    mongoose.model('miritems', MirItemSchema).find({ mirId: self.mirId, poId: self.poId }, function (err, miritems) {
+        if (err) {
+            next(err);
+        } else if (!_.isEmpty(miritems)) {
+            self.invalidate("poId", "MIR already contain an item with the same poId.");
+            next(new Error("MIR already contain an item with the same poId."));
+        } else {
+            next();
+        }
+    });
+});
+
+MirItemSchema.pre('save', function(next) {
+    let self = this;
     mongoose.model('miritems', MirItemSchema).find({ mirId: self.mirId }, function (err, miritems) {
         if (err) {
             self.invalidate("lineNr", "Could not generate lineNr.");
@@ -70,12 +84,16 @@ MirItemSchema.pre('save', function(next) {
 
 MirItemSchema.pre('save', function(next) {
     let self = this;
-    Po.findById(self.poId, function (err, po) {
+    Po.findById(self.poId).populate({
+        path: 'project',
+        populate: {
+            path: 'erp'
+        }
+    }).exec(function (err, po) {
         if (err || !po) {
-            self.invalidate("qtyRequired", "Could not retreive quantity Required.");
+            next();
         } else {
-            getArticle(po.erp, po.pcs, po.mtrs, po.uom, po.vlArtNo, po.vlArtNoX).then(article => {
-                self.qtyRequired = po.qty
+            getArticle(po.project.erp.name, po.vlArtNo, po.vlArtNoX).then(article => {
                 self.unitWeight = article.netWeight
                 next();
             });
@@ -85,7 +103,7 @@ MirItemSchema.pre('save', function(next) {
 
 module.exports = MirItem = mongoose.model('miritems', MirItemSchema);
 
-function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {
+function getArticle(erp, vlArtNo, vlArtNoX) {
     return new Promise(function (resolve) {
         if (!vlArtNo && !vlArtNoX) {
             resolve({
@@ -95,15 +113,6 @@ function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {
         } else {
             let conditions = vlArtNo ? { erp: erp, vlArtNo : vlArtNo } : { erp: erp, vlArtNoX : vlArtNoX };
             Article.findOne(conditions, function (err, article) {
-                let tempUom = 'pcs';
-                if (!!uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(uom.toUpperCase())) {
-                    tempUom = 'mtrs';
-                } else if (!!uom && ['F', 'FT', 'FEET', 'FEETS'].includes(uom.toUpperCase())) {
-                    tempUom = 'feets';
-                } else if (!!uom && uom.toUpperCase() === 'MT') {
-                    tempUom = 'mt';
-                }
-
                 if(err || _.isNull(article)) {
                     resolve({
                         hsCode: '',
@@ -112,21 +121,10 @@ function getArticle(erp, pcs, mtrs, uom, vlArtNo, vlArtNoX) {
                 } else {
                     resolve({
                         hsCode: article.hsCode,
-                        netWeight: calcWeight(tempUom, pcs, mtrs, article.netWeight)
+                        netWeight: article.netWeight
                     });
                 }
             });
         }
     });
 }
-
-function calcWeight(tempUom, pcs, mtrs, weight) {
-    switch(tempUom) {
-        case 'pcs': return pcs * weight || 0;
-        case 'mtrs': return mtrs * weight || 0;
-        case 'feets': return mtrs * 0.3048 * weight || 0;
-        case 'mt': return mtrs / 1000 || 0;
-        default: return 0;
-    }
-}
-

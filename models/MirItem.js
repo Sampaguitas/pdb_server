@@ -50,7 +50,7 @@ MirItemSchema.set('toJSON', { virtuals: true });
 
 MirItemSchema.pre('save', function(next) {
     let self = this;
-    if (!this.qtyRequired || this.qtyRequired < 0) {
+    if (!this.qtyRequired || this.qtyRequired <= 0) {
         self.invalidate("qtyRequired", 'Qty is requred.');
         next({ message: 'Quantity Required cannot be null.' });
     } else {

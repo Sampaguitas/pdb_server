@@ -9,15 +9,13 @@ const DocCountNfi = require('../../models/DocCountNfi');
 const DocCountPf = require('../../models/DocCountPf');
 const DocCountPl = require('../../models/DocCountPl');
 const DocCountPn = require('../../models/DocCountPn');
+const DocCountPt = require('../../models/DocCountPt');
 const DocCountSi = require('../../models/DocCountSi');
 const DocCountSm = require('../../models/DocCountSm');
 const DocCountSh = require('../../models/DocCountSh');
 
 router.post('/', async (req, res) => {
 
-    console.log(req.body);
-
-    // console.log('req.body:', req.body);
     if (req.body.code) {
             const newDocDef = new DocDef({
                 // _id: req.body._id,
@@ -206,7 +204,21 @@ function getDocDefCode(projectId, doctypeId) {
                     }
                 });
             });
-        default: return '0';
+        case '5edb2317e7179a6b6367d786': //PT01
+            return new Promise(function(resolve, reject) {
+                DocCountPt.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                    if(error) {
+                        reject('An error has occured.');
+                    } else if (!doc) {
+                        reject('No document was return from the callback.');
+                    } else {
+                        resolve('PT' + baseTen(doc.seq));
+                    }
+                });
+            });
+        default: return new Promise(function(resolve, reject) {
+            reject('DocType not listed.');
+        });
     }
 }
 

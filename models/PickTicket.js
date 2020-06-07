@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const _ = require('lodash');
 
-//Create Schema
 const PickTicketSchema = new Schema({
     pickNr: {
         type: Number 
@@ -32,6 +31,20 @@ PickTicketSchema.virtual("pickitems", {
     localField: "_id",
     foreignField: "pickticketId",
     justOne: false
+});
+
+PickTicketSchema.virtual("warehouse", {
+    ref: "warehouses",
+    localField: "warehouseId",
+    foreignField: "_id",
+    justOne: true
+});
+
+PickTicketSchema.virtual("project", {
+    ref: "projectId",
+    localField: "projectId",
+    foreignField: "_id",
+    justOne: true
 });
 
 PickTicketSchema.set('toJSON', { virtuals: true });

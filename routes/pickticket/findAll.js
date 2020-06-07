@@ -8,17 +8,43 @@ router.get('/', (req, res) => {
     .sort({
         pickticket: 'asc',
     })
-    .populate({
-        path: 'pickitems',
-        options: {
-            sort: {
-                lineNr: 'asc'
-            }
+    .populate([
+        {
+            path: 'pickitems',
+            populate: [
+                {
+                    path: 'miritem',
+                    populate: [
+                        {
+                            path: 'po',
+                            populate: {
+                                path: 'project'
+                            }
+                        },
+                        {
+                            path: 'mir'
+                        }
+                    ]
+                },
+                {
+                    path: 'location',
+                    populate: {
+                        path: 'area',
+                        populate: {
+                            path: 'warehouse'
+                        }
+                    }
+                }
+
+            ]
         },
-        populate: {
-            path: 'po'
+        {
+            path: 'warehouse'
+        },
+        {
+            path: 'project'
         }
-    })
+    ])
     .exec(function (err, picktickets) {
         if (err) {
             return res.status(400).json({ message: 'An error has occured.' });

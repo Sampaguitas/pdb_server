@@ -15,7 +15,7 @@ router.post('/', (req, res) => {
     let transDate = decodeURI(req.body.transDate);
 
     if (!projectId || !poId || !fromLocationId || !toLocationId || !transDate) {
-        res.status(400).json({message: 'Project Id, poId, location or transaction date is missing...'});
+        res.status(400).json({message: 'projectId, poId, location or transaction date is missing...'});
     } else if (fromLocationId === toLocationId) {
         res.status(400).json({message: 'Please select another location...'});
     } else if (!!transQty && transQty < 0) {

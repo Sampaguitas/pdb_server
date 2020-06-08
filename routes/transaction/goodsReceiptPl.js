@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     if (_.isUndefined(selectedIdsGr) || _.isEmpty(selectedIdsGr)) {
         res.status(400).json({message: 'Please select line(s)'});
     } else if (!projectId || !toLocation || !transDate) {
-        res.status(400).json({message: 'Project Id, location or transaction date is missing...'});
+        res.status(400).json({message: 'projectId, location or transaction date is missing...'});
     } else if (!!transQty && transQty < 0) {
         res.status(400).json({ message: 'Transaction quantity should be greater than 0.' });
     } else {

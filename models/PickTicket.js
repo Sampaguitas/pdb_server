@@ -33,6 +33,13 @@ PickTicketSchema.virtual("pickitems", {
     justOne: false
 });
 
+PickTicketSchema.virtual("mir", {
+    ref: "mirs",
+    localField: "mirId",
+    foreignField: "_id",
+    justOne: true
+});
+
 PickTicketSchema.virtual("warehouse", {
     ref: "warehouses",
     localField: "warehouseId",

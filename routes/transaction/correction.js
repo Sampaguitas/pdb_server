@@ -14,7 +14,7 @@ router.post('/', (req, res) => {
     let transDate = decodeURI(req.body.transDate);
 
     if (!projectId || !poId || !locationId || !transQty || !transDate) {
-        res.status(400).json({message: 'Project Id, poId, locationid, qty or date is missing...'});
+        res.status(400).json({message: 'PprojectId, poId, locationid, qty or date is missing...'});
     } else {
         Transaction.find({poId: poId, locationId: locationId})
         .populate('po', 'uom')

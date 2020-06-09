@@ -52,7 +52,7 @@ PickTicketSchema.virtual("warehouse", {
 });
 
 PickTicketSchema.virtual("project", {
-    ref: "projectId",
+    ref: "projects",
     localField: "projectId",
     foreignField: "_id",
     justOne: true

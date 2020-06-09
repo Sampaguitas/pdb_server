@@ -6,7 +6,7 @@ const _ = require('lodash');
 router.get('/', (req, res) => {
     PickTicket.find({projectId: req.query.projectId})
     .sort({
-        pickticket: 'asc',
+        pickNr: 'asc',
     })
     .populate([
         {

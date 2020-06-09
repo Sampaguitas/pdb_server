@@ -56,7 +56,6 @@ router.post('/', (req, res) => {
         ])
         .exec(function (err, miritems) {
             if (err) {
-                console.log('err:', err);
                 res.status(400).json({
                     message: 'An error has occured.',
                     logs: []
@@ -68,6 +67,7 @@ router.post('/', (req, res) => {
                 });
             } else {
                 let tempObject = miritems.reduce(function (acc, cur) {
+                    
                     let qtyRequired = cur.qtyRequired || 0;
                     
                     let qtyAlPicked = cur.pickitems.reduce(function (accPickitems, curPickitems) {
@@ -77,11 +77,14 @@ router.post('/', (req, res) => {
 
                     let qtyTbPicked = Math.max(qtyRequired - qtyAlPicked, 0);
                     let qtyRemaining = Math.max(qtyRequired - qtyAlPicked, 0);
+                    
                     if (!_.isEmpty(cur.po.transactions)) {
                         
                         let locations = cur.po.transactions.reduce( function (accTransaction, curTransaction) {
-                            if (warehouseIds.includes(curTransaction.location.area.warehouseId)) {
-                                let foundLocation = accTransaction.find(element => _.isEqual(element.locationId, curTransaction.locationId));
+                            if (warehouseIds.includes(String(curTransaction.location.area.warehouseId))) {
+                                let foundLocation = accTransaction.find(element => {
+                                    return _.isEqual(element._id, curTransaction.locationId)
+                                });
                                 if (!_.isUndefined(foundLocation)) {
                                     foundLocation.stockQty += curTransaction.transQty;
                                 } else {
@@ -95,8 +98,8 @@ router.post('/', (req, res) => {
                             return accTransaction;
                         }, []);
 
-                        if (!_isEmpty(locations)) {
-                            location.map(location => {
+                        if (!_.isEmpty(locations)) {
+                            locations.map(location => {
                                 if (qtyRemaining > 0) {
                                     let foundPickTicket = acc.ptArray.find(element => _.isEqual(element.warehouseId, location.warehouseId));
                                     if (!_.isUndefined(foundPickTicket)) {
@@ -129,7 +132,7 @@ router.post('/', (req, res) => {
                                 }
                             });
                         }
-                        logArray.push({
+                        acc.logArray.push({
                             lineNr: cur.lineNr,
                             qtyRequired: qtyRequired,
                             qtyAlPicked: qtyAlPicked,
@@ -144,7 +147,6 @@ router.post('/', (req, res) => {
                     logArray: [],
                     ptArray: [],
                 });
-                console.log('ptArray:', tempObject.ptArray);
                 tempObject.ptArray.map(pickticket => pickticketPromise.push(savePickTicket(pickticket)));
                 Promise.all(pickticketPromise).then(results => {
                     results.map(result => {
@@ -153,11 +155,11 @@ router.post('/', (req, res) => {
                         } else {
                             nAdded++;
                             nItemAdded += result.nAdded;
-                            nItemRejected += result.nItemRejected;
+                            nItemRejected += result.nRejected;
                         }
                     });
                     res.status(!!nRejected || !!nItemRejected ? 400 : 200).json({
-                        message: `${nAdded} PickTicket created, ${nRejected} PickTicket rejected - ${nItemAdded} PickItem created, ${nItemRejected} PickItem rejected`,
+                        message: `${nAdded} packing ticket added, ${nRejected} rejected - ${nItemAdded} packitems added, ${nItemRejected} rejected.`,
                         logs: tempObject.logArray
                     });
                 })
@@ -169,7 +171,6 @@ router.post('/', (req, res) => {
 module.exports = router;
 
 function savePickTicket(pickticket) {
-    console.log('pickticket:', pickticket);
     return new Promise(function (resolve) {
         let pickitemPromise = [];
         let nRejected = 0;

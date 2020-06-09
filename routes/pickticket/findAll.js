@@ -39,6 +39,9 @@ router.get('/', (req, res) => {
             ]
         },
         {
+            path: 'mir'
+        },
+        {
             path: 'warehouse'
         },
         {

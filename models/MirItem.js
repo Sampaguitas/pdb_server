@@ -46,13 +46,20 @@ MirItemSchema.virtual('po', {
     justOne: true
 });
 
+MirItemSchema.virtual('pickitems', {
+    ref: 'pickitems',
+    localField: '_id',
+    foreignField: 'miritemId',
+    justOne: false
+});
+
 MirItemSchema.set('toJSON', { virtuals: true });
 
 MirItemSchema.pre('save', function(next) {
     let self = this;
     if (!this.qtyRequired || this.qtyRequired <= 0) {
-        self.invalidate("qtyRequired", 'Qty is requred.');
-        next({ message: 'Quantity Required cannot be null.' });
+        self.invalidate("qtyRequired", 'is requred.');
+        next({ message: 'qtyRequired cannot be null.' });
     } else {
         next();
     }
@@ -76,8 +83,8 @@ MirItemSchema.pre('save', function(next) {
     let self = this;
     mongoose.model('miritems', MirItemSchema).find({ mirId: self.mirId }, function (err, miritems) {
         if (err) {
-            self.invalidate("lineNr", "lineNr is required.");
-            next({ message: 'Could not generate the Line Number.' });
+            self.invalidate("lineNr", "is required.");
+            next({ message: 'Could not generate the lineNr.' });
         } else if (_.isEmpty(miritems)) {
             self.lineNr = 1;
             next();

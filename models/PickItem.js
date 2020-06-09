@@ -2,15 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const _ = require('lodash');
 
-//Create Schema
-const PickItem = new Schema({
+const PickItemSchema = new Schema({
     qtyPrepared: {
         type: Number 
     },
     qtyPicked: {
         type: Number 
     },
-    mirItemId: {
+    miritemId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'miritems',
         required: true  
@@ -27,20 +26,20 @@ const PickItem = new Schema({
     },
 });
 
-PickItem.virtual("location", {
+PickItemSchema.virtual("location", {
     ref: "locations",
     localField: "locationId",
     foreignField: "_id",
     justOne: true
 });
 
-PickItem.virtual("miritem", {
+PickItemSchema.virtual("miritem", {
     ref: "miritems",
     localField: "miritemId",
     foreignField: "_id",
-    justOne: true
+    justOne: false
 });
 
-PickItem.set('toJSON', { virtuals: true });
+PickItemSchema.set('toJSON', { virtuals: true });
 
-module.exports = PickItem = mongoose.model('pickitems', PickItem);
+module.exports = PickItem = mongoose.model('pickitems', PickItemSchema);

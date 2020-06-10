@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const PickItem = require('./PickItem')
 const _ = require('lodash');
 
 const PickTicketSchema = new Schema({
@@ -81,5 +82,43 @@ PickTicketSchema.pre('save', function(next) {
         }
     });
 });
+
+PickTicketSchema.post('findOneAndDelete', function(doc, next) {
+    findPickItems(doc._id).then( () => next()); 
+});
+
+function findPickItems(pickticketId) {
+    return new Promise(function (resolve) {
+        if (!pickticketId) {
+            resolve();
+        } else {
+            PickItem.find({ pickticketId: pickticketId }, function (err, pickitems) {
+                if (err || _.isEmpty(pickitems)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    pickitems.map(pickitem => myPromises.push(deletePickItem(pickitem._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deletePickItem(pickitemId) {
+    return new Promise(function(resolve) {
+        if (!pickitemId) {
+            resolve();
+        } else {
+            PickItem.findByIdAndDelete(pickitemId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
 
 module.exports = PickTicket = mongoose.model('picktickets', PickTicketSchema);

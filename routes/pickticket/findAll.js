@@ -14,25 +14,17 @@ router.get('/', (req, res) => {
             populate: [
                 {
                     path: 'miritem',
-                    populate: [
-                        {
+                    populate: {
                             path: 'po',
-                            populate: {
-                                path: 'project'
-                            }
-                        },
-                        {
-                            path: 'mir'
-                        }
-                    ]
+                    }
                 },
                 {
                     path: 'location',
                     populate: {
                         path: 'area',
-                        populate: {
-                            path: 'warehouse'
-                        }
+                        // populate: {
+                        //     path: 'warehouse'
+                        // }
                     }
                 }
 

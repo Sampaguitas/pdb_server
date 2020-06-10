@@ -37,7 +37,7 @@ PickItemSchema.virtual("miritem", {
     ref: "miritems",
     localField: "miritemId",
     foreignField: "_id",
-    justOne: false
+    justOne: true
 });
 
 PickItemSchema.set('toJSON', { virtuals: true });

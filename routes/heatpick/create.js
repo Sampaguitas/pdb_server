@@ -40,8 +40,8 @@ module.exports = router;
 
 function upsert(document) {
     return new Promise(function(resolve) {
-        let filter = { heatlocId: document.heatlocId, pickitemId: document.pickitemId };
-        let update = { $inc: { pickQty: document.pickQty } };
+        let filter = { heatlocId: document.heatlocId, pickitemId: document.pickitemId, projectId: document.projectId };
+        let update = { $inc: { inspQty: document.inspQty } };
         HeatPick.findOneAndUpdate(filter, update, { new: true, upsert: true, rawResult: true }, function (err, heatpick) {
             if (err || !heatpick) {
                 resolve({

@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 //Create Schema
 const HeatPickSchema = new Schema({
-    pickQty: {
+    inspQty: {
         type: Number,
     },
     heatlocId: {

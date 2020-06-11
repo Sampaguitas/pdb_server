@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Heat = require('./Heat');
 const HeatLoc = require('./HeatLoc');
+const MirItem = require('./MirItem');
 const Sub = require('./Sub');
 const Transaction = require('./Transaction');
 const _ = require('lodash');
@@ -248,11 +249,14 @@ PoSchema.set('toJSON', { virtuals: true });
 
 
 PoSchema.post('findOneAndDelete', function(doc, next) {
-    findSubs(doc._id).then( () => {
-        findHeats(doc._id).then( () => {
-            findHeatLocs(doc._id).then( () => {
-                findTransactions(doc._id).then( () => {
-                    next()
+    let poId = doc._id;
+    findSubs(poId).then( () => {
+        findHeats(poId).then( () => {
+            findHeatLocs(poId).then( () => {
+                findMirItems(poId).then( () => {
+                    findTransactions(poId).then( () => {
+                        next()
+                    });
                 });
             });
         });
@@ -351,6 +355,40 @@ function deleteHeatLoc(heatlocId) {
             resolve();
         } else {
             HeatLoc.findByIdAndDelete(heatlocId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findMirItems(poId) {
+    return new Promise(function (resolve) {
+        if (!poId) {
+            resolve();
+        } else {
+            MirItem.find({ poId: poId }, function (err, miritems) {
+                if (err || _.isEmpty(miritems)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    miritems.map(miritem => myPromises.push(deleteMirItem(miritem._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteMirItem(miritemId) {
+    return new Promise(function(resolve) {
+        if (!miritemId) {
+            resolve();
+        } else {
+            MirItem.findByIdAndDelete(miritemId, function (err) {
                 if (err) {
                     resolve();
                 } else {

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const PickItem = require('./PickItem')
+const PickItem = require('./PickItem');
+
 const _ = require('lodash');
 
 const PickTicketSchema = new Schema({
@@ -84,7 +85,8 @@ PickTicketSchema.pre('save', function(next) {
 });
 
 PickTicketSchema.post('findOneAndDelete', function(doc, next) {
-    findPickItems(doc._id).then( () => next()); 
+    const pickticketId = doc._id;
+    findPickItems(pickticketId).then( () => next()); 
 });
 
 function findPickItems(pickticketId) {

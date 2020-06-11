@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Article = require('./Article');
+const PickItem = require('./PickItem');
 const Po = require('./Po');
 const _ = require('lodash');
 
@@ -120,7 +121,12 @@ MirItemSchema.pre('save', function(next) {
     });
 });
 
-module.exports = MirItem = mongoose.model('miritems', MirItemSchema);
+MirItemSchema.post('findOneAndDelete', function(doc, next) {
+    let miritemId = doc._id;
+    findPickItems(miritemId).then( () => {
+        next()
+    });
+});
 
 function getArticle(erp, vlArtNo, vlArtNoX) {
     return new Promise(function (resolve) {
@@ -147,3 +153,39 @@ function getArticle(erp, vlArtNo, vlArtNoX) {
         }
     });
 }
+
+function findPickItems(miritemId) {
+    return new Promise(function (resolve) {
+        if (!miritemId) {
+            resolve();
+        } else {
+            PickItem.find({ miritemId: miritemId }, function (err, pickitems) {
+                if (err || _.isEmpty(pickitems)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    pickitems.map(pickitem => myPromises.push(deletePickItem(pickitem._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deletePickItem(pickitemId) {
+    return new Promise(function(resolve) {
+        if (!pickitemId) {
+            resolve();
+        } else {
+            PickItem.findByIdAndDelete(pickitemId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+module.exports = MirItem = mongoose.model('miritems', MirItemSchema);

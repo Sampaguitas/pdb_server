@@ -44,7 +44,8 @@ HeatLocSchema.set('toJSON', { virtuals: true });
 
 
 HeatLocSchema.post('findOneAndDelete', function (doc, next) {
-    findHeatPicks(doc._id).then( () => next());
+    const heatlocId = doc._id;
+    findHeatPicks(heatlocId).then( () => next());
 });
 
 function findHeatPicks(heatlocId) {

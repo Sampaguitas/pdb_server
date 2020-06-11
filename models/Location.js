@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const HeatLoc = require('./HeatLoc');
+const PickItem = require('./PickItem');
 const Transaction = require('./Transaction');
 const _ = require('lodash');
 
@@ -58,7 +59,12 @@ LocationSchema.virtual('transactions', {
 LocationSchema.set('toJSON', { virtuals: true });
 
 LocationSchema.post('findOneAndDelete', function(doc, next) {
-    findTransactions(doc._id).then( () => findHeatLocs(doc._id).then( () => next())); 
+    const locationId = doc._id;
+    findTransactions(locationId).then( () => {
+        findPickItems(locationId).then( () => {
+            findHeatLocs(locationId).then( () => next());
+        });
+    }); 
 });
 
 function findHeatLocs(locationId) {
@@ -85,6 +91,40 @@ function deleteHeatLoc(heatlocId) {
             resolve();
         } else {
             HeatLoc.findByIdAndDelete(heatlocId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findPickItems(locationId) {
+    return new Promise(function (resolve) {
+        if (!locationId) {
+            resolve();
+        } else {
+            PickItem.find({ locationId: locationId }, function (err, pickitems) {
+                if (err || _.isEmpty(pickitems)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    pickitems.map(pickitem => myPromises.push(deletePickItem(pickitem._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deletePickItem(pickitemId) {
+    return new Promise(function(resolve) {
+        if (!pickitemId) {
+            resolve();
+        } else {
+            PickItem.findByIdAndDelete(pickitemId, function (err) {
                 if (err) {
                     resolve();
                 } else {

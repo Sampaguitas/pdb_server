@@ -20,6 +20,9 @@ const DocField = require('./DocField');
 const Field = require('./Field');
 const FieldName = require('./FieldName');
 const HeatLoc = require('./HeatLoc');
+const HeatPick = require('./HeatPick');
+const Mir = require('./Mir');
+const PickTicket = require('./PickTicket');
 const Po = require('./Po');
 const Setting = require('./Setting');
 const Supplier = require('./Supplier');
@@ -216,12 +219,18 @@ ProjectSchema.post('findOneAndDelete', function(doc, next) {
                                                                     findFields(projectId).then( () => {
                                                                         findFieldNames(projectId).then( () => {
                                                                             findHeatLocs(projectId).then( () => {
-                                                                                findPos(projectId).then( () => {
-                                                                                    findSettings(projectId).then( () => {
-                                                                                        findSuppliers(projectId).then( () => {
-                                                                                            findTransactions(projectId).then( () => {
-                                                                                                findWarehouse(projectId).then( () => {
-                                                                                                    s3bucket.deleteProject(projectNr).then( () => next());
+                                                                                findHeatPicks(projectId).then( () => {
+                                                                                    findMirs(projectId).then( () => {
+                                                                                        findPickTickets(projectId).then( () => {
+                                                                                            findPos(projectId).then( () => {
+                                                                                                findSettings(projectId).then( () => {
+                                                                                                    findSuppliers(projectId).then( () => {
+                                                                                                        findTransactions(projectId).then( () => {
+                                                                                                            findWarehouse(projectId).then( () => {
+                                                                                                                s3bucket.deleteProject(projectNr).then( () => next());
+                                                                                                            });
+                                                                                                        });
+                                                                                                    });
                                                                                                 });
                                                                                             });
                                                                                         });
@@ -884,6 +893,108 @@ function deleteHeatLoc(heatlocId) {
             resolve();
         } else {
             HeatLoc.findByIdAndDelete(heatlocId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findHeatPicks(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            HeatPick.find({ projectId: projectId }, function (err, heatpicks) {
+                if (err || _.isEmpty(heatpicks)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    heatpicks.map(heatpick => myPromises.push(deleteHeatPick(heatpick._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteHeatPick(heatpickId) {
+    return new Promise(function(resolve) {
+        if (!heatpickId) {
+            resolve();
+        } else {
+            HeatPick.findByIdAndDelete(heatpickId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findMirs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            Mir.find({ projectId: projectId }, function (err, mirs) {
+                if (err || _.isEmpty(mirs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    mirs.map(mir => myPromises.push(deleteMirs(mir._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteMirs(mirId) {
+    return new Promise(function(resolve) {
+        if (!mirId) {
+            resolve();
+        } else {
+            Mir.findByIdAndDelete(mirId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findPickTickets(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            PickTicket.find({ projectId: projectId }, function (err, picktickets) {
+                if (err || _.isEmpty(picktickets)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    picktickets.map(pickticket => myPromises.push(deletePickTickets(pickticket._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deletePickTickets(pickticketId) {
+    return new Promise(function(resolve) {
+        if (!pickticketId) {
+            resolve();
+        } else {
+            PickTicket.findByIdAndDelete(pickticketId, function (err) {
                 if (err) {
                     resolve();
                 } else {

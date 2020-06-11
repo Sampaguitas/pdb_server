@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const MirItem = require('./MirItem');
+const PickTicket = require('./PickTicket');
 const _ = require('lodash');
 
-//Create Schema
 const MirSchema = new Schema({
     mir: {
         type: String,
@@ -44,7 +44,10 @@ MirSchema.pre('save', function(next) {
 });
 
 MirSchema.post('findOneAndDelete', function(doc, next) {
-    findMirItems(doc._id).then( () => next()); 
+    const mirId = doc._id
+    findMirItems(mirId).then( () => {
+        findPickTickets(mirId).then( () => next());
+    });
 });
 
 function findMirItems(mirId) {
@@ -65,12 +68,46 @@ function findMirItems(mirId) {
     });
 }
 
-function deleteMirItem(mirId) {
+function deleteMirItem(miritemId) {
     return new Promise(function(resolve) {
+        if (!miritemId) {
+            resolve();
+        } else {
+            MirItem.findByIdAndDelete(miritemId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findPickTickets(mirId) {
+    return new Promise(function (resolve) {
         if (!mirId) {
             resolve();
         } else {
-            MirItem.findByIdAndDelete(mirId, function (err) {
+            PickTicket.find({ mirId: mirId }, function (err, picktickets) {
+                if (err || _.isEmpty(picktickets)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    picktickets.map(pickticket => myPromises.push(deletePickTicket(pickticket._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deletePickTicket(pickticketId) {
+    return new Promise(function(resolve) {
+        if (!pickticketId) {
+            resolve();
+        } else {
+            PickTicket.findByIdAndDelete(pickticketId, function (err) {
                 if (err) {
                     resolve();
                 } else {

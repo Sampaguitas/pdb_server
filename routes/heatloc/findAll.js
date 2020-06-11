@@ -9,6 +9,7 @@ router.get('/', (req, res) => {
         cif: 'asc',
         heatNr: 'asc',
     })
+    .populate('heatpicks')
     .exec(function (err, heatlocs) {
         if (err) {
             return res.status(400).json({ message: 'An error has occured.' });

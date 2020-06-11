@@ -33,6 +33,13 @@ const HeatLocSchema = new Schema({
     }
 });
 
+HeatLocSchema.virtual('heatpicks', {
+    ref: "heatpicks",
+    localField: "_id",
+    foreignField: "heatlocId",
+    justOne: false
+});
+
 HeatLocSchema.set('toJSON', { virtuals: true });
 
 

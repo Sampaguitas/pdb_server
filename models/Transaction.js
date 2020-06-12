@@ -18,12 +18,12 @@ const TransactionSchema = new Schema({
         type: String,
         required: true,
     },
-    locationId: {
+    locationId: {//
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'locations',
         required: true 
     },
-    poId: {
+    poId: {//
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'pos',
         required: true
@@ -42,7 +42,11 @@ const TransactionSchema = new Schema({
         required: true 
     },
     transferId: {
-        type: mongoose.SchemaTypes.ObjectId
+        type: mongoose.SchemaTypes.ObjectId,
+    },
+    pickticketId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'picktickets',
     }
 }, {
     // Make Mongoose use Unix time (seconds since Jan 1, 1970)

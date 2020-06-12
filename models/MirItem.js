@@ -40,6 +40,13 @@ MirItemSchema.virtual('totWeight').get(function() {
     }
 });
 
+MirItemSchema.virtual('mir', {
+    ref: 'mirs',
+    localField: 'mirId',
+    foreignField: '_id',
+    justOne: true
+});
+
 MirItemSchema.virtual('po', {
     ref: 'pos',
     localField: 'poId',

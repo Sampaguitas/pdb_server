@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const PickTicket = require('./PickTicket');
 const _ = require('lodash');
 
 //Create Schema
@@ -92,24 +93,57 @@ TransactionSchema.set('toJSON', { virtuals: true });
 
 TransactionSchema.post('findOneAndDelete', function(doc, next) {
     transferId = doc.transferId;
-    if (!_.isUndefined(transferId) && !!transferId) {
-        findSiblings(transferId).then( () => next());
-    } else {
-        next();
-    }
+    pickticketId = doc.pickticketId;
+    findPickSiblings(pickticketId).then( () => {
+        findTransSiblings(transferId).then( () => next());
+    });
 });
 
-function findSiblings(transferId) {
+function findPickSiblings(pickticketId) {
     let myPromises = [];
     return new Promise(function(resolve) {
-        mongoose.model('transactions', TransactionSchema).find({ transferId: transferId}, function(err, siblings) {
-            if(err || _.isEmpty(siblings)) {
+        if (!pickticketId) {
+            resolve();
+        } else {
+            mongoose.model('transactions', TransactionSchema).find({ pickticketId: pickticketId}, function(err, siblings) {
+                if(err || _.isEmpty(siblings)) {
+                    resolve();
+                } else {
+                    siblings.map(sibling => myPromises.push(deleteSibling(sibling._id)));
+                    Promise.all(myPromises).then( () => updatePickTicket(pickticketId).then( () => resolve()));
+                }
+            });
+        }
+    });
+}
+
+function updatePickTicket(pickticketId) {
+    return new Promise(function(resolve) {
+        PickTicket.findByIdAndUpdate(pickticketId, {isProcessed: false}, function(err) {
+            if (err) {
                 resolve();
             } else {
-                siblings.map(sibling => myPromises.push(deleteSibling(sibling._id)));
-                Promise.all(myPromises).then( () => resolve());
+                resolve();
             }
         });
+    });
+}
+
+function findTransSiblings(transferId) {
+    let myPromises = [];
+    return new Promise(function(resolve) {
+        if (!transactionId) {
+            resolve();
+        } else {
+            mongoose.model('transactions', TransactionSchema).find({ transferId: transferId}, function(err, siblings) {
+                if(err || _.isEmpty(siblings)) {
+                    resolve();
+                } else {
+                    siblings.map(sibling => myPromises.push(deleteSibling(sibling._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
     });
 }
 

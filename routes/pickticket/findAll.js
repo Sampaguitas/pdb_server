@@ -22,9 +22,6 @@ router.get('/', (req, res) => {
                     path: 'location',
                     populate: {
                         path: 'area',
-                        // populate: {
-                        //     path: 'warehouse'
-                        // }
                     }
                 }
 

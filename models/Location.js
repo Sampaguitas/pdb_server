@@ -56,6 +56,13 @@ LocationSchema.virtual('transactions', {
     justOne: false
 });
 
+LocationSchema.virtual('heatlocs', {
+    ref: 'heatlocs',
+    localField: '_id',
+    foreignField: 'locationId',
+    justOne: false
+});
+
 LocationSchema.set('toJSON', { virtuals: true });
 
 LocationSchema.post('findOneAndDelete', function(doc, next) {

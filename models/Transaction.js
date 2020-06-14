@@ -132,7 +132,7 @@ function updatePickTicket(pickticketId) {
 function findTransSiblings(transferId) {
     let myPromises = [];
     return new Promise(function(resolve) {
-        if (!transactionId) {
+        if (!transferId) {
             resolve();
         } else {
             mongoose.model('transactions', TransactionSchema).find({ transferId: transferId}, function(err, siblings) {

@@ -179,6 +179,13 @@ ProjectSchema.virtual("transactions", {
     justOne: false
 });
 
+ProjectSchema.virtual("picktickets", {
+    ref: "picktickets",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
 ProjectSchema.set('toJSON', { virtuals: true });
 
 ProjectSchema.pre("save", function (next) {

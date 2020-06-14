@@ -42,7 +42,7 @@ router.post('/', function (req, res) {
                 path: 'project',
                 populate: {
                     path: 'picktickets',
-                    match: { pickticketId: pickticketId },
+                    match: { _id: pickticketId },
                     populate: [
                         {
                             path: 'pickitems',
@@ -404,8 +404,8 @@ function getLines(docDef, docfields, locale) {
                 }, 0);
             }
             pickticket.pickitems.map(pickitem => {
-                if (_.isEmpty(pickitem.location.heatlocs)) {
-                    pickitem.location.heatlocs.map(heatloc, heatIndex => {
+                if (!_.isEmpty(pickitem.location.heatlocs)) {
+                    pickitem.location.heatlocs.map( (heatloc, heatIndex) => {
                         myRowPromises.push(getRow(docDef, docfields, pickticket, itemCount, mirWeight, pickitem, heatloc, heatIndex));
                     });
                 } else {

@@ -393,10 +393,14 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                 if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
                     acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
                 }
+                if (!acc.inspQty.split(' | ').includes(cur.inspQty)) {
+                    acc.inspQty = !acc.inspQty ? cur.inspQty : `${acc.inspQty} | ${cur.inspQty}`
+                }
                 return acc;
             }, {
                 heatNr: '',
-                cif: ''
+                cif: '',
+                inspQty: ''
             });
             docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {

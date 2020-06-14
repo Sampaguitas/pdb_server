@@ -27,7 +27,7 @@ router.delete('/', (req, res) => {
                             nDeleted++;
                         }
                     });
-                    res.status(!!nRjected ? 400 : 200).json({ message: `${nDeleted} items deleted, ${nRejected} items rejected.`});
+                    res.status(!!nRejected ? 400 : 200).json({ message: `${nDeleted} items deleted, ${nRejected} items rejected.`});
                 });
             }
         });

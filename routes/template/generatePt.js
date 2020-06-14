@@ -535,7 +535,7 @@ function getRow(docDef, docfields, pickticket, itemCount, mirWeight, pickitem, h
                 case 'certificate':
                     if(!!heatloc) {
                         arrayRow.push({
-                            val: _.isEqual(docfield.fields.name, 'cif') ? heatloc.cif : heatNr,
+                            val: heatloc[docfield.fields.name],
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type 

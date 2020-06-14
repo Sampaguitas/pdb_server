@@ -74,7 +74,7 @@ function getDocDefCode(projectId, doctypeId) {
     switch(doctypeId){
         case '5d1927121424114e3884ac7e': //ESR01
             return new Promise(function(resolve, reject) {
-                DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -86,7 +86,7 @@ function getDocDefCode(projectId, doctypeId) {
             })
         case '5d1927131424114e3884ac7f': //NFI01
             return new Promise(function(resolve, reject) {
-                DocCountNfi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountNfi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -98,7 +98,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1927131424114e3884ac80': //PL01
             return new Promise(function(resolve, reject) {
-                DocCountPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -110,7 +110,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1927131424114e3884ac81': //PN01
             return new Promise(function(resolve, reject) {
-                DocCountPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -122,7 +122,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1927141424114e3884ac82': //PF01
             return new Promise(function(resolve, reject) {
-                DocCountPf.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountPf.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -134,7 +134,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1927141424114e3884ac83': //SI01
             return new Promise(function(resolve, reject) {
-                DocCountSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -146,7 +146,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1927141424114e3884ac84': //SM01
             return new Promise(function(resolve, reject) {
-                DocCountSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -158,7 +158,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1928de1424114e3884ac85': //INSPECT01
             return new Promise(function(resolve, reject) {
-                DocCountInspect.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountInspect.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -170,7 +170,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1928de1424114e3884ac86': //ESR00
             return new Promise(function(resolve, reject) {
-                DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountEsr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -182,7 +182,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5d1928df1424114e3884ac87': //INSPREL01
             return new Promise(function(resolve, reject) {
-                DocCountInsprel.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountInsprel.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -194,7 +194,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5eacef91e7179a42f172feea': //SH01
             return new Promise(function(resolve, reject) {
-                DocCountSh.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountSh.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {
@@ -206,7 +206,7 @@ function getDocDefCode(projectId, doctypeId) {
             });
         case '5edb2317e7179a6b6367d786': //PT01
             return new Promise(function(resolve, reject) {
-                DocCountPt.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, function(error, doc)   {
+                DocCountPt.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
                     if(error) {
                         reject('An error has occured.');
                     } else if (!doc) {

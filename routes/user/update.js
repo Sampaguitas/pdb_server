@@ -12,13 +12,13 @@ router.put('/', (req, res) => {
 
     const id = req.query.id
     User.findOneAndUpdate({_id: id }, { $set: data }, function (err, user) {
-            if (err) {
-                return res.status(400).json({ message: 'An error has occured.'});
-            } if (!user) {
-                return res.status(400).json({ message: 'Could not retreive user to be updated.'});
-            } else {
-                return res.status(200).json({ message: 'User has successfully been updated.' });
-            }
+        if (err) {
+            return res.status(400).json({ message: 'An error has occured.'});
+        } if (!user) {
+            return res.status(400).json({ message: 'Could not retreive user to be updated.'});
+        } else {
+            return res.status(200).json({ message: 'User has successfully been updated.' });
+        }
     });
 });
 

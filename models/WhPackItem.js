@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ColliPack = require('./ColliPack');
+const WhColliPack = require('./WhColliPack');
 const Po = require('./Po');
 const _ = require('lodash');
 
 //Create Schema
-const PackItemSchema = new Schema({
+const WhPackItemSchema = new Schema({
     plNr: {
         type: Number,
     },
@@ -129,40 +129,40 @@ const PackItemSchema = new Schema({
     udfPiD10: {
         type: Date,
     },
-    subId: {
+    pickitemId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'subs'  
+        ref: 'pickitems'  
     },
-    collipackId: {
+    whcollipackId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'collipacks'  
+        ref: 'whcollipacks'  
     },
     daveId: {
         type: Number,
     }
 });
 
-PackItemSchema.virtual("sub", {
-    ref: "subs",
-    localField: "subId",
+WhPackItemSchema.virtual("pickitem", {
+    ref: "pickitems",
+    localField: "pickitemId",
     foreignField: "_id",
     justOne: true
 });
 
-PackItemSchema.virtual("transactions", {
+WhPackItemSchema.virtual("transactions", {
     ref: "transactions",
     localField: "_id",
-    foreignField: "packitemId",
+    foreignField: "whpackitemId",
     justOne: false
 });
 
-PackItemSchema.set('toJSON', { virtuals: true });
+WhPackItemSchema.set('toJSON', { virtuals: true });
 
 
-PackItemSchema.post('findOneAndDelete', function(doc, next) {
-    doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
-        if (!err && !!res.sub.po.projectId) {
-            let projectId = res.sub.po.projectId;
+WhPackItemSchema.post('findOneAndDelete', function(doc, next) {
+    doc.populate({ path: 'pickitem', populate: { path: 'po' } }, function(err, res) {
+        if (!err && !!res.pickitem.po.projectId) {
+            let projectId = res.pickitem.po.projectId;
             removeDirtyCollis(projectId);
         }
     });
@@ -170,30 +170,30 @@ PackItemSchema.post('findOneAndDelete', function(doc, next) {
 });
 
 
-PackItemSchema.post('findOneAndUpdate', function(doc, next) {
-    doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
-        if (!err && !!res.sub.po.projectId) {
-            let projectId = res.sub.po.projectId;
+WhPackItemSchema.post('findOneAndUpdate', function(doc, next) {
+    doc.populate({ path: 'pickitem', populate: { path: 'po' } }, function(err, res) {
+        if (!err && !!res.pickitem.po.projectId) {
+            let projectId = res.pickitem.po.projectId;
             removeDirtyCollis(projectId).then( () => {
-                //if new packitem has plNr and colliNr:
+                //if new whpackitem has plNr and colliNr:
                 if (!!res.plNr && !!res.colliNr) {
                     let filter = { plNr: res.plNr, colliNr: res.colliNr, projectId: projectId };
                     let update = { plNr: res.plNr, colliNr: res.colliNr, projectId: projectId };
                     let options = { new: true, upsert: true };
-                    //we whant to create a colli in the collipack collection (if it does not already exist);
-                    ColliPack.findOneAndUpdate(filter, update, options, function(errColliPack, resColliPack) {
-                        if (!errColliPack && !!resColliPack._id) {
+                    //we whant to create a colli in the whcollipack collection (if it does not already exist);
+                    WhColliPack.findOneAndUpdate(filter, update, options, function(errWhColliPack, resWhColliPack) {
+                        if (!errWhColliPack && !!resWhColliPack._id) {
                             // removeDirtyCollis(projectId).then(onfulfilled => {
-                                doc.collipackId = resColliPack._id;
+                                doc.whcollipackId = resWhColliPack._id;
                                 doc.save();
                             // });
                         } else {
-                            doc.collipackId = undefined;
+                            doc.whcollipackId = undefined;
                             doc.save();
                         }
                     });
                 } else {
-                    doc.collipackId = undefined;
+                    doc.whcollipackId = undefined;
                     doc.save();
                 }
             });
@@ -208,9 +208,9 @@ function removeDirtyCollis(projectId) {
         Po
         .find({projectId: projectId})
         .populate({
-            path: 'subs',
+            path: 'pickitems',
             populate: {
-                path: 'packitems'
+                path: 'whpackitems'
             }
         })
         .exec(function(errPo, resPos) {
@@ -227,18 +227,18 @@ function removeDirtyCollis(projectId) {
             } else {
 
                 let projectCollis = resPos.reduce(function (accPo, curPo) {
-                    let tempSubs = curPo.subs.reduce(function (accSub, curSub) {
-                        let temPackItems = curSub.packitems.reduce(function (accPackItem, curPackItem) {
-                            if(!!curPackItem.plNr && !!curPackItem.colliNr && !doesHave(accPackItem, curPackItem.plNr, curPackItem.colliNr)) {
-                                accPackItem.push({plNr: curPackItem.plNr, colliNr: curPackItem.colliNr});
+                    let tempSubs = curPo.pickitems.reduce(function (accSub, curSub) {
+                        let temWhPackItems = curSub.whpackitems.reduce(function (accWhPackItem, curWhPackItem) {
+                            if(!!curWhPackItem.plNr && !!curWhPackItem.colliNr && !doesHave(accWhPackItem, curWhPackItem.plNr, curWhPackItem.colliNr)) {
+                                accWhPackItem.push({plNr: curWhPackItem.plNr, colliNr: curWhPackItem.colliNr});
                             }
-                            return accPackItem;
+                            return accWhPackItem;
                         }, []);
-                        temPackItems.map(temPackItem => {
-                            if(!doesHave(accSub, temPackItem.plNr, temPackItem.colliNr)) {
+                        temWhPackItems.map(temWhPackItem => {
+                            if(!doesHave(accSub, temWhPackItem.plNr, temWhPackItem.colliNr)) {
                                 accSub.push({
-                                    plNr: temPackItem.plNr, 
-                                    colliNr: temPackItem.colliNr
+                                    plNr: temWhPackItem.plNr, 
+                                    colliNr: temWhPackItem.colliNr
                                 });
                             }
                         });
@@ -258,40 +258,40 @@ function removeDirtyCollis(projectId) {
                 }, []);
 
                 if (projectCollis) {
-                    ColliPack.find({projectId: projectId}, function (err, collipacks) {
+                    WhColliPack.find({projectId: projectId}, function (err, whcollipacks) {
                         if (err) {
                             resolve({
                                 isRejected: true,
-                                message: 'an error occured while trying to retrive ColliPacks.' 
+                                message: 'an error occured while trying to retrive WhColliPacks.' 
                             });
-                        } else if (_.isEmpty(collipacks)) {
+                        } else if (_.isEmpty(whcollipacks)) {
                             resolve({
                                 isRejected: false,
-                                message: 'No ColliPacks.' 
+                                message: 'No WhColliPacks.' 
                             });
                         } else {
                             let tempPackIds = [];
-                            collipacks.map(collipack => {
-                                if (!doesHave(projectCollis, collipack.plNr, collipack.colliNr)) {
-                                    tempPackIds.push(collipack._id);
+                            whcollipacks.map(whcollipack => {
+                                if (!doesHave(projectCollis, whcollipack.plNr, whcollipack.colliNr)) {
+                                    tempPackIds.push(whcollipack._id);
                                 }
                             });
                             if (_.isEmpty(tempPackIds)) {
                                 resolve({
                                     isRejected: false,
-                                    message: 'No ColliPacks are different than packitems.' 
+                                    message: 'No WhColliPacks are different than whpackitems.' 
                                 }); 
                             } else {
-                                ColliPack.deleteMany({_id: { $in: tempPackIds } }, function (err) {
+                                WhColliPack.deleteMany({_id: { $in: tempPackIds } }, function (err) {
                                     if (err) {
                                         resolve({
                                             isRejected: true,
-                                            message: 'An error has occured while removing ColliPacks.' 
+                                            message: 'An error has occured while removing WhColliPacks.' 
                                         });
                                     } else {
                                         resolve({
                                             isRejected: false,
-                                            message: 'All collipacks have been removed.' 
+                                            message: 'All whcollipacks have been removed.' 
                                         });
                                     }
                                 });
@@ -301,7 +301,7 @@ function removeDirtyCollis(projectId) {
                 } else {
                     resolve({
                         isRejected: false,
-                        message: 'no packitem colli(s) to be deleted.'
+                        message: 'no whpackitem colli(s) to be deleted.'
                     })
                 }
             }
@@ -313,4 +313,4 @@ function doesHave(array, plNr, colliNr) {
     return !!array.find(e => e.plNr == plNr && e.colliNr == colliNr);
 }
 
-module.exports = PackItem = mongoose.model('packitems', PackItemSchema);
+module.exports = WhPackItem = mongoose.model('whpackitems', WhPackItemSchema);

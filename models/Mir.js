@@ -35,10 +35,6 @@ MirSchema.set('toJSON', { virtuals: true });
 
 MirSchema.pre('save', function(next) {
     let self = this;
-    
-    console.log('self.mir:', self.mir);
-    console.log('self.projectId.mir:', self.projectId.mir);
-
     mongoose.model('mirs', MirSchema).findOne({ mir: self.mir, projectId: self.projectId }, function (err, mir) {
         if (!err && !!mir) {
             self.invalidate("Mir", "MIR should be unique");

@@ -245,6 +245,13 @@ PoSchema.virtual("heats", {
     justOne: false
 });
 
+PoSchema.virtual("miritems", {
+    ref: "miritems",
+    localField: "_id",
+    foreignField: "poId",
+    justOne: false
+});
+
 PoSchema.set('toJSON', { virtuals: true });
 
 

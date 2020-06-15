@@ -149,20 +149,28 @@ WhPackItemSchema.virtual("pickitem", {
     justOne: true
 });
 
-WhPackItemSchema.virtual("transactions", {
-    ref: "transactions",
-    localField: "_id",
-    foreignField: "whpackitemId",
-    justOne: false
-});
+// WhPackItemSchema.virtual("transactions", {
+//     ref: "transactions",
+//     localField: "_id",
+//     foreignField: "whpackitemId",
+//     justOne: false
+// });
 
 WhPackItemSchema.set('toJSON', { virtuals: true });
 
 
 WhPackItemSchema.post('findOneAndDelete', function(doc, next) {
-    doc.populate({ path: 'pickitem', populate: { path: 'po' } }, function(err, res) {
-        if (!err && !!res.pickitem.po.projectId) {
-            let projectId = res.pickitem.po.projectId;
+    doc.populate({
+        path: 'pickitem',
+        populate: { 
+            path: 'miritem',
+            populate: {
+                path: 'po'
+            } 
+        } 
+    }, function(err, res) {
+        if (!err && !!res.pickitem.miritem.po.projectId) {
+            let projectId = res.pickitem.miritem.po.projectId;
             removeDirtyCollis(projectId);
         }
     });
@@ -171,9 +179,17 @@ WhPackItemSchema.post('findOneAndDelete', function(doc, next) {
 
 
 WhPackItemSchema.post('findOneAndUpdate', function(doc, next) {
-    doc.populate({ path: 'pickitem', populate: { path: 'po' } }, function(err, res) {
-        if (!err && !!res.pickitem.po.projectId) {
-            let projectId = res.pickitem.po.projectId;
+    doc.populate({
+        path: 'pickitem',
+        populate: { 
+            path: 'miritem',
+            populate: {
+                path: 'po'
+            } 
+        } 
+    }, function(err, res) {
+        if (!err && !!res.pickitem.miritem.po.projectId) {
+            let projectId = res.pickitem.miritem.po.projectId;
             removeDirtyCollis(projectId).then( () => {
                 //if new whpackitem has plNr and colliNr:
                 if (!!res.plNr && !!res.colliNr) {
@@ -208,9 +224,12 @@ function removeDirtyCollis(projectId) {
         Po
         .find({projectId: projectId})
         .populate({
-            path: 'pickitems',
+            path: 'miritems',
             populate: {
-                path: 'whpackitems'
+                path: 'pickitems',
+                populate: {
+                    path: 'whpackitems'
+                }
             }
         })
         .exec(function(errPo, resPos) {
@@ -227,33 +246,42 @@ function removeDirtyCollis(projectId) {
             } else {
 
                 let projectCollis = resPos.reduce(function (accPo, curPo) {
-                    let tempSubs = curPo.pickitems.reduce(function (accSub, curSub) {
-                        let temWhPackItems = curSub.whpackitems.reduce(function (accWhPackItem, curWhPackItem) {
-                            if(!!curWhPackItem.plNr && !!curWhPackItem.colliNr && !doesHave(accWhPackItem, curWhPackItem.plNr, curWhPackItem.colliNr)) {
-                                accWhPackItem.push({plNr: curWhPackItem.plNr, colliNr: curWhPackItem.colliNr});
-                            }
-                            return accWhPackItem;
+                    let tempMirItems = curPo.miritems.reduce(function (accMirItem, curMirItem) {
+                        let tempPickItems = curMirItem.pickitems.reduce(function (accPickItem, curPickItem) {
+                            let tempWhPackItems = curPickItem.whpackitems.reduce(function(accWhPackItem, curWhPackItem) {
+                                if(!!curWhPackItem.plNr && !!curWhPackItem.colliNr && !doesHave(accWhPackItem, curWhPackItem.plNr, curWhPackItem.colliNr)) {
+                                    accWhPackItem.push({plNr: curWhPackItem.plNr, colliNr: curWhPackItem.colliNr});
+                                }
+                                return accWhPackItem;
+                            }, [])
+                            tempWhPackItems.map(tempWhPackItem => {
+                                if(!doesHave(accPickItem, tempWhPackItem.plNr, tempWhPackItem.colliNr)) {
+                                    accPickItem.push({
+                                        plNr: tempWhPackItem.plNr, 
+                                        colliNr: tempWhPackItem.colliNr
+                                    });
+                                }
+                            });
+                            return accPickItem;
                         }, []);
-                        temWhPackItems.map(temWhPackItem => {
-                            if(!doesHave(accSub, temWhPackItem.plNr, temWhPackItem.colliNr)) {
-                                accSub.push({
-                                    plNr: temWhPackItem.plNr, 
-                                    colliNr: temWhPackItem.colliNr
+                        tempPickItems.map(tempPickItem => {
+                            if(!doesHave(accMirItem, tempPickItem.plNr, tempPickItem.colliNr)) {
+                                accMirItem.push({
+                                    plNr: tempPickItem.plNr, 
+                                    colliNr: tempPickItem.colliNr
                                 });
                             }
                         });
-    
-                        return accSub;
+                        return accMirItem;
                     }, []);
-                    tempSubs.map(tempSub => {
-                        if(!doesHave(accPo, tempSub.plNr, tempSub.colliNr)) {
+                    tempMirItems.map(tempMirItem => {
+                        if(!doesHave(accPo, tempMirItem.plNr, tempMirItem.colliNr)) {
                             accPo.push({
-                                plNr: tempSub.plNr, 
-                                colliNr: tempSub.colliNr
+                                plNr: tempMirItem.plNr, 
+                                colliNr: tempMirItem.colliNr
                             });
                         }
                     });
-    
                     return accPo;
                 }, []);
 
@@ -270,12 +298,18 @@ function removeDirtyCollis(projectId) {
                                 message: 'No WhColliPacks.' 
                             });
                         } else {
-                            let tempPackIds = [];
-                            whcollipacks.map(whcollipack => {
-                                if (!doesHave(projectCollis, whcollipack.plNr, whcollipack.colliNr)) {
-                                    tempPackIds.push(whcollipack._id);
+                            //refactored
+                            let tempPackIds = whcollipacks.reduce(function (acc, cur) {
+                                if (!doesHave(projectCollis, cur.plNr, cur.colliNr)) {
+                                    acc.push(cur._id);
                                 }
-                            });
+                            }, []);
+                            // let tempPackIds = [];
+                            // whcollipacks.map(whcollipack => {
+                            //     if (!doesHave(projectCollis, whcollipack.plNr, whcollipack.colliNr)) {
+                            //         tempPackIds.push(whcollipack._id);
+                            //     }
+                            // });
                             if (_.isEmpty(tempPackIds)) {
                                 resolve({
                                     isRejected: false,

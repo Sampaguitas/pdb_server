@@ -41,6 +41,14 @@ PickItemSchema.virtual("miritem", {
     justOne: true
 });
 
+PickItemSchema.virtual("whpackitems", {
+    ref: "whpackitems",
+    localField: "_id",
+    foreignField: "miritemId",
+    justOne: false
+});
+
+
 PickItemSchema.set('toJSON', { virtuals: true });
 
 PickItemSchema.post('findOneAndDelete', function (doc, next) {

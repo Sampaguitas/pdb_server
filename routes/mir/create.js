@@ -13,6 +13,12 @@ router.post('/', (req, res) => {
             newMir
                 .save()
                 .then( () => res.status(200).json({message: 'Mir successfully created.'}))
-                .catch( () => res.status(400).json({message: 'An error has occured.'}));
+                .catch( (err) => {
+                    if (err.hasOwnProperty('message')) {
+                        res.status(400).json({message: err.message});
+                    } else {
+                        res.status(400).json({message: 'An error has occured.'});
+                    }
+                });
 });
 module.exports = router;

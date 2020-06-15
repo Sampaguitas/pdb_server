@@ -38,8 +38,10 @@ MirSchema.pre('save', function(next) {
     mongoose.model('mirs', MirSchema).findOne({ mir: self.mir, projectId: self.projectId }, function (err, mir) {
         if (!err && !!mir) {
             self.invalidate("Mir", "MIR should be unique");
+            next({ message: 'MIR should be unique' });
+        } else {
+            next();
         }
-        next();
     });
 });
 

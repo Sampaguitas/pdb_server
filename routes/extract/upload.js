@@ -94,7 +94,7 @@ router.post('/', upload.single('file'), function (req, res) {
                 tempSub.poId = tempPo._id;
                 //assign PackItem Ids
                 tempPackItem._id = clean(worksheet.getCell('C' + row).value);
-                tempPackItem.packId = clean(worksheet.getCell('D' + row).value);
+                tempPackItem.collipackId = clean(worksheet.getCell('D' + row).value);
                 tempPackItem.subId = tempSub._id;
 
 

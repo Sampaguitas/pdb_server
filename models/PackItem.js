@@ -133,7 +133,7 @@ const PackItemSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'subs'  
     },
-    packId: {
+    collipackId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'collipacks'  
     },
@@ -184,16 +184,16 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
                     ColliPack.findOneAndUpdate(filter, update, options, function(errColliPack, resColliPack) {
                         if (!errColliPack && !!resColliPack._id) {
                             // removeDirtyCollis(projectId).then(onfulfilled => {
-                                doc.packId = resColliPack._id;
+                                doc.collipackId = resColliPack._id;
                                 doc.save();
                             // });
                         } else {
-                            doc.packId = undefined;
+                            doc.collipackId = undefined;
                             doc.save();
                         }
                     });
                 } else {
-                    doc.packId = undefined;
+                    doc.collipackId = undefined;
                     doc.save();
                 }
             });

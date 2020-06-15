@@ -33,7 +33,7 @@ router.put('/', (req, res) => {
             element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
         });
 
-        PackItem.find({ packId: { $in: collipackIds} })
+        PackItem.find({ collipackId: { $in: collipackIds} })
         .populate({
             path: 'sub',
             populate: {
@@ -46,17 +46,17 @@ router.put('/', (req, res) => {
             } else {
 
                 packitems.map(function(packitem) {
-                    itemsWeight.push(getweight(erp, packitem.pcs, packitem.mtrs, packitem.packId,  packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX));
+                    itemsWeight.push(getweight(erp, packitem.pcs, packitem.mtrs, packitem.collipackId,  packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX));
                 });
 
                 await Promise.all(itemsWeight).then(async resItemsWeight => {
                     
                     let myCollis = resItemsWeight.reduce(function (acc, cur) {
                         // if (!cur.isRejected) {
-                           if (acc.hasOwnProperty([cur.packId])) {
-                                acc[cur.packId] += cur.weight;
+                           if (acc.hasOwnProperty([cur.collipackId])) {
+                                acc[cur.collipackId] += cur.weight;
                            } else {
-                                acc[cur.packId] = cur.weight;
+                                acc[cur.collipackId] = cur.weight;
                            }
                         // }
                         return acc;
@@ -88,7 +88,7 @@ router.put('/', (req, res) => {
 
 module.exports = router;
 
-function updateColliPack(packId, netWeight, type, length, width, height, pkWeight) {
+function updateColliPack(collipackId, netWeight, type, length, width, height, pkWeight) {
     return new Promise(function (resolve) {
         let grossWeight = !!netWeight ? netWeight + pkWeight : 0;
         let update = {
@@ -102,7 +102,7 @@ function updateColliPack(packId, netWeight, type, length, width, height, pkWeigh
             }
         }
         let options = { new: true };
-        ColliPack.findByIdAndUpdate(packId, update, options, function(err) {
+        ColliPack.findByIdAndUpdate(collipackId, update, options, function(err) {
             if(err) {
                 resolve({
                     isRejected: true,
@@ -116,19 +116,19 @@ function updateColliPack(packId, netWeight, type, length, width, height, pkWeigh
     });
 }
 
-function getweight(erp, pcs, mtrs, packId, uom, vlArtNo, vlArtNoX) {
+function getweight(erp, pcs, mtrs, collipackId, uom, vlArtNo, vlArtNoX) {
     return new Promise(function(resolve) {
         if (!vlArtNo && !vlArtNoX) {
             resolve({
                 weight: 0,
-                packId: packId,
+                collipackId: collipackId,
                 isRejected: true,
                 reason: 'Article number is missing.'
             });
         } else if(!uom){
             resolve({
                 weight: 0,
-                packId: packId,
+                collipackId: collipackId,
                 isRejected: true,
                 reason: 'Unit of mesurement is missing.'
             });
@@ -147,21 +147,21 @@ function getweight(erp, pcs, mtrs, packId, uom, vlArtNo, vlArtNoX) {
                 if (err) {
                     resolve({
                         weight: 0,
-                        packId: packId,
+                        collipackId: collipackId,
                         isRejected: true,
                         reason: 'An error occured.'
                     });
                 } else if (_.isNull(article)) {
                     resolve({
                         weight: 0,
-                        packId: packId,
+                        collipackId: collipackId,
                         isRejected: true,
                         reason: 'Could not find article weight.'
                     });
                 } else {
                     resolve({
                         weight: calcWeight(tempUom, pcs, mtrs, article.netWeight),
-                        packId: packId,
+                        collipackId: collipackId,
                         isRejected: false,
                         reason: 'Could not find article weight.'
                     });

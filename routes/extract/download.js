@@ -8,7 +8,7 @@ const _ = require('lodash');
   //expediting: poId and subId
   //inspection,  release data: poId, subId, _id (from certificate)
   //inspection, certificates: poId, subId, _id (from certificate)
-  //shipping, transport docs: poId, subId, _id (from packItem) , packId (from colliPack)
+  //shipping, transport docs: poId, subId, _id (from packItem) , collipackId (from colliPack)
   //shipping, packing details: _id (from colliPack)
 
   //screenId: '5cd2b642fd333616dc360b63', //Expediting

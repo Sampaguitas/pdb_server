@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const PackItem = require('../../models/PackItem');
-const fault = require('../../utilities/Errors');
 const _ = require('lodash');
 const ObjectId = require('mongodb').ObjectID;
 

@@ -56,7 +56,7 @@ router.post('/', (req, res) => {
                             subject: 'Reset your account password',
                             html: '<h2>Project Database (PDB)</h2>' +
                             '<p>Hi,</p>' +
-                            '<p>Please click on the following <a href=https://www.vanleeuwenpdb.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '>link</a> within the next hour to reset your password,</p>' +
+                            '<p>Please click on the following <a href=https://pdb-client.herokuapp.com/resetpwd?id=' + user._id + '&token=' + encodeURI(token) + '>link</a> within the next hour to reset your password,</p>' +
                             '<p>If you have not requested for a new password, call me on the follwoing number: <a href="tel:' + keys.myPhone + '">' + keys.myPhone +'</a></p>' +
                             '<p>Thanks,</p>' +
                             '<br/>' +

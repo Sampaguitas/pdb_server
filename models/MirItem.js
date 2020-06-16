@@ -75,7 +75,7 @@ MirItemSchema.pre('save', function(next) {
                 next({ message: 'Could not generate the lineNr.' });
             } else {
                 let unique = miritems.reduce(function(acc, cur) {
-                    if (!!acc && _isEqual(cur.poId, self.poId)) {
+                    if (!!acc && _.isEqual(cur.poId, self.poId)) {
                         acc = false;
                     }
                     return acc;
@@ -98,7 +98,6 @@ MirItemSchema.pre('save', function(next) {
                 }
             }
         });
-        // next();
     }
 });
 

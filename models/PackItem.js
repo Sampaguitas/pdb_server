@@ -180,7 +180,7 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
                     let filter = { plNr: res.plNr, colliNr: res.colliNr, projectId: projectId };
                     let update = { plNr: res.plNr, colliNr: res.colliNr, projectId: projectId };
                     let options = { new: true, upsert: true };
-                    //we whant to create a colli in the collipack collection (if it does not already exist);
+                    //we want to create a colli in the collipack collection (if it does not already exist);
                     ColliPack.findOneAndUpdate(filter, update, options, function(errColliPack, resColliPack) {
                         if (!errColliPack && !!resColliPack._id) {
                             // removeDirtyCollis(projectId).then(onfulfilled => {

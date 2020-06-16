@@ -101,52 +101,6 @@ MirItemSchema.pre('save', function(next) {
     }
 });
 
-// MirItemSchema.pre('save', function(next) {
-//     let self = this;
-//     if (!this.qtyRequired || this.qtyRequired <= 0) {
-//         self.invalidate("qtyRequired", 'is requred.');
-//         next({ message: 'qtyRequired cannot be null.' });
-//     } else {
-//         next();
-//     }
-// });
-
-// MirItemSchema.pre('save', function(next) {
-//     let self = this;
-//     mongoose.model('miritems', MirItemSchema).find({ mirId: self.mirId, poId: self.poId }, function (err, miritems) {
-//         if (err) {
-//             next(err);
-//         } else if (!_.isEmpty(miritems)) {
-//             self.invalidate("poId", "Not unique");
-//             next({ message: 'This line has already been added, MIR cannot contain twice the same item!' });
-//         } else {
-//             next();
-//         }
-//     });
-// });
-
-// MirItemSchema.pre('save', function(next) {
-//     let self = this;
-//     mongoose.model('miritems', MirItemSchema).find({ mirId: self.mirId }, function (err, miritems) {
-//         if (err) {
-//             self.invalidate("lineNr", "is required.");
-//             next({ message: 'Could not generate the lineNr.' });
-//         } else if (_.isEmpty(miritems)) {
-//             self.lineNr = 1;
-//             next();
-//         } else {
-//             let lastLineNr = miritems.reduce(function (acc, cur) {
-//                 if (cur.lineNr > acc) {
-//                     acc = cur.lineNr;
-//                 }
-//                 return acc;
-//             }, 0);
-//             self.lineNr = lastLineNr + 1;
-//             next();
-//         }
-//     });
-// });
-
 MirItemSchema.pre('save', function(next) {
     let self = this;
     Po.findById(self.poId).populate({

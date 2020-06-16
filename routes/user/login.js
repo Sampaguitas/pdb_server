@@ -49,7 +49,7 @@ router.post('/', (req, res) => {
                 jwt.sign(
                     payload,
                     keys.secret,
-                    { expiresIn: 3600 },
+                    { expiresIn: 86400 }, //day=86400, hour=3600 sec
                     (err, token) => {
                         res.json({
                             success: true,

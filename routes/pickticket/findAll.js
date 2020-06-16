@@ -23,8 +23,10 @@ router.get('/', (req, res) => {
                     populate: {
                         path: 'area',
                     }
+                },
+                {
+                    path: 'whpackitems',
                 }
-
             ]
         },
         {

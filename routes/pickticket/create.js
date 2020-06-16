@@ -159,7 +159,7 @@ router.post('/', (req, res) => {
                         }
                     });
                     res.status(!!nRejected || !!nItemRejected ? 400 : 200).json({
-                        message: `${nAdded} packing ticket added, ${nRejected} rejected - ${nItemAdded} packitems added, ${nItemRejected} rejected.`,
+                        message: `${nAdded} picking ticket added, ${nRejected} rejected - ${nItemAdded} pickitems added, ${nItemRejected} rejected.`,
                         logs: tempObject.logArray
                     });
                 })

@@ -298,18 +298,12 @@ function removeDirtyCollis(projectId) {
                                 message: 'No WhColliPacks.' 
                             });
                         } else {
-                            //refactored
-                            let tempPackIds = whcollipacks.reduce(function (acc, cur) {
-                                if (!doesHave(projectCollis, cur.plNr, cur.colliNr)) {
-                                    acc.push(cur._id);
+                            let tempPackIds = [];
+                            whcollipacks.map(whcollipack => {
+                                if (!doesHave(projectCollis, whcollipack.plNr, whcollipack.colliNr)) {
+                                    tempPackIds.push(whcollipack._id);
                                 }
-                            }, []);
-                            // let tempPackIds = [];
-                            // whcollipacks.map(whcollipack => {
-                            //     if (!doesHave(projectCollis, whcollipack.plNr, whcollipack.colliNr)) {
-                            //         tempPackIds.push(whcollipack._id);
-                            //     }
-                            // });
+                            });
                             if (_.isEmpty(tempPackIds)) {
                                 resolve({
                                     isRejected: false,

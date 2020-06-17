@@ -11,7 +11,6 @@ router.delete('/', async (req, res) => {
     let myPromises = [];
     let nRejected = 0;
     let nDeleted = 0;
-
     if (_.isEmpty(selectedIds)) {
         return res.status(400).json({message: 'You need to pass an Id.'});
     } else {

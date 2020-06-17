@@ -4,6 +4,7 @@ const Po = require('../../models/Po');
 const Sub = require('../../models/Sub');
 const Certificate = require('../../models/Certificate');
 const PackItem = require('../../models/PackItem');
+const WhPackItem = require('../../models/WhPackItem');
 const ColliPack = require('../../models/ColliPack');
 const _ = require('lodash');
 const ObjectId = require('mongodb').ObjectID;
@@ -21,6 +22,8 @@ router.put('/', async (req, res) => {
     let certificateIds = [];
     let packitemIds = [];
     let collipackIds = [];
+    let pickitemIds = [];
+    let whpackitemIds = [];
 
     let myPromises = [];
     let nEdited = 0;
@@ -35,6 +38,9 @@ router.put('/', async (req, res) => {
             element.certificateId && !certificateIds.includes(element.certificateId) && certificateIds.push(element.certificateId);
             element.packitemId && !packitemIds.includes(element.packitemId) && packitemIds.push(element.packitemId);
             element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
+            element.pickitemId && !pickitemIds.includes(element.pickitemId) && pickitemIds.push(element.pickitemId);
+            element.whpackitemId && !whpackitemIds.includes(element.whpackitemId) && whpackitemIds.push(element.whpackitemId);
+
         });
 
         switch(collection){
@@ -142,7 +148,6 @@ router.put('/', async (req, res) => {
                     return res.status(nRejected > 0 ? 400 : 200).json({
                         message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
                     });
-
                 });
                 break;
             case 'whpackitem':
@@ -304,7 +309,7 @@ function upsertPackItem(selectedId, fieldName, fieldValue) {
 function upsertWhPackItem(selectedId, fieldName, fieldValue) {
     return new Promise(function(resolve){
         if (!!selectedId.whpackitemId || !!selectedId.pickitemId) {
-            let query = selectedId.whwh ? { _id: selectedId.whpackitemId } : { _id: new ObjectId() };
+            let query = selectedId.whpackitemId ? { _id: selectedId.whpackitemId } : { _id: new ObjectId() };
             let update = { $set: { [fieldName]: fieldValue, pickitemId: selectedId.pickitemId } };
             let options = { new: true, upsert: true };
             WhPackItem.findOneAndUpdate(query, update, options, function(errPackItem) {

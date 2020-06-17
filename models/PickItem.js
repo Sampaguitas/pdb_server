@@ -44,7 +44,7 @@ PickItemSchema.virtual("miritem", {
 PickItemSchema.virtual("whpackitems", {
     ref: "whpackitems",
     localField: "_id",
-    foreignField: "miritemId",
+    foreignField: "pickitemId",
     justOne: false
 });
 

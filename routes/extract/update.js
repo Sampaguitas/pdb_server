@@ -145,6 +145,30 @@ router.put('/', async (req, res) => {
 
                 });
                 break;
+            case 'whpackitem':
+
+                selectedIds.map(function (selectedId) {
+                    myPromises.push(upsertWhPackItem(selectedId, fieldName, fieldValue));
+                });
+                
+                await Promise.all(myPromises).then(resMyPromises => {
+                    
+                    resMyPromises.map(r => {
+                        if (r.isRejected) {
+                            nRejected++;
+                        } else if (r.isEdited) {
+                            nEdited++;
+                        } else if (r.isAdded) {
+                            nAdded++;
+                        }
+                    });
+                        
+                    return res.status(nRejected > 0 ? 400 : 200).json({
+                        message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
+                    });
+
+                });
+                break;
             case 'collipack':
                 if (fieldName === 'plNr' || fieldName === 'colliNr') {
                     return res.status(400).json({ message: 'plNr and colliNr cannot be edited.' });
@@ -263,6 +287,37 @@ function upsertPackItem(selectedId, fieldName, fieldValue) {
                     resolve({
                         isEdited: selectedId.packitemId ? true : false,
                         isAdded: selectedId.packitemId ? false: true,
+                        isRejected: false,
+                    });
+                }
+            });
+        } else {
+            resolve({
+                isEdited: false,
+                isAdded: false,
+                isRejected: true, 
+            });
+        }
+    });
+}
+
+function upsertWhPackItem(selectedId, fieldName, fieldValue) {
+    return new Promise(function(resolve){
+        if (!!selectedId.whpackitemId || !!selectedId.pickitemId) {
+            let query = selectedId.whwh ? { _id: selectedId.whpackitemId } : { _id: new ObjectId() };
+            let update = { $set: { [fieldName]: fieldValue, pickitemId: selectedId.pickitemId } };
+            let options = { new: true, upsert: true };
+            WhPackItem.findOneAndUpdate(query, update, options, function(errPackItem) {
+                if (errPackItem) {
+                    resolve({
+                        isEdited: false,
+                        isAdded: false,
+                        isRejected: true,
+                    });
+                } else {
+                    resolve({
+                        isEdited: selectedId.whpackitemId ? true : false,
+                        isAdded: selectedId.whpackitemId ? false: true,
                         isRejected: false,
                     });
                 }

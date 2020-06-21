@@ -204,7 +204,7 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
 
 
 function removeDirtyCollis(projectId) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
         Po
         .find({projectId: projectId})
         .populate({

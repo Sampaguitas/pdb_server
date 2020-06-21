@@ -205,8 +205,7 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
 
 function removeDirtyCollis(projectId) {
     return new Promise(function (resolve) {
-        Po
-        .find({projectId: projectId})
+        Po.find({ projectId: projectId })
         .populate({
             path: 'subs',
             populate: {
@@ -225,7 +224,7 @@ function removeDirtyCollis(projectId) {
                     message: 'Po seems to be empty.'
                 });
             } else {
-
+                console.log('resPos:', resPos);
                 let projectCollis = resPos.reduce(function (accPo, curPo) {
                     let tempSubs = curPo.subs.reduce(function (accSub, curSub) {
                         let temPackItems = curSub.packitems.reduce(function (accPackItem, curPackItem) {

@@ -202,7 +202,6 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
     next();
 });
 
-
 function removeDirtyCollis(projectId) {
     return new Promise(function (resolve) {
         Po.find({ projectId: projectId })

@@ -10,7 +10,7 @@ router.put('/', (req, res) => {
 
     const id = decodeURI(req.query.id);
     
-    HeatPick.findByIdAndUpdate(id, { $set: data }, function (err, heatpick) {
+    HeatPick.findByIdAndUpdate(id, { $set: data }, { new: true, rawResult: true }, function (err, heatpick) {
         if (err || !heatpick) {
             return res.status(400).json({ message: 'An error has occured.' });
         } else {

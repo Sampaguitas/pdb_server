@@ -37,15 +37,27 @@ HeatPickSchema.set('toJSON', { virtuals: true });
 
 HeatPickSchema.post('findOneAndDelete', function (doc, next) {
     const pickitemId = doc.pickitemId;
-    getQtyPicked(pickitemId).then(qtyPicked => {
-        updateQtyPicked(qtyPicked, pickitemId).then( () => next());
+    PickItem.findById(pickitemId).populate('pickticket').exec(function(err, pickitem) {
+        if(err || !pickitem || (pickitem.hasOwnProperty('pickticket') && !!pickitem.pickticket.isProcessed)) {
+            next();
+        } else {
+            getQtyPicked(pickitemId).then(qtyPicked => {
+                updateQtyPicked(qtyPicked, pickitemId).then( () => next());
+            });
+        }
     });
 });
 
 HeatPickSchema.post('findOneAndUpdate', function (doc, next) {
     const pickitemId = doc.value.pickitemId;
-    getQtyPicked(pickitemId).then(qtyPicked => {
-        updateQtyPicked(qtyPicked, pickitemId).then( () => next());
+    PickItem.findById(pickitemId).populate('pickticket').exec(function(err, pickitem) {
+        if(err || !pickitem || (pickitem.hasOwnProperty('pickticket') && !!pickitem.pickticket.isProcessed)) {
+            next();
+        } else {
+            getQtyPicked(pickitemId).then(qtyPicked => {
+                updateQtyPicked(qtyPicked, pickitemId).then( () => next());
+            });
+        }
     });
 });
 

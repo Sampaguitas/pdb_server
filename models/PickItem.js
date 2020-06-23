@@ -41,6 +41,13 @@ PickItemSchema.virtual("miritem", {
     justOne: true
 });
 
+PickItemSchema.virtual("pickticket", {
+    ref: "picktickets",
+    localField: "pickticketId",
+    foreignField: "_id",
+    justOne: true
+});
+
 PickItemSchema.virtual("whpackitems", {
     ref: "whpackitems",
     localField: "_id",

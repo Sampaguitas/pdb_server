@@ -202,6 +202,10 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
     next();
 });
 
+module.exports = PackItem = mongoose.model('packitems', PackItemSchema);
+
+
+
 function removeDirtyCollis(projectId) {
     return new Promise(function (resolve) {
         Po.find({ projectId: projectId })
@@ -223,7 +227,6 @@ function removeDirtyCollis(projectId) {
                     message: 'Po seems to be empty.'
                 });
             } else {
-                console.log('resPos:', resPos);
                 let projectCollis = resPos.reduce(function (accPo, curPo) {
                     let tempSubs = curPo.subs.reduce(function (accSub, curSub) {
                         let temPackItems = curSub.packitems.reduce(function (accPackItem, curPackItem) {
@@ -310,5 +313,3 @@ function removeDirtyCollis(projectId) {
 function doesHave(array, plNr, colliNr) {
     return !!array.find(e => e.plNr == plNr && e.colliNr == colliNr);
 }
-
-module.exports = PackItem = mongoose.model('packitems', PackItemSchema);

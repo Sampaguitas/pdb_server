@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ColliPack = require('./ColliPack');
-const Po = require('./Po');
+const Po = require('../models/Po');
 const _ = require('lodash');
 
 //Create Schema
@@ -168,6 +168,22 @@ PackItemSchema.post('findOneAndDelete', function(doc, next) {
     });
     next();
 });
+
+// PackItemSchema.post('findOneAndUpdate', function(doc, next) {
+//     doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
+//         if (!err && !!res.sub.po.projectId) {
+//             let projectId = res.sub.po.projectId;
+//             Po.find({projectId: projectId}, function(errPo, resPos){
+//                 if(errPo){
+//                     console.log('errPo:', errPo);
+//                 } else {
+//                     console.log('resPos:', resPos);
+//                 }
+//             });
+//         }
+//     });
+//     next();
+// });
 
 
 PackItemSchema.post('findOneAndUpdate', function(doc, next) {

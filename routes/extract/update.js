@@ -6,6 +6,7 @@ const Certificate = require('../../models/Certificate');
 const PackItem = require('../../models/PackItem');
 const WhPackItem = require('../../models/WhPackItem');
 const ColliPack = require('../../models/ColliPack');
+const WhColliPack = require('../../models/WhColliPack');
 const _ = require('lodash');
 const ObjectId = require('mongodb').ObjectID;
 
@@ -24,6 +25,7 @@ router.put('/', async (req, res) => {
     let collipackIds = [];
     let pickitemIds = [];
     let whpackitemIds = [];
+    let whcollipackIds = []
 
     let myPromises = [];
     let nEdited = 0;
@@ -31,7 +33,6 @@ router.put('/', async (req, res) => {
     let nRejected = 0;
 
     if (!_.isUndefined(selectedIds) && !_.isEmpty(selectedIds) && !!collection || !!fieldName ) {
-
         selectedIds.forEach(element => {
             element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
             element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
@@ -40,7 +41,7 @@ router.put('/', async (req, res) => {
             element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
             element.pickitemId && !pickitemIds.includes(element.pickitemId) && pickitemIds.push(element.pickitemId);
             element.whpackitemId && !whpackitemIds.includes(element.whpackitemId) && whpackitemIds.push(element.whpackitemId);
-
+            element.whcollipackId && !whcollipackIds.includes(element.whcollipackId) && whcollipackIds.push(element.whcollipackId);
         });
 
         switch(collection){
@@ -201,6 +202,33 @@ router.put('/', async (req, res) => {
                     });
                 }
                 break;
+            case 'whcollipack':
+                if (fieldName === 'plNr' || fieldName === 'colliNr') {
+                    return res.status(400).json({ message: 'plNr and colliNr cannot be edited.' });
+                } else {
+                    selectedIds.map(function (selectedId) {
+                        myPromises.push(editWhColliPack(selectedId, fieldName, fieldValue));
+                    });
+
+                    await Promise.all(myPromises).then(resMyPromises => {
+                    
+                        resMyPromises.map(r => {
+                            if (r.isRejected) {
+                                nRejected++;
+                            } else if (r.isEdited) {
+                                nEdited++;
+                            } else if (r.isAdded) {
+                                nAdded++;
+                            }
+                        });
+                            
+                        return res.status(nRejected > 0 ? 400 : 200).json({
+                            message: `${nEdited} item(s) edited, ${nAdded} item(s) added, ${nRejected} item(s) rejected.`
+                        });
+    
+                    });
+                }
+                break;
             default: return res.status(400).json({ message: 'this Field cannot be updated.' });
         }
     } else {
@@ -210,6 +238,37 @@ router.put('/', async (req, res) => {
 });
 
 module.exports = router;
+
+function editWhColliPack(selectedId, fieldName, fieldValue) {
+    return new Promise(function (resolve) {
+        if (!!selectedId.whcollipackId) {
+            let query = { _id: selectedId.whcollipackId };
+            let update = { $set: { [fieldName]: fieldValue } };
+            let options = { new: true };
+            WhColliPack.findOneAndUpdate(query, update, options, function(errWhColliPack) {
+                if (errWhColliPack) {
+                    resolve({
+                        isEdited: false,
+                        isAdded: false,
+                        isRejected: true, 
+                    });
+                } else {
+                    resolve({
+                        isEdited: true,
+                        isAdded: false,
+                        isRejected: false, 
+                    });
+                }
+            });
+        } else {
+            resolve({
+                isEdited: false,
+                isAdded: false,
+                isRejected: true, 
+            });
+        }
+    });
+}
 
 
 function editColliPack(selectedId, fieldName, fieldValue) {

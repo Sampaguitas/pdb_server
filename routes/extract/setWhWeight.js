@@ -40,7 +40,6 @@ router.put('/', (req, res) => {
             if (err) {
                 res.status(400).json({ message: 'An error has occured.'});
             } else {
-
                 whpackitems.map(function(whpackitem) {
                     itemsWeight.push(getweight(erp, whpackitem.pcs, whpackitem.mtrs, whpackitem.whcollipackId,  whpackitem.pickitem.miritem.po.uom, whpackitem.pickitem.miritem.po.vlArtNo, whpackitem.pickitem.miritem.po.vlArtNoX));
                 });

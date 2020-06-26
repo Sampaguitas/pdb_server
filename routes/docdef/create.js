@@ -13,6 +13,10 @@ const DocCountPt = require('../../models/DocCountPt');
 const DocCountSi = require('../../models/DocCountSi');
 const DocCountSm = require('../../models/DocCountSm');
 const DocCountSh = require('../../models/DocCountSh');
+const DocCountWhPl = require('../../models/DocCountWhPl');
+const DocCountWhPn = require('../../models/DocCountWhPn');
+const DocCountWhSi = require('../../models/DocCountWhSi');
+const DocCountWhSm = require('../../models/DocCountWhSm');
 
 router.post('/', async (req, res) => {
 
@@ -213,6 +217,54 @@ function getDocDefCode(projectId, doctypeId) {
                         reject('No document was return from the callback.');
                     } else {
                         resolve('PT' + baseTen(doc.seq));
+                    }
+                });
+            });
+        case '5ef4e9a67c213e6263a723f0': //WHPL01
+            return new Promise(function(resolve, reject) {
+                DocCountWhPl.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
+                    if(error) {
+                        reject('An error has occured.');
+                    } else if (!doc) {
+                        reject('No document was return from the callback.');
+                    } else {
+                        resolve('WHPL' + baseTen(doc.seq));
+                    }
+                });
+            });
+        case '5ef4e9d67c213e6263a7240e': //WHPN01
+            return new Promise(function(resolve, reject) {
+                DocCountWhPn.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
+                    if(error) {
+                        reject('An error has occured.');
+                    } else if (!doc) {
+                        reject('No document was return from the callback.');
+                    } else {
+                        resolve('WHPN' + baseTen(doc.seq));
+                    }
+                });
+            });
+        case '5ef4ea197c213e6263a7241b': //WHSI01
+            return new Promise(function(resolve, reject) {
+                DocCountWhSi.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
+                    if(error) {
+                        reject('An error has occured.');
+                    } else if (!doc) {
+                        reject('No document was return from the callback.');
+                    } else {
+                        resolve('WHSI' + baseTen(doc.seq));
+                    }
+                });
+            });
+        case '5ef4ea597c213e6263a72425': //WHSM01
+            return new Promise(function(resolve, reject) {
+                DocCountWhSm.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
+                    if(error) {
+                        reject('An error has occured.');
+                    } else if (!doc) {
+                        reject('No document was return from the callback.');
+                    } else {
+                        resolve('WHSM' + baseTen(doc.seq));
                     }
                 });
             });

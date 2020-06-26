@@ -12,9 +12,14 @@ const DocCountNfi = require('./DocCountNfi');
 const DocCountPf = require('./DocCountPf');
 const DocCountPl = require('./DocCountPl');
 const DocCountPn = require('./DocCountPn');
+const DocCountPt = require('./DocCountPt');
+const DocCountSh = require('./DocCountSh');
 const DocCountSi = require('./DocCountSi');
 const DocCountSm = require('./DocCountSm');
-const DocCountSh = require('./DocCountSh');
+const DocCountWhPl = require('./DocCountWhPl');
+const DocCountWhPn = require('./DocCountWhPn');
+const DocCountWhSi = require('./DocCountWhSi');
+const DocCountWhSm = require('./DocCountWhSm');
 const DocDef = require('./DocDef');
 const DocField = require('./DocField');
 const Field = require('./Field');
@@ -218,23 +223,33 @@ ProjectSchema.post('findOneAndDelete', function(doc, next) {
                                     findDocCountPfs(projectId).then( () => {
                                         findDocCountPls(projectId).then( () => {
                                             findDocCountPns(projectId).then( () => {
-                                                findDocCountSis(projectId).then( () => {
-                                                    findDocCountSms(projectId).then( () => {
-                                                        findDocCountShs(projectId).then( () => {
-                                                            findDocDefs(projectId).then( () => {
-                                                                findDocFields(projectId).then( () => {
-                                                                    findFields(projectId).then( () => {
-                                                                        findFieldNames(projectId).then( () => {
-                                                                            findHeatLocs(projectId).then( () => {
-                                                                                findHeatPicks(projectId).then( () => {
-                                                                                    findMirs(projectId).then( () => {
-                                                                                        findPickTickets(projectId).then( () => {
-                                                                                            findPos(projectId).then( () => {
-                                                                                                findSettings(projectId).then( () => {
-                                                                                                    findSuppliers(projectId).then( () => {
-                                                                                                        findTransactions(projectId).then( () => {
-                                                                                                            findWarehouse(projectId).then( () => {
-                                                                                                                s3bucket.deleteProject(projectNr).then( () => next());
+                                                findDocCountPts(projectId).then( () => {
+                                                    findDocCountShs(projectId).then( () => {
+                                                        findDocCountSis(projectId).then( () => {
+                                                            findDocCountSms(projectId).then( () => {
+                                                                findDocCountWhPls(projectId).then( () => {
+                                                                    findDocCountWhPns(projectId).then( () => {
+                                                                        findDocCountWhSis(projectId).then( () => {
+                                                                            findDocCountWhSms(projectId).then( () => {
+                                                                                findDocDefs(projectId).then( () => {
+                                                                                    findDocFields(projectId).then( () => {
+                                                                                        findFields(projectId).then( () => {
+                                                                                            findFieldNames(projectId).then( () => {
+                                                                                                findHeatLocs(projectId).then( () => {
+                                                                                                    findHeatPicks(projectId).then( () => {
+                                                                                                        findMirs(projectId).then( () => {
+                                                                                                            findPickTickets(projectId).then( () => {
+                                                                                                                findPos(projectId).then( () => {
+                                                                                                                    findSettings(projectId).then( () => {
+                                                                                                                        findSuppliers(projectId).then( () => {
+                                                                                                                            findTransactions(projectId).then( () => {
+                                                                                                                                findWarehouse(projectId).then( () => {
+                                                                                                                                    s3bucket.deleteProject(projectNr).then( () => next());
+                                                                                                                                });
+                                                                                                                            });
+                                                                                                                        });
+                                                                                                                    });
+                                                                                                                });
                                                                                                             });
                                                                                                         });
                                                                                                     });
@@ -638,6 +653,74 @@ function deleteDocCountPn(doccountpnId) {
     });
 }
 
+function findDocCountPts(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountPt.find({ _id: projectId }, function (err, doccountpts) {
+                if (err || _.isEmpty(doccountpts)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountpts.map(doccountpt => myPromises.push(deleteDocCountPt(doccountpt._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountPt(doccountptId) {
+    return new Promise(function(resolve) {
+        if (!doccountptId) {
+            resolve();
+        } else {
+            DocCountPt.ffindByIdAndDelete(doccountptId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountShs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountSh.find({ _id: projectId }, function (err, doccountshs) {
+                if (err || _.isEmpty(doccountshs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountshs.map(doccountsh => myPromises.push(deleteDocCountSh(doccountsh._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountSh(doccountshId) {
+    return new Promise(function(resolve) {
+        if (!doccountshId) {
+            resolve();
+        } else {
+            DocCountSh.ffindByIdAndDelete(doccountshId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
 function findDocCountSis(projectId) {
     return new Promise(function (resolve) {
         if (!projectId) {
@@ -706,17 +789,17 @@ function deleteDocCountSm(doccountsmId) {
     });
 }
 
-function findDocCountShs(projectId) {
+function findDocCountWhPls(projectId) {
     return new Promise(function (resolve) {
         if (!projectId) {
             resolve();
         } else {
-            DocCountSh.find({ _id: projectId }, function (err, doccountshs) {
-                if (err || _.isEmpty(doccountshs)) {
+            DocCountWhPl.find({ _id: projectId }, function (err, doccountwhpls) {
+                if (err || _.isEmpty(doccountwhpls)) {
                     resolve();
                 } else {
                     let myPromises = [];
-                    doccountshs.map(doccountsh => myPromises.push(deleteDocCountSh(doccountsh._id)));
+                    doccountwhpls.map(doccountwhpl => myPromises.push(deleteDocCountWhPl(doccountwhpl._id)));
                     Promise.all(myPromises).then( () => resolve());
                 }
             });
@@ -724,12 +807,114 @@ function findDocCountShs(projectId) {
     });
 }
 
-function deleteDocCountSh(doccountshId) {
+function deleteDocCountWhPl(doccountwhplId) {
     return new Promise(function(resolve) {
-        if (!doccountshId) {
+        if (!doccountwhplId) {
             resolve();
         } else {
-            DocCountSh.findByIdAndDelete(doccountshId, function (err) {
+            DocCountWhPl.findByIdAndDelete(doccountwhplId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountWhPns(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountWhPn.find({ _id: projectId }, function (err, doccountwhpns) {
+                if (err || _.isEmpty(doccountwhpns)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountwhpns.map(doccountwhpn => myPromises.push(deleteDocCountWhPn(doccountwhpn._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountWhPn(doccountwhpnId) {
+    return new Promise(function(resolve) {
+        if (!doccountwhpnId) {
+            resolve();
+        } else {
+            DocCountWhPn.findByIdAndDelete(doccountwhpnId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountWhSis(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountWhSi.find({ _id: projectId }, function (err, doccountwhsis) {
+                if (err || _.isEmpty(doccountwhsis)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountwhsis.map(doccountwhsi => myPromises.push(deleteDocCountWhSi(doccountwhsi._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountWhSi(doccountwhsiId) {
+    return new Promise(function(resolve) {
+        if (!doccountwhsiId) {
+            resolve();
+        } else {
+            DocCountWhSi.findByIdAndDelete(doccountwhsiId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountWhSms(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountWhSm.find({ _id: projectId }, function (err, doccountwhsms) {
+                if (err || _.isEmpty(doccountwhsms)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccountwhsms.map(doccountwhsm => myPromises.push(deleteDocCountWhSm(doccountwhsm._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountWhSm(doccountwhsmId) {
+    return new Promise(function(resolve) {
+        if (!doccountwhsmId) {
+            resolve();
+        } else {
+            DocCountWhSm.findByIdAndDelete(doccountwhsmId, function (err) {
                 if (err) {
                     resolve();
                 } else {

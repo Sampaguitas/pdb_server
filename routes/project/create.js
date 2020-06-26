@@ -17,8 +17,14 @@ const DocCountNfi = require('../../models/DocCountNfi');
 const DocCountPf = require('../../models/DocCountPf');
 const DocCountPl = require('../../models/DocCountPl');
 const DocCountPn = require('../../models/DocCountPn');
+const DocCountPt = require('../../models/DocCountPt');
+const DocCountSh = require('../../models/DocCountSh');
 const DocCountSi = require('../../models/DocCountSi');
 const DocCountSm = require('../../models/DocCountSm');
+const DocCountWhPl = require('../../models/DocCountWhPl');
+const DocCountWhPn = require('../../models/DocCountWhPn');
+const DocCountWhSi = require('../../models/DocCountWhSi');
+const DocCountWhSm = require('../../models/DocCountWhSm');
 
 const fault = require('../../utilities/Errors');
 const fs = require('fs');
@@ -355,6 +361,34 @@ router.post('/', async (req, res) => {
                 .catch( () => console.log("DocCountPn could not be created"));
             } //if statement
 
+            let oldDocCountPt = await DocCountPt.findOne({_id: req.body.copyId});
+            if (!oldDocCountPt) {
+                return console.log("there was no oldDocCountPt");
+            } else {
+                const newDocCountPt = new DocCountPt({
+                    _id:  project._id,
+                    seq: oldDocCountPt.seq
+                });
+                newDocCountPt
+                .save()
+                .then( () => console.log("new DocCountPt has been created"))
+                .catch( () => console.log("DocCountPt could not be created"));
+            } //if statement
+
+            let oldDocCountSh = await DocCountSh.findOne({_id: req.body.copyId});
+            if (!oldDocCountSh) {
+                return console.log("there was no oldDocCountSh");
+            } else {
+                const newDocCountSh = new DocCountSh({
+                    _id:  project._id,
+                    seq: oldDocCountSh.seq
+                });
+                newDocCountSh
+                .save()
+                .then( () => console.log("new DocCountSh has been created"))
+                .catch( () => console.log("DocCountSh could not be created"));
+            } //if statement
+
             let oldDocCountSi = await DocCountSi.findOne({_id: req.body.copyId});
             if (!oldDocCountSi) {
                 return console.log("there was no oldDocCountSi");
@@ -381,6 +415,62 @@ router.post('/', async (req, res) => {
                 .save()
                 .then( () => console.log("new DocCountSm has been created"))
                 .catch( () => console.log("DocCountSm could not be created"));
+            } //if statement
+
+            let oldDocCountWhPl = await DocCountWhPl.findOne({_id: req.body.copyId});
+            if (!oldDocCountWhPl) {
+                return console.log("there was no oldDocCountWhPl");
+            } else {
+                const newDocCountWhPl = new DocCountWhPl({
+                    _id:  project._id,
+                    seq: oldDocCountWhPl.seq
+                });
+                newDocCountWhPl
+                .save()
+                .then( () => console.log("new DocCountWhPl has been created"))
+                .catch( () => console.log("DocCountWhPl could not be created"));
+            } //if statement
+
+            let oldDocCountWhPn = await DocCountWhPn.findOne({_id: req.body.copyId});
+            if (!oldDocCountWhPn) {
+                return console.log("there was no oldDocCountWhPn");
+            } else {
+                const newDocCountWhPn = new DocCountWhPn({
+                    _id:  project._id,
+                    seq: oldDocCountWhPn.seq
+                });
+                newDocCountWhPn
+                .save()
+                .then( () => console.log("new DocCountWhPn has been created"))
+                .catch( () => console.log("DocCountWhPn could not be created"));
+            } //if statement
+
+            let oldDocCountWhSi = await DocCountWhSi.findOne({_id: req.body.copyId});
+            if (!oldDocCountWhSi) {
+                return console.log("there was no oldDocCountWhSi");
+            } else {
+                const newDocCountWhSi = new DocCountWhSi({
+                    _id:  project._id,
+                    seq: oldDocCountWhSi.seq
+                });
+                newDocCountWhSi
+                .save()
+                .then( () => console.log("new DocCountWhSi has been created"))
+                .catch( () => console.log("DocCountWhSi could not be created"));
+            } //if statement
+
+            let oldDocCountWhSm = await DocCountWhSm.findOne({_id: req.body.copyId});
+            if (!oldDocCountWhSm) {
+                return console.log("there was no oldDocCountWhSm");
+            } else {
+                const newDocCountWhSm = new DocCountWhSm({
+                    _id:  project._id,
+                    seq: oldDocCountWhSm.seq
+                });
+                newDocCountWhSm
+                .save()
+                .then( () => console.log("new DocCountWhSm has been created"))
+                .catch( () => console.log("DocCountWhSm could not be created"));
             } //if statement
 
             let oldProject = await Project.findOne({_id: req.body.copyId});

@@ -270,8 +270,6 @@ function TypeToString(fieldValue, fieldType, locale) {
 function getLines(docDef, docfields, locale) {
     return new Promise(async function (resolve) {
 
-        // let arrayLines = [];
-        // let arrayRow = [];
         let myRowPromises = [];
         let arrayColli = [];
         let hasColli = false;
@@ -322,11 +320,11 @@ function getRow(docDef, docfields, whcollipack, whpackitem, hasColli) {
         let arrayRow = [];
         getArticle(docDef.project.erp.name, whpackitem.pcs, whpackitem.mtrs, whpackitem.sub.po.uom, whpackitem.sub.po.vlArtNo, whpackitem.sub.po.vlArtNoX).then(article => {
             let certificate = whpackitem.pickitem.heatpicks.reduce(function (acc, cur) {
-                if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
-                    acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+                if (!acc.heatNr.split(' | ').includes(cur.heatloc.heatNr)) {
+                    acc.heatNr = !acc.heatNr ? cur.heatloc.heatNr : `${acc.heatNr} | ${cur.heatloc.heatNr}`
                 }
-                if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
-                    acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+                if (!acc.cif.split(' | ').includes(cur.heatloc.cif)) {
+                    acc.cif = !acc.cif ? cur.heatloc.cif : `${acc.cif} | ${cur.heatloc.cif}`
                 }
                 if (!acc.inspQty.split(' | ').includes(String(cur.inspQty))) {
                     acc.inspQty = !acc.inspQty ? String(cur.inspQty) : `${acc.inspQty} | ${String(cur.inspQty)}`

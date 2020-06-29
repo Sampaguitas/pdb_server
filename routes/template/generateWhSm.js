@@ -42,7 +42,7 @@ router.get('/', function (req, res) {
                     path: 'erp',
                 },
                 {
-                    path: 'collipacks',
+                    path: 'whcollipacks',
                     match: { plNr: selectedPl },
                     options: {
                         sort: {
@@ -51,23 +51,29 @@ router.get('/', function (req, res) {
                         }
                     },
                     populate: {
-                        path: 'packitems',
+                        path: 'whpackitems',
                         populate: {
-                            path: 'sub',
+                            path: 'pickitem',
                             populate: [
                                 {
-                                    path: 'po',
+                                    path: 'miritem',
+                                    populate: [
+                                        {
+                                            path: 'po'
+                                        },
+                                        {
+                                            path: 'mir'
+                                        },
+                                    ]
                                 },
                                 {
-                                    path: 'heats',
-                                    options: {
-                                        sort: {
-                                            heatNr: 'asc'
-                                        }
-                                    },
+                                    path: 'heatpicks',
                                     populate: {
-                                        path: 'certificate',
+                                        path: 'heatloc',
                                     }
+                                },
+                                {
+                                    path: 'pickticket'
                                 }
                             ]
                         }
@@ -97,41 +103,41 @@ router.get('/', function (req, res) {
                     }
                 });
                 
-                if (!_.isEmpty(docDef.project.collipacks)) {
+                if (!_.isEmpty(docDef.project.whcollipacks)) {
                     var firstSheet = '';
                     let rowCount = 0;
                     let columnCount = 0;
                     
-                    docDef.project.collipacks.map(function (collipack, indexColli) {
+                    docDef.project.whcollipacks.map(function (whcollipack, indexColli) {
                         //2) add colli pages
                         if (indexColli === 0) {
                             firstSheet = workbook.getWorksheet(1);
-                            firstSheet.name = docDef.project.collipacks[0].colliNr;
+                            firstSheet.name = docDef.project.whcollipacks[0].colliNr;
                             rowCount = firstSheet.rowCount;
                             columnCount = firstSheet.columnCount;
                         } else {
-                            workbook.addWorksheet(collipack.colliNr);
+                            workbook.addWorksheet(whcollipack.colliNr);
                             for (var col = 1; col < columnCount + 1; col++) {
-                                workbook.getWorksheet(collipack.colliNr).getColumn(col).width = firstSheet.getColumn(col).width;
+                                workbook.getWorksheet(whcollipack.colliNr).getColumn(col).width = firstSheet.getColumn(col).width;
                                 for (var row = 1; row < rowCount + 1; row++) {
-                                    workbook.getWorksheet(collipack.colliNr).getRow(row).height = firstSheet.getRow(row).height;
-                                    workbook.getWorksheet(collipack.colliNr).getCell(alphabet(col) + row).value = firstSheet.getCell(alphabet(col) + row).value;
-                                    workbook.getWorksheet(collipack.colliNr).getCell(alphabet(col) + row).numFmt = firstSheet.getCell(alphabet(col) + row).numFmt;
-                                    workbook.getWorksheet(collipack.colliNr).getCell(alphabet(col) + row).font = firstSheet.getCell(alphabet(col) + row).font;
-                                    workbook.getWorksheet(collipack.colliNr).getCell(alphabet(col) + row).alignment = firstSheet.getCell(alphabet(col) + row).alignment;
-                                    workbook.getWorksheet(collipack.colliNr).getCell(alphabet(col) + row).border = firstSheet.getCell(alphabet(col) + row).border;
-                                    workbook.getWorksheet(collipack.colliNr).getCell(alphabet(col) + row).fill = firstSheet.getCell(alphabet(col) + row).fill;
+                                    workbook.getWorksheet(whcollipack.colliNr).getRow(row).height = firstSheet.getRow(row).height;
+                                    workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(col) + row).value = firstSheet.getCell(alphabet(col) + row).value;
+                                    workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(col) + row).numFmt = firstSheet.getCell(alphabet(col) + row).numFmt;
+                                    workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(col) + row).font = firstSheet.getCell(alphabet(col) + row).font;
+                                    workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(col) + row).alignment = firstSheet.getCell(alphabet(col) + row).alignment;
+                                    workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(col) + row).border = firstSheet.getCell(alphabet(col) + row).border;
+                                    workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(col) + row).fill = firstSheet.getCell(alphabet(col) + row).fill;
                                 }
                             }
                         }
                         //3) fill colli pages
-                        collipack.packitems.map(packitem => {
-                            let certificate = packitem.sub.heats.reduce(function (acc, cur) {
-                                if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
-                                    acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+                        whcollipack.whpackitems.map(whpackitem => {
+                            let certificate = whpackitem.pickitem.heatpicks.reduce(function (acc, cur) {
+                                if (!acc.heatNr.split(' | ').includes(cur.heatloc.heatNr)) {
+                                    acc.heatNr = !acc.heatNr ? cur.heatloc.heatNr : `${acc.heatNr} | ${cur.heatloc.heatNr}`
                                 }
-                                if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
-                                    acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+                                if (!acc.cif.split(' | ').includes(cur.heatloc.cif)) {
+                                    acc.cif = !acc.cif ? cur.heatloc.cif : `${acc.cif} | ${cur.heatloc.cif}`
                                 }
                                 if (!acc.inspQty.split(' | ').includes(String(cur.inspQty))) {
                                     acc.inspQty = !acc.inspQty ? String(cur.inspQty) : `${acc.inspQty} | ${String(cur.inspQty)}`
@@ -144,27 +150,28 @@ router.get('/', function (req, res) {
                             });
                             docDef.docfields.map(docfield => {
                                 switch(docfield.fields.fromTbl) {
-                                    case 'collipack': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = collipack[docfield.fields.name] || '';
+                                    case 'collipack': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whcollipack[docfield.fields.name] || '';
                                         break;
-                                    case 'packitem': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem[docfield.fields.name] || '';
+                                    case 'packitem': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem[docfield.fields.name] || '';
                                         break;
-                                    case 'sub': 
-                                        if(docfield.fields.name === 'heatNr') {
-                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = certificate[docfield.fields.name] || '';
-                                        } else {
-                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem.sub[docfield.fields.name] || '';
-                                        }
+                                    case 'pickitem': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem[docfield.fields.name] || '';
                                         break;
-                                    case 'certificate': workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = certificate[docfield.fields.name] || '';
+                                    case 'miritem': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.miritem[docfield.fields.name] || '';
                                         break;
                                     case 'po': 
                                         if (['project', 'projectNr'].includes(docfield.fields.name)) {
-                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '';
+                                            workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '';
                                         } else {
-                                            workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = packitem.sub.po[docfield.fields.name] || '';
+                                            workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.miritem.po[docfield.fields.name] || '';
                                         }    
-                                    break;
-                                    default: workbook.getWorksheet(collipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = '';
+                                        break;
+                                    case 'mir': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.miritem.mir[docfield.fields.name] || '';
+                                        break;
+                                    case 'certificate': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = certificate[docfield.fields.name] || '';
+                                        break;
+                                    case 'pickticket': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.pickticket[docfield.fields.name] || '';
+                                        break;
+                                    default: workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = '';
                                 }
                             });
                         });
@@ -172,7 +179,7 @@ router.get('/', function (req, res) {
                         const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
                         // const lastColSol = getColumnLast(docFieldSol);
                         const lastColSol = getColumnLast(docFieldSol, docDef.col1);
-                        wsPageSetup(docDef.row1, workbook.getWorksheet(collipack.colliNr), lastColSol);
+                        wsPageSetup(docDef.row1, workbook.getWorksheet(whcollipack.colliNr), lastColSol);
                     });
                 }
                 workbook.xlsx.write(res);
@@ -232,17 +239,3 @@ function wsPageSetup(firstRow, ws, lastCol) {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -42,7 +42,7 @@ router.get('/', function (req, res) {
                     path: 'erp',
                 },
                 {
-                    path: 'collipacks',
+                    path: 'whcollipacks',
                     match: { plNr: selectedPl },
                     options: {
                         sort: {
@@ -51,23 +51,29 @@ router.get('/', function (req, res) {
                         }
                     },
                     populate: {
-                        path: 'packitems',
+                        path: 'whpackitems',
                         populate: {
-                            path: 'sub',
+                            path: 'pickitem',
                             populate: [
                                 {
-                                    path: 'po',
+                                    path: 'miritem',
+                                    populate: [
+                                        {
+                                            path: 'po'
+                                        },
+                                        {
+                                            path: 'mir'
+                                        },
+                                    ]
                                 },
                                 {
-                                    path: 'heats',
-                                    options: {
-                                        sort: {
-                                            heatNr: 'asc'
-                                        }
-                                    },
+                                    path: 'heatpicks',
                                     populate: {
-                                        path: 'certificate',
+                                        path: 'heatloc',
                                     }
+                                },
+                                {
+                                    path: 'pickticket'
                                 }
                             ]
                         }
@@ -94,7 +100,7 @@ router.get('/', function (req, res) {
                 // console.log('--------------------------');
                 // console.log(docDef.project.collipacks);
 
-                let spColli = docDef.project.collipacks.reduce(function(acc, cur) {
+                let spColli = docDef.project.whcollipacks.reduce(function(acc, cur) {
                     if (!!cur.type && !acc.hasOwnProperty(cur.type.toUpperCase())){
                         acc[cur.type.toUpperCase()] = { spColliQty: 1, spColliWeight: cur.grossWeight || 0 }
                     } else if (!!cur.type && acc.hasOwnProperty(cur.type.toUpperCase())){
@@ -329,34 +335,17 @@ function TypeToString(fieldValue, fieldType, locale) {
   }
 }
 
-//---group(1)----params row: 1 or 2 or 3....
-//po.description
-//po.material
-//---display(1)---
-
-//---group(2)----params row: 1 or 2 or 3....
-//po.size
-//po.sch
-//---display(2)---
-
-// function getGroups(docfields) {
-
-// }
-
 function getLines(docDef, docfields, locale, spColli) {
     return new Promise(async function (resolve) {
-        // let arrayLines = [];
-        // let arrayRow = [];
         let myRowPromises = [];
         let arrayColli = [];
 
-        if(docDef.project.collipacks) {
+        if(docDef.project.whcollipacks) {
             
-            docDef.project.collipacks.map(collipack => {
-                // console.log('collipack.packitems:', collipack.packitems);
-                if(collipack.packitems){
-                    collipack.packitems.map(function (packitem, itemIndex) {
-                        myRowPromises.push(getRows(docDef, docfields, collipack, packitem, itemIndex, spColli));
+            docDef.project.whcollipacks.map(whcollipack => {
+                if(whcollipack.whpackitems){
+                    whcollipack.whpackitems.map(function (whpackitem, itemIndex) {
+                        myRowPromises.push(getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli));
                     });
                 }
             });
@@ -372,26 +361,26 @@ function getLines(docDef, docfields, locale, spColli) {
     });
 }
 
-function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
+function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli) {
     return new Promise(function(resolve) {
         let arrayLine = [];
         
         let tempUom = 'pcs';
-        if (!!packitem.sub.po.uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(packitem.sub.po.uom.toUpperCase())) {
+        if (!!whpackitem.pickitem.miritem.po.uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(whpackitem.pickitem.miritem.po.uom.toUpperCase())) {
             tempUom = 'mtrs';
-        } else if (!!packitem.sub.po.uom && ['F', 'FT', 'FEET', 'FEETS'].includes(packitem.sub.po.uom.toUpperCase())) {
+        } else if (!!whpackitem.pickitem.miritem.po.uom && ['F', 'FT', 'FEET', 'FEETS'].includes(whpackitem.pickitem.miritem.po.uom.toUpperCase())) {
             tempUom = 'feets';
-        } else if (!!packitem.sub.po.uom && packitem.sub.po.uom.toUpperCase() === 'MT') {
+        } else if (!!whpackitem.pickitem.miritem.po.uom && whpackitem.pickitem.miritem.po.uom.toUpperCase() === 'MT') {
             tempUom = 'mt';
         }
 
-        getArticle(docDef.project.erp.name, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX).then(article => {
-            let certificate = packitem.sub.heats.reduce(function (acc, cur) {
-                if (!acc.heatNr.split(' | ').includes(cur.heatNr)) {
-                    acc.heatNr = !acc.heatNr ? cur.heatNr : `${acc.heatNr} | ${cur.heatNr}`
+        getArticle(docDef.project.erp.name, whpackitem.pickitem.miritem.po.vlArtNo, whpackitem.pickitem.miritem.po.vlArtNoX).then(article => {
+            let certificate = whpackitem.pickitem.heatpicks.reduce(function (acc, cur) {
+                if (!acc.heatNr.split(' | ').includes(cur.heatloc.heatNr)) {
+                    acc.heatNr = !acc.heatNr ? cur.heatloc.heatNr : `${acc.heatNr} | ${cur.heatloc.heatNr}`
                 }
-                if (!acc.cif.split(' | ').includes(cur.certificate.cif)) {
-                    acc.cif = !acc.cif ? cur.certificate.cif : `${acc.cif} | ${cur.certificate.cif}`
+                if (!acc.cif.split(' | ').includes(cur.heatloc.cif)) {
+                    acc.cif = !acc.cif ? cur.heatloc.cif : `${acc.cif} | ${cur.heatloc.cif}`
                 }
                 if (!acc.inspQty.split(' | ').includes(String(cur.inspQty))) {
                     acc.inspQty = !acc.inspQty ? String(cur.inspQty) : `${acc.inspQty} | ${String(cur.inspQty)}`
@@ -421,14 +410,14 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                             });
                         } else if (docfield.fields.name === 'spLineWeight') {
                             arrayLine.push({
-                                val: calcWeight(tempUom, packitem.pcs, packitem.mtrs, article.netWeight),
+                                val: calcWeight(tempUom, whpackitem.pcs, whpackitem.mtrs, article.netWeight),
                                 row: docfield.row,
                                 col: docfield.col,
                                 type: docfield.fields.type
                             });
                         } else if (docfield.fields.name === 'spPlQty') {
                             arrayLine.push({
-                                val: tempUom === 'pcs' ? packitem.pcs : packitem.mtrs,
+                                val: tempUom === 'pcs' ? whpackitem.pcs : whpackitem.mtrs,
                                 row: docfield.row,
                                 col: docfield.col,
                                 type: docfield.fields.type
@@ -443,16 +432,57 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                         }
                         break;
                     case 'collipack':
-                        arrayLine.push({
-                            val: collipack[docfield.fields.name] || '',
+                        arrayRow.push({
+                            val: whcollipack[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type
                         });
                         break;
                     case 'packitem':
-                        arrayLine.push({
-                            val: packitem[docfield.fields.name] || '',
+                        arrayRow.push({
+                            val: whpackitem[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                        break;
+                    case 'pickitem':
+                        arrayRow.push({
+                            val: whpackitem.pickitem[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                        break;
+                    case 'miritem':
+                        arrayRow.push({
+                            val: whpackitem.pickitem.miritem[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                        break;
+                    case 'po':
+                        if (['project', 'projectNr'].includes(docfield.fields.name)) {
+                            arrayRow.push({
+                                val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        } else {
+                            arrayRow.push({
+                                val: whpackitem.pickitem.miritem.po[docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        }
+                        break;
+                    case 'mir':
+                        arrayRow.push({
+                            val: whpackitem.pickitem.miritem.mir[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type
@@ -466,49 +496,15 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                             type: docfield.fields.type
                         });
                         break;
-                    case 'sub':
-                        if (docfield.fields.name === 'heatNr') {
-                            arrayRow.push({
-                                val: certificate[docfield.fields.name] || '',
-                                row: docfield.row,
-                                col: docfield.col,
-                                type: docfield.fields.type
-                            });
-                        } else {
-                            arrayRow.push({
-                                val: packitem.sub[docfield.fields.name] || '',
-                                row: docfield.row,
-                                col: docfield.col,
-                                type: docfield.fields.type
-                            });
-                        }
-                        break;
-                    case 'po':
-                        if (['project', 'projectNr'].includes(docfield.fields.name)) {
-                            arrayLine.push({
-                                val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
-                                row: docfield.row,
-                                col: docfield.col,
-                                type: docfield.fields.type
-                            });
-                        } else {
-                            arrayLine.push({
-                                val: packitem.sub.po[docfield.fields.name] || '',
-                                row: docfield.row,
-                                col: docfield.col,
-                                type: docfield.fields.type
-                            });
-                        }
-                        break;
                     case 'article':
-                        arrayLine.push({
+                        arrayRow.push({
                             val: article[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type
                         });
                         break;
-                    default: arrayLine.push({
+                    default: arrayRow.push({
                         val: '',
                         row: docfield.row,
                         col: docfield.col,
@@ -517,40 +513,9 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                 }
             });
             resolve(arrayLine);
-            // resolve(lineToRows(arrayLine));
         });
     });
 }
-
-// function lineToRows(arrayLine) {
-//     let tempRows = [];
-//     let lineObject = arrayLine.reduce(function (acc, cur) {
-//         if (!!cur.row && cur.row > acc.maxRow) {
-//             acc.maxRow = cur.row;
-//         }
-
-//         if (!!cur.row && !acc.hasOwnProperty(cur.row)) {
-//             acc[cur.row] = [cur];
-//         } else if (!!cur.row && acc.hasOwnProperty(cur.row)) {
-//             acc[cur.row].push(cur);
-//         }
-
-//         return acc;
-
-//     }, { maxRow: 1 });
-
-//     for (var i = 1; i < lineObject.maxRow + 1; i++) {
-//         if (lineObject.hasOwnProperty(i)) {
-//             tempRows.push(lineObject[i]);
-//         } else {
-//             tempRows.push([]);
-//         }
-//     }
-
-//     // console.log(lineObject)
-
-//     return arrayLine;
-// }
 
 function getArticle(erp, vlArtNo, vlArtNoX) {
     return new Promise(function (resolve) {
@@ -562,15 +527,6 @@ function getArticle(erp, vlArtNo, vlArtNoX) {
         } else {
             let conditions = vlArtNo ? { erp: erp, vlArtNo : vlArtNo } : { erp: erp, vlArtNoX : vlArtNoX };
             Article.findOne(conditions, function (err, article) {
-                // let tempUom = 'pcs';
-                // if (!!uom && ['M', 'MT', 'MTR', 'MTRS', 'LM'].includes(uom.toUpperCase())) {
-                //     tempUom = 'mtrs';
-                // } else if (!!uom && ['F', 'FT', 'FEET', 'FEETS'].includes(uom.toUpperCase())) {
-                //     tempUom = 'feets';
-                // } else if (!!uom && uom.toUpperCase() === 'MT') {
-                //     tempUom = 'mt';
-                // }
-
                 if(err || _.isNull(article)) {
                     resolve({
                         hsCode: '',
@@ -580,7 +536,6 @@ function getArticle(erp, vlArtNo, vlArtNoX) {
                     resolve({
                         hsCode: article.hsCode,
                         netWeight: article.netWeight
-                        // calcWeight(tempUom, pcs, mtrs, article.netWeight)
                     });
                 }
             });

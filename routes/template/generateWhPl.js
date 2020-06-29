@@ -318,7 +318,7 @@ function emptyRow(docfields) {
 function getRow(docDef, docfields, whcollipack, whpackitem, hasColli) {
     return new Promise(function(resolve) {
         let arrayRow = [];
-        getArticle(docDef.project.erp.name, whpackitem.pcs, whpackitem.mtrs, whpackitem.sub.po.uom, whpackitem.sub.po.vlArtNo, whpackitem.sub.po.vlArtNoX).then(article => {
+        getArticle(docDef.project.erp.name, whpackitem.pcs, whpackitem.mtrs, whpackitem.pickitem.miritem.po.uom, whpackitem.pickitem.miritem.po.vlArtNo, whpackitem.pickitem.miritem.po.vlArtNoX).then(article => {
             let certificate = whpackitem.pickitem.heatpicks.reduce(function (acc, cur) {
                 if (!acc.heatNr.split(' | ').includes(cur.heatloc.heatNr)) {
                     acc.heatNr = !acc.heatNr ? cur.heatloc.heatNr : `${acc.heatNr} | ${cur.heatloc.heatNr}`
@@ -406,14 +406,6 @@ function getRow(docDef, docfields, whcollipack, whpackitem, hasColli) {
                     case 'certificate':
                         arrayRow.push({
                             val: certificate[docfield.fields.name] || '',
-                            row: docfield.row,
-                            col: docfield.col,
-                            type: docfield.fields.type
-                        });
-                        break;
-                    case 'mir':
-                        arrayRow.push({
-                            val: whpackitem.pickitem.miritem.mir[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type

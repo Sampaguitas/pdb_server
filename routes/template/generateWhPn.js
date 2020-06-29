@@ -311,21 +311,12 @@ function getRow(docDef, docfields, whcollipack, whpackitem) {
             docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {
                     case 'collipack':
-                        if (hasColli) {
-                            arrayRow.push({
-                                val: '',
-                                row: docfield.row,
-                                col: docfield.col,
-                                type: docfield.fields.type
-                            });
-                        } else {
-                            arrayRow.push({
-                                val: whcollipack[docfield.fields.name] || '',
-                                row: docfield.row,
-                                col: docfield.col,
-                                type: docfield.fields.type
-                            });
-                        }
+                        arrayRow.push({
+                            val: whcollipack[docfield.fields.name] || '',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
                         break;
                     case 'packitem':
                         arrayRow.push({
@@ -379,14 +370,6 @@ function getRow(docDef, docfields, whcollipack, whpackitem) {
                     case 'certificate':
                         arrayRow.push({
                             val: certificate[docfield.fields.name] || '',
-                            row: docfield.row,
-                            col: docfield.col,
-                            type: docfield.fields.type
-                        });
-                        break;
-                    case 'mir':
-                        arrayRow.push({
-                            val: whpackitem.pickitem.miritem.mir[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type

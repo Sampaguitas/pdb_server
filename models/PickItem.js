@@ -55,6 +55,13 @@ PickItemSchema.virtual("whpackitems", {
     justOne: false
 });
 
+PickItemSchema.virtual("heatpicks", {
+    ref: "heatpicks",
+    localField: "_id",
+    foreignField: "pickitemId",
+    justOne: false
+});
+
 
 PickItemSchema.set('toJSON', { virtuals: true });
 

@@ -97,9 +97,6 @@ router.get('/', function (req, res) {
             wb.xlsx.read(s3.getObject(params).createReadStream())
             .then(async function(workbook) {
 
-                // console.log('--------------------------');
-                // console.log(docDef.project.collipacks);
-
                 let spColli = docDef.project.whcollipacks.reduce(function(acc, cur) {
                     if (!!cur.type && !acc.hasOwnProperty(cur.type.toUpperCase())){
                         acc[cur.type.toUpperCase()] = { spColliQty: 1, spColliWeight: cur.grossWeight || 0 }
@@ -432,7 +429,7 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         }
                         break;
                     case 'collipack':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: whcollipack[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -440,7 +437,7 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         });
                         break;
                     case 'packitem':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: whpackitem[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -448,7 +445,7 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         });
                         break;
                     case 'pickitem':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: whpackitem.pickitem[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -456,7 +453,7 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         });
                         break;
                     case 'miritem':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: whpackitem.pickitem.miritem[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -465,14 +462,14 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         break;
                     case 'po':
                         if (['project', 'projectNr'].includes(docfield.fields.name)) {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
                                 row: docfield.row,
                                 col: docfield.col,
                                 type: docfield.fields.type
                             });
                         } else {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: whpackitem.pickitem.miritem.po[docfield.fields.name] || '',
                                 row: docfield.row,
                                 col: docfield.col,
@@ -482,14 +479,14 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         break;
                     case 'mir':
                         if (['itemCount', 'mirWeight'].includes(docfield.fields.name)) {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: '',
                                 row: docfield.row,
                                 col: docfield.col,
                                 type: 'String'
                             });
                         } else {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: whpackitem.pickitem.miritem.mir[docfield.fields.name] || '',
                                 row: docfield.row,
                                 col: docfield.col,
@@ -498,7 +495,7 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         }
                         break;
                     case 'certificate':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: certificate[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -507,14 +504,14 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         break;
                     case 'pickticket':
                         if (_.isEqual(docfield.fields.name, 'pickStatus')) {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: whpackitem.pickitem.pickticket.isProcessed ? 'Closed' : 'Open',
                                 row: docfield.row,
                                 col: docfield.col,
                                 type: docfield.fields.type
                             });
                         }else {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: whpackitem.pickitem.pickticket[docfield.fields.name] || '',
                                 row: docfield.row,
                                 col: docfield.col,
@@ -523,14 +520,14 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         }
                         break;
                     case 'article':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: article[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type
                         });
                         break;
-                    default: arrayRow.push({
+                    default: arrayLine.push({
                         val: '',
                         row: docfield.row,
                         col: docfield.col,

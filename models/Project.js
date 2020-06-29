@@ -100,6 +100,13 @@ ProjectSchema.virtual("collipacks", {
     justOne: false
 });
 
+ProjectSchema.virtual("whcollipacks", {
+    ref: "whcollipacks",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
 ProjectSchema.virtual("collitypes", {
     ref: "collitypes",
     localField: "_id",

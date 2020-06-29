@@ -165,11 +165,21 @@ router.get('/', function (req, res) {
                                             workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.miritem.po[docfield.fields.name] || '';
                                         }    
                                         break;
-                                    case 'mir': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.miritem.mir[docfield.fields.name] || '';
+                                    case 'mir': 
+                                        if(['itemCount', 'mirWeight'].includes(docfield.fields.name)) {
+                                            workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = '';
+                                        } else {
+                                            workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.miritem.mir[docfield.fields.name] || '';
+                                        }
                                         break;
                                     case 'certificate': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = certificate[docfield.fields.name] || '';
                                         break;
-                                    case 'pickticket': workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.pickticket[docfield.fields.name] || '';
+                                    case 'pickticket': 
+                                        if (_.isEqual(docfield.fields.name, 'pickStatus')) {
+                                            workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.pickticket.isProcessed ? 'Closed' : 'Open';
+                                        } else {
+                                            workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = whpackitem.pickitem.pickticket[docfield.fields.name] || '';
+                                        }
                                         break;
                                     default: workbook.getWorksheet(whcollipack.colliNr).getCell(alphabet(docfield.col) + docfield.row).value = '';
                                 }

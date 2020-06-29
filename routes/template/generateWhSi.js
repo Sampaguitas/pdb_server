@@ -481,12 +481,21 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                         }
                         break;
                     case 'mir':
-                        arrayRow.push({
-                            val: whpackitem.pickitem.miritem.mir[docfield.fields.name] || '',
-                            row: docfield.row,
-                            col: docfield.col,
-                            type: docfield.fields.type
-                        });
+                        if (['itemCount', 'mirWeight'].includes(docfield.fields.name)) {
+                            arrayRow.push({
+                                val: '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: 'String'
+                            });
+                        } else {
+                            arrayRow.push({
+                                val: whpackitem.pickitem.miritem.mir[docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        }
                         break;
                     case 'certificate':
                         arrayRow.push({
@@ -495,6 +504,23 @@ function getRows(docDef, docfields, whcollipack, whpackitem, itemIndex, spColli)
                             col: docfield.col,
                             type: docfield.fields.type
                         });
+                        break;
+                    case 'pickticket':
+                        if (_.isEqual(docfield.fields.name, 'pickStatus')) {
+                            arrayRow.push({
+                                val: whpackitem.pickitem.pickticket.isProcessed ? 'Closed' : 'Open',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        }else {
+                            arrayRow.push({
+                                val: whpackitem.pickitem.pickticket[docfield.fields.name] || '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type
+                            });
+                        }
                         break;
                     case 'article':
                         arrayRow.push({

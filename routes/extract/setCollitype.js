@@ -41,6 +41,7 @@ router.put('/', (req, res) => {
             }
         })
         .exec(async function (err, packitems) {
+            console.log('packitems:', packitems);
             if (err) {
                 res.status(400).json({ message: 'An error has occured.'});
             } else {

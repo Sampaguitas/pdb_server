@@ -211,6 +211,9 @@ const SubSchema = new Schema({
     udfSbD10: {
         type: Date,
     },
+    isReturned: {
+        type: Boolean,
+    },
     poId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'pos' 

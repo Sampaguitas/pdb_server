@@ -207,6 +207,9 @@ const PoSchema = new Schema({
     udfPoD10: {
         type: Date,
     },
+    qtyReturned: {
+        type: Number,
+    },
     projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'  

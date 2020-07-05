@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const Heat = require('./Heat');
 const HeatLoc = require('./HeatLoc');
 const MirItem = require('./MirItem');
+const Return = require('./Return');
 const Sub = require('./Sub');
 const Transaction = require('./Transaction');
 const _ = require('lodash');
@@ -11,9 +12,11 @@ const _ = require('lodash');
 const PoSchema = new Schema({
     clPo: {
         type: String, //2
+        default: 'RETURNED'
     },
     clPoRev: {
-        type: String, //2
+        type: String, //2,
+        default: 'NVL'
     },
     clPoItem: {
         type: Number, //2
@@ -207,9 +210,6 @@ const PoSchema = new Schema({
     udfPoD10: {
         type: Date,
     },
-    qtyReturned: {
-        type: Number,
-    },
     projectId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'projects'  
@@ -228,6 +228,13 @@ PoSchema.virtual("project", {
 
 PoSchema.virtual("transactions", {
     ref: "transactions",
+    localField: "_id",
+    foreignField: "poId",
+    justOne: false
+});
+
+PoSchema.virtual("returns", {
+    ref: "returns",
     localField: "_id",
     foreignField: "poId",
     justOne: false
@@ -260,18 +267,54 @@ PoSchema.set('toJSON', { virtuals: true });
 
 PoSchema.post('findOneAndDelete', function(doc, next) {
     let poId = doc._id;
-    findSubs(poId).then( () => {
-        findHeats(poId).then( () => {
-            findHeatLocs(poId).then( () => {
-                findMirItems(poId).then( () => {
-                    findTransactions(poId).then( () => {
-                        next()
+    findReturns(poId).then( () => {
+        findSubs(poId).then( () => {
+            findHeats(poId).then( () => {
+                findHeatLocs(poId).then( () => {
+                    findMirItems(poId).then( () => {
+                        findTransactions(poId).then( () => {
+                            next()
+                        });
                     });
                 });
             });
         });
-    }); 
+    })
 });
+
+function findReturns(poId) {
+    return new Promise(function (resolve) {
+        if (!poId) {
+            resolve();
+        } else {
+            Return.find({ poId: poId }, function (err, returns) {
+                if (err || _.isEmpty(returns)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    returns.map(_return => myPromises.push(deleteReturn(_return._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteReturn(returnId) {
+    return new Promise(function(resolve) {
+        if (!returnId) {
+            resolve();
+        } else {
+            Return.findByIdAndDelete(returnId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
 
 function findSubs(poId) {
     return new Promise(function (resolve) {

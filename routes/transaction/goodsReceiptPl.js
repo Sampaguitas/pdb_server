@@ -14,6 +14,7 @@ router.post('/', (req, res) => {
 
     let poIds = [];
     let subIds = [];
+    let returnIds = [];
     let certificateIds = [];
     let packitemIds = [];
     let collipackIds = [];
@@ -33,6 +34,7 @@ router.post('/', (req, res) => {
         selectedIdsGr.forEach(element => {
             element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
             element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
+            element.returnId && !returnIds.includes(element.returnId) && returnIds.push(element.returnId);
             element.certificateId && !certificateIds.includes(element.certificateId) && certificateIds.push(element.certificateId);
             element.packitemId && !packitemIds.includes(element.packitemId) && packitemIds.push(element.packitemId);
             element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);

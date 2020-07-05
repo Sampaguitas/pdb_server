@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const _ = require('lodash');
-const Sub = require('../../models/Sub');
+const Return = require('../../models/Return');
 const Transaction = require('../../models/Transaction');
 
 router.post('/', (req, res) => {
@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
             element.packitemId && !packitemIds.includes(element.packitemId) && packitemIds.push(element.packitemId);
             element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
         });
-        Sub.find({_id: {$in: subIds}})
+        Return.find({_id: {$in: returnIds}})
         .populate([
             {
                 path: 'po',
@@ -48,14 +48,14 @@ router.post('/', (req, res) => {
                 path: 'transactions'
             }
         ])
-        .exec(async function(err, subs) {
+        .exec(async function(err, returns) {
             if (err) {
                 res.status(400).json({message: 'An error has occured.'});
-            } else if (!subs) {
-                res.status(400).json({message: 'Could not retrive subs.'});
+            } else if (!returns) {
+                res.status(400).json({message: 'Could not retrive returns.'});
             } else {
-                subs.map(function (sub) {
-                    myTransactions.push(saveTransaction(sub, transQty, transDate, toLocation, projectId));
+                returns.map(function (_return) {
+                    myTransactions.push(saveTransaction(_return, transQty, transDate, toLocation, projectId));
                 });
 
                 await Promise.all(myTransactions).then(resTransactions => {
@@ -77,14 +77,12 @@ router.post('/', (req, res) => {
 
 module.exports = router;
 
-
-
-function saveTransaction(sub, transQty, transDate, toLocation, projectId) {
+function saveTransaction(_return, transQty, transDate, toLocation, projectId) {
     return new Promise(function(resolve) {
-        let stockQty = getStockQty(sub);
-        let relQty = sub.relQty || 0;
-        transQty = transQty ? transQty : relQty - stockQty;
-        if (transQty > relQty - stockQty) {
+        let stockQty = getStockQty(_return);
+        let qtyReturn = _return.qtyReturn || 0;
+        transQty = transQty ? transQty : qtyReturn - stockQty;
+        if (transQty > qtyReturn - stockQty) {
             resolve ({
                 isRejected: true,
                 isAdded: false,
@@ -93,11 +91,11 @@ function saveTransaction(sub, transQty, transDate, toLocation, projectId) {
             const newTransaction = new Transaction({
                 transQty: transQty,
                 transDate: transDate,
-                transType: 'Receipt',
-                transComment: `NFI ${sub.nfi} Received: ${transQty} ${sub.po.uom}`,
+                transType: 'Return',
+                transComment: `WayBill ${_return.waybillNr} item ${_return.waybillItem} Received: ${transQty} ${_return.po.uom}`,
                 locationId: toLocation,
-                poId: sub.poId,
-                subId: sub._id,
+                poId: _return.poId,
+                returnId: _return._id,
                 projectId: projectId
             });
 
@@ -114,8 +112,8 @@ function saveTransaction(sub, transQty, transDate, toLocation, projectId) {
     });
 }
 
-function getStockQty(sub) {
-    return sub.transactions.reduce(function (acc, cur) {
+function getStockQty(_return) {
+    return _return.transactions.reduce(function (acc, cur) {
         if (!!cur.transQty) {
             acc += cur.transQty;
         }

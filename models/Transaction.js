@@ -33,6 +33,10 @@ const TransactionSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'subs',
     },
+    returnId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'returns',
+    },
     packitemId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'packitems',
@@ -71,6 +75,13 @@ TransactionSchema.virtual("po", {
 TransactionSchema.virtual("sub", {
     ref: "subs",
     localField: "subId",
+    foreignField: "_id",
+    justOne: true
+});
+
+TransactionSchema.virtual("return", {
+    ref: "returns",
+    localField: "returnId",
     foreignField: "_id",
     justOne: true
 });

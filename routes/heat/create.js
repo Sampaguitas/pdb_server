@@ -9,6 +9,7 @@ router.post('/', (req, res) => {
                 certIndex: req.body.certIndex,
                 poId: req.body.poId,
                 subId: req.body.subId,
+                returnId: req.body.returnId,
                 certificateId: req.body.certificateId,
             });
 

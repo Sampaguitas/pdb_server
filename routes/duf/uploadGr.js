@@ -4,31 +4,43 @@ var multer = require('multer');
 var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
 fs = require('fs');
-const FieldName = require('../../models/FieldName');
-const Project = require('../../models/Project');
-const Po = require('../../models/Po');
-const Sub = require('../../models/Sub');
+// const FieldName = require('../../models/FieldName');
+// const Project = require('../../models/Project');
+// const Po = require('../../models/Po');
+// const Sub = require('../../models/Sub');
 var Excel = require('exceljs');
 var _ = require('lodash');
+const { stringify } = require('querystring');
+
+
+// let nonPrintable = /[\t\r\n]/mg;
+// nonPrintable.test(value)
+// value.replace(nonPrintable, '');
 
 router.post('/', upload.single('file'), function (req, res) {
-  
   const projectId = req.body.projectId;
   const file = req.file;
 
-  let colPromises = [];
-  let rowPromises = [];
 
-  let tempPo = {};
-  let tempSub = {};
-  
+  let fieldnames = [
+    { forShow: 1, field: { type: 'String', name: 'clCode', custom: 'Client Code'}},
+    { forShow: 2, field: { type: 'Number', name: 'inspQty', custom: 'Qty'}},
+    { forShow: 3, field: { type: 'Date', name: 'dateReturn', custom: 'Date Returned'}},
+    { forShow: 4, field: { type: 'String', name: 'remarks', custom: 'Remarks'}},
+    { forShow: 5, field: { type: 'String', name: 'waybillNr', custom: 'Waybill Nr'}},
+    { forShow: 6, field: { type: 'String', name: 'waybillItem', custom: 'Waybill Item'}},
+    { forShow: 7, field: { type: 'String', name: 'contractor', custom: 'Contractor'}},
+    { forShow: 8, field: { type: 'String', name: 'warehouse', custom: 'Warehouse'}},
+    { forShow: 9, field: { type: 'String', name: 'location', custom: 'Location'}},
+    { forShow: 10, field: { type: 'String', name: 'cif', custom: 'CIF'}},
+    { forShow: 11, field: { type: 'String', name: 'heatNr', custom: 'Heat No'}},
+  ];
+
   let rejections = [];
   let nProcessed = 0;
   let nRejected = 0;
   let nAdded = 0;
   let nEdited = 0;
-
-  let nonPrintable = /[\t\r\n]/mg;
   
   if (!projectId || !file) {
     res.status(400).json({
@@ -40,238 +52,128 @@ router.post('/', upload.single('file'), function (req, res) {
       nEdited: nEdited
     });
   } else {
-    // FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
-    Project.findById(projectId)
-    .populate({
-      path: 'fieldnames',
-      match: {
-        screenId: '5cd2b646fd333616dc360b6d',
-        forShow: {$exists: true, $nin: ['', 0]}
-      },
-      options: { sort: {forShow:'asc'} },
-      populate: {
-        path: 'fields'
-      }
-    })
-    // .populate('fields')
-    // .sort({forShow:'asc'})
-    // .exec(function (errFieldNames, resFieldNames) {
-    .exec(function (errProject, resProject) {
-      if (errProject || !resProject) {
+    var workbook = new Excel.Workbook();
+    workbook.xlsx.load(file.buffer).then(wb => {
+
+      var worksheet = wb.getWorksheet(1);
+      let rowCount = worksheet.rowCount;
+            
+      if (rowCount < 2) {
         return res.status(400).json({
-            message: 'An error has occured, please check with your administrator.',
-            rejections: rejections,
-            nProcessed: nProcessed,
-            nRejected: nRejected,
-            nAdded: nAdded,
-            nEdited: nEdited
+          message: 'The Duf File seems to be empty.',
+          rejections: rejections,
+          nProcessed: nProcessed,
+          nRejected: nRejected,
+          nAdded: nAdded,
+          nEdited: nEdited
+        });
+      } else if (rowCount > 801) {
+        return res.status(400).json({
+          message: 'Try to upload less than 800 rows at the time.',
+          rejections: rejections,
+          nProcessed: nProcessed,
+          nRejected: nRejected,
+          nAdded: nAdded,
+          nEdited: nEdited
         });
       } else {
-        var workbook = new Excel.Workbook();
-        workbook.xlsx.load(file.buffer).then(wb => {
 
-          var worksheet = wb.getWorksheet(1);
-          let rowCount = worksheet.rowCount;
+        let pos = [];
+        let nonPrintable = /[\t\r\n]/mg;
+
+        for (var row = 2; row < rowCount + 1; row++ ) {
           
-          if (rowCount < 2) {
-            return res.status(400).json({
-              message: 'The Duf File seems to be empty.',
-              rejections: rejections,
-              nProcessed: nProcessed,
-              nRejected: nRejected,
-              nAdded: nAdded,
-              nEdited: nEdited
-            });
-          } else if (rowCount > 801) {
-            return res.status(400).json({
-              message: 'Try to upload less than 800 rows at the time.',
-              rejections: rejections,
-              nProcessed: nProcessed,
-              nRejected: nRejected,
-              nAdded: nAdded,
-              nEdited: nEdited
-            });
-          } else {
- 
-            (async function() {
-              for (let row = 2; row < rowCount + 1 ; row++) {
+          let line = fieldnames.reduce(function(acc, cur) {
+            if (nonPrintable.test(worksheet.getCell(`${alphabet(cur.forShow)}${row}`).value)) {
+              acc[cur.field.name] = worksheet.getCell(`${alphabet(cur.forShow)}${row}`).value.replace(nonPrintable, '');
+            } else {
+              acc[cur.field.name] = worksheet.getCell(`${alphabet(cur.forShow)}${row}`).value;
+            }
+            return acc;
+          }, {});
 
-                colPromises = [];
-
-                //initialise objects
-                for (var member in tempPo) delete tempPo[member];
-                for (var member in tempSub) delete tempSub[member];
-                
-                //assign projectId
-                tempPo.projectId = projectId;
-
-                resProject.fieldnames.map(fieldname => {
-                  let cell = alphabet(fieldname.forShow) + row;
-                  let fromTbl = fieldname.fields.fromTbl;
-                  let type = fieldname.fields.type;
-                  let key = fieldname.fields.name;
-                  let value = worksheet.getCell(cell).value
-                  
-                  if (type === 'String' && value === 0) {
-                    value = '0'
-                  } else if (nonPrintable.test(value)) {
-                    value = value.replace(nonPrintable, '');
-                  }
-                  
-                  colPromises.push(testFormat(row, cell, type, value));
-                  
-                  switch (fromTbl) {
-                    case 'po':
-                      // if (!['project', 'projectNr'].includes(key)) {
-                      tempPo[key] = value;
-                      // }
-                      break;
-                    case 'sub':
-                      tempSub[key] = value;
-                      break;
-                  }
-                });// end map
-
-                await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(upsert(projectId, row, tempPo, tempSub, resProject.number));
-                }).catch(errPromises => {
-                  if(!_.isEmpty(errPromises)) {
-                    rejections.push(errPromises);
-                  }
-                  nRejected++;
-                });//end colPromises.all promise
-
-                nProcessed++;
-              } //end for loop
-
-              await Promise.all(rowPromises).then(resRowPromises => {
-                resRowPromises.map(r => {
-                  if (r.isRejected) {
-                    rejections.push({row: r.row, reason: r.reason});
-                    nRejected++;
-                  } else if(r.isEdited) {
-                    nEdited++;
-                  } else {
-                    nAdded++;
-                  }
-                });//end parse resRowPromise
-                return res.status(200).json({
-                  rejections: rejections,
-                  nProcessed: nProcessed,
-                  nRejected: nRejected,
-                  nAdded: nAdded,
-                  nEdited: nEdited
-                });
-              }).catch( () => {
-                return res.status(400).json({
-                  message: 'An error has occured during the upload.',
-                  rejections: rejections,
-                  nProcessed: nProcessed,
-                  nRejected: nRejected,
-                  nAdded: nAdded,
-                  nEdited: nEdited
-                });
-              });//end rowPromise.all promise
-              
-            })();//end async function
-          }
-        }).catch( () => {
-          return res.status(400).json({
-              message: 'Could not load the workbook.',
-              rejections: rejections,
-              nProcessed: nProcessed,
-              nRejected: nRejected,
-              nAdded: nAdded,
-              nEdited: nEdited
-          });
-        });//end wb load promise
-      }
-    })
-  }
-
-  function upsert(projectId, row, tempPo, tempSub, projectNr) {
-    return new Promise (function (resolve, reject) {
-      let poQuery = {};
-      
-      if (tempPo.vlSo && tempPo.vlSoItem) {
-        poQuery = {
-          projectId: projectId, 
-          vlSo: tempPo.vlSo, 
-          vlSoItem: tempPo.vlSoItem
-        };
-      } else if (tempPo.clPo && tempPo.clPoRev && tempPo.clPoItem && tempPo.clCode) {
-        poQuery = {
-          projectId: projectId,
-          clPo: tempPo.clPo,
-          clPoRev: tempPo.clPoRev,
-          clPoItem: tempPo.clPoItem,
-          clCode: tempPo.clCode
-        };
-      } else {
-          poQuery = {};
-      }
-
-      if (_.isEmpty(poQuery)) {
-        resolve({
-          row: row,
-          isRejected: true,
-          isEdited: false,
-          isAdded: false,
-          reason: 'Fields ("clPo", "clPoRev", "clPoItem", "clCode") or ("vlSo", "vlSoItem") should not be empty.'
-        });
-      } else if (tempPo.hasOwnProperty('projectNr') && tempPo.projectNr != projectNr) {
-        resolve({
-          row: row,
-          isRejected: true,
-          isEdited: false,
-          isAdded: false,
-          reason: 'Field projectNr does not match current project number.'
-        });
-      } else {
-        Po.findOneAndUpdate(poQuery, tempPo, { new: true, upsert: true, rawResult: true}, function(errNewPo, resNewPo){
-          if (errNewPo || !resNewPo) {
-            resolve({
-              row: row,
-              isRejected: true,
-              isEdited: false,
-              isAdded: false,
-              reason: 'Fields from Table Po could not be saved.'
-            });
-          } else {
-            //assign poId and Split Qty
-            tempSub.poId = resNewPo.value._id;
-            tempSub.splitQty = resNewPo.value.qty;
-            Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
-              if (errNewSub || !resNewSub) {
-                resolve({
-                  row: row,
-                  isRejected: true,
-                  isEdited: false,
-                  isAdded: false,
-                  reason: 'Fields from Table Sub could not be saved.'
-                });
-              } else {
-                if (resNewPo.lastErrorObject.updatedExisting) {
-                  resolve({
-                    row: row,
-                    isRejected: false,
-                    isEdited: true,
-                    isAdded: false,
-                    reason: ''
-                  });
-                } else {
-                  resolve({
-                    row: row,
-                    isRejected: false,
-                    isEdited: false,
-                    isAdded: true,
-                    reason: ''
-                  });
+          let foundPo = pos.find(element => element.clCode === line.clCode);
+          if (!foundPo) {
+            pos.push({
+              clCode: line.clCode,
+              returns: [
+                {
+                  qtyReturn: line.inspQty,
+                  dateReturn: line.dateReturn,
+                  remarks: line.remarks,
+                  waybillNr: line.waybillNr,
+                  waybillItem: line.waybillItem,
+                  contractor: line.contractor,
+                  heatlocs: [
+                    {
+                      cif: line.cif,
+                      heatNr: line.heatNr,
+                      inspQty: line.inspQty,
+                      warehouse: line.warehouse,
+                      location: line.location,
+                    }
+                  ]
                 }
-              }
+              ]
             });
+          } else {
+            let foundReturn = foundPo.returns.find(element => element.waybillNr === line.waybillNr && element.waybillItem === line.waybillItem);
+            if (!foundReturn) {
+              foundPo.returns.push({
+                qtyReturn: line.inspQty,
+                dateReturn: line.dateReturn,
+                remarks: line.remarks,
+                waybillNr: line.waybillNr,
+                waybillItem: line.waybillItem,
+                contractor: line.contractor,
+                heatlocs: [
+                  {
+                    cif: line.cif,
+                    heatNr: line.heatNr,
+                    inspQty: line.inspQty,
+                    warehouse: line.warehouse,
+                    location: line.location,
+                  }
+                ]
+              });
+            } else {
+              foundReturn.qtyReturn += line.inspQty;
+              let foundHeatLoc = foundReturn.heatlocs.find(element => {
+                return element.cif === line.cif && element.heatNr === line.heatNr && element.warehouse === line.warehouse && element.location === line.location
+              });
+              if (!foundHeatLoc) {
+                foundReturn.heatlocs.push({
+                  cif: line.cif,
+                  heatNr: line.heatNr,
+                  inspQty: line.inspQty,
+                  warehouse: line.warehouse,
+                  location: line.location,
+                })
+              } else {
+                foundHeatLoc.inspQty += line.inspQty;
+              }
+            }
           }
+        }
+        pos.map(po => {
+          po.returns.map(_return => {
+            // let heats = _return.heatlocs.reduce(function(acc, cur) {
+            //   acc += cur.inspQty
+            //   return acc;
+            // }, 0);
+            // _return.qtyReturn = qtyReturn;
+            console.log(_return);
+          });
         });
+        
+        res.status(200).json({
+          message: 'Still working on this function...',
+          rejections: rejections,
+          nProcessed: nProcessed,
+          nRejected: nRejected,
+          nAdded: nAdded,
+          nEdited: nEdited
+        })
       }
     });
   }

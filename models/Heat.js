@@ -25,6 +25,11 @@ const HeatSchema = new Schema({
         ref: 'subs',
         required: false
     },
+    returnId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'returns',
+        required: false
+    },
     certificateId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'certificates',
@@ -42,6 +47,13 @@ HeatSchema.virtual('certificate', {
 HeatSchema.virtual('sub', {
     ref: "subs",
     localField: "subId",
+    foreignField: "_id",
+    justOne: true
+});
+
+HeatSchema.virtual('return', {
+    ref: "returns",
+    localField: "returnId",
     foreignField: "_id",
     justOne: true
 });

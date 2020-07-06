@@ -5,18 +5,17 @@ fs = require('fs');
 
 router.get('/', function (req, res) {
     let fieldnames = [
-        { forShow: 1, fields: { type: 'String', name: 'clCode', custom: 'Client Code', fromTbl: 'po' }},
-        { forShow: 2, fields: { type: 'Number', name: 'inspQty', custom: 'Qty', fromTbl: 'heatloc' }},
-        { forShow: 3, fields: { type: 'String', name: 'uom', custom: 'Qty Unit', fromTbl: 'po' }},
-        { forShow: 4, fields: { type: 'Date', name: 'transDate', custom: 'Date', fromTbl: 'transaction' }},
-        { forShow: 5, fields: { type: 'String', name: 'remarks', custom: 'Remarks', fromTbl: 'po' }},
-        { forShow: 6, fields: { type: 'Number', name: 'plNr', custom: 'waybill No', fromTbl: 'packitem' }},
-        { forShow: 7, fields: { type: 'String', name: 'colliNr', custom: 'waybill Item', fromTbl: 'packitem' }},
-        { forShow: 8, fields: { type: 'String', name: 'supplier', custom: 'Contractor', fromTbl: 'po' }},
-        { forShow: 9, fields: { type: 'String', name: 'warehouse', custom: 'Warehouse', fromTbl: 'warehouse' }},
-        { forShow: 10, fields: { type: 'String', name: 'location', custom: 'Location', fromTbl: 'location' }},
-        { forShow: 11, fields: { type: 'String', name: 'cif', custom: 'CIF', fromTbl: 'heatloc' }},
-        { forShow: 12, fields: { type: 'String', name: 'heatNr', custom: 'Heat No', fromTbl: 'heatloc' }},
+        { forShow: 1, field: { type: 'String', name: 'clCode', custom: 'Client Code'}},
+        { forShow: 2, field: { type: 'Number', name: 'inspQty', custom: 'Qty'}},
+        { forShow: 3, field: { type: 'Date', name: 'dateReturn', custom: 'Date Returned'}},
+        { forShow: 4, field: { type: 'String', name: 'remarks', custom: 'Remarks'}},
+        { forShow: 5, field: { type: 'String', name: 'waybillNr', custom: 'Waybill Nr'}},
+        { forShow: 6, field: { type: 'String', name: 'waybillItem', custom: 'Waybill Item'}},
+        { forShow: 7, field: { type: 'String', name: 'contractor', custom: 'Contractor'}},
+        { forShow: 8, field: { type: 'String', name: 'warehouse', custom: 'Warehouse'}},
+        { forShow: 9, field: { type: 'String', name: 'location', custom: 'Location'}},
+        { forShow: 10, field: { type: 'String', name: 'cif', custom: 'CIF'}},
+        { forShow: 11, field: { type: 'String', name: 'heatNr', custom: 'Heat No'}},
     ];
     workbook = new Excel.Workbook();
     var worksheet = workbook.addWorksheet('My Sheet');
@@ -24,7 +23,7 @@ router.get('/', function (req, res) {
     fieldnames.map(fieldname => {
         let cell = worksheet.getCell(`${alphabet(fieldname.forShow) + 1}`);
         with (cell) {
-            value = fieldname.fields.custom,
+            value = fieldname.field.custom,
             style = Object.create(cell.style), //shallow-clone the style, break references
             border ={
                 top: {style:'hair'},
@@ -51,57 +50,6 @@ router.get('/', function (req, res) {
         }
     })
     workbook.xlsx.write(res);
-//   const projectId = req.query.projectId;
-
-//     FieldName.find({ screenId: '5cd2b646fd333616dc360b6d', projectId: projectId, forShow: {$exists: true, $nin: ['', 0]} })
-//     .populate('fields')
-//     .sort({forShow:'asc'})
-//     .exec(function (errFieldNames, resFieldNames) {
-//         if (errFieldNames) {
-//             return res.status(400).json({message: errFieldNames})
-//         } else if (!resFieldNames) {
-//             return res.status(400).json({message: 'an error occured'});
-//         } else {
-//             workbook = new Excel.Workbook();
-//             // workbook.properties.date1904 = true;
-//             var worksheet = workbook.addWorksheet('My Sheet');
-//             if (!!resFieldNames.length) {
-//                 worksheet.getRow(1).height = 30;
-//                 resFieldNames.map(resFieldName => {
-//                     if(resFieldName.forShow > 0) {
-//                         let cell = worksheet.getCell(`${alphabet(resFieldName.forShow) + 1}`);
-//                         with (cell) {
-//                             value = resFieldName.fields.custom,
-//                             style = Object.create(cell.style), //shallow-clone the style, break references
-//                             border ={
-//                                 top: {style:'hair'},
-//                                 left: {style:'hair'},
-//                                 bottom: {style:'thick'},
-//                                 right: {style:'hair'}                
-//                             },
-//                             fill = {
-//                                 type: 'pattern',
-//                                 pattern: 'solid',
-//                                 fgColor: { argb: '0070C0'}
-//                             },
-//                             font = {
-//                                 name: 'Calibri',
-//                                 color: { argb: 'FFFFFF'},
-//                                 family: 2,
-//                                 size: 11,
-//                                 bold: true
-//                             },
-//                             alignment = {
-//                                 vertical: 'middle',
-//                                 horizontal: 'left'
-//                             }
-//                         }
-//                     }
-//                 })
-//             }
-//             workbook.xlsx.write(res);
-//         }
-//     });
 });
 
 function alphabet(num){

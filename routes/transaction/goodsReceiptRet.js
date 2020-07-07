@@ -92,7 +92,7 @@ function saveTransaction(_return, transQty, transDate, toLocation, projectId) {
                 transQty: transQty,
                 transDate: transDate,
                 transType: 'Return',
-                transComment: `WayBill ${_return.waybillNr} item ${_return.waybillItem} Received: ${transQty} ${_return.po.uom}`,
+                transComment: `WayBill ${_return.waybillNr} item ${_return.waybillItem} ${_return.contractor} Returned: ${transQty} ${_return.po.uom}`,
                 locationId: toLocation,
                 poId: _return.poId,
                 returnId: _return._id,

@@ -32,6 +32,17 @@ router.get('/', (req, res) => {
         },
         {
             path: 'returns',
+            populate: {
+                path: 'heats',
+                potions: {
+                    sort: {
+                        heatNr:'asc'
+                    }
+                },
+                populate: {
+                    path: 'certificate',
+                }
+            }
         }
     ])
     .exec(function (err, po) {

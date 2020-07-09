@@ -283,13 +283,12 @@ router.post('/', upload.single('file'), function (req, res) {
                           }
                         }
                       }
-                      if (!!line.heatNr || !!certificateId) {
+                      if (!!line.heatNr && !!certificateId) {
                         let foundHeat = foundReturn.heats.find(element => {
                           return element.heatNr === line.heatNr && _.isEqual(element._id, certificateId);
                         });
                         if (!foundHeat) {
                           foundReturn.heats.push({
-                            // cif: line.cif, //
                             heatNr: line.heatNr,
                             inspQty: line.inspQty,
                             poId: foundPo._id,

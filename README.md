@@ -14,25 +14,41 @@ You will need to install [nodejs](https://nodejs.org/en/) and [gitbash](https://
 
 Our database will be hosted on [mLab](https://mlab.com/) and our git repository deployed on [heroku](https://dashboard.heroku.com/); sign up to both of these websites if you do not already have an account...
 
-Login to your mLab account and create a new deployement:
+### Set up the Database
+
+click on the following link to download an empty copy of the database: (link to be provided).
+
+This database contains the minimum information required to get you up and running.
+
+#### Create new deployement
+
+Login to your mLab account and click on "create new"
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/new+deployement.png "create new deployment")
 
-Select your Cloud provider, Plan type and Region:
+#### Select your Cloud provider, Plan type and Region:
+
+We recomend using the free SANDBOX Plan from Amazon Web Services, choose the nearest location.
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/select+could+provider.png "select cloud provider")
 
-Add a new database user (different than your mlab credentials):
+#### Add a new db user
+
+Click on the User tab and create a new user.
+
+Use different credentials than your mlab account; these credentials will be used to execute the Git command below.
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/new+user.png "new user")
 
-Under Tools, copy the mongorestore command line and execute it in gitbash(windows)/ your terminal(linux):
+#### Import Database (Binary)
+
+Click on the Tools tab, copy the mongorestore command line and execute it in gitbash(windows)/ your terminal(linux):
 
 replace <\user>, <\password> with the credentials created above, and <\input db directory> with the folder name.
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
 
-### Installing
+### Installing the Back End
 
 Clone this repository:
 

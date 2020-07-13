@@ -28,7 +28,7 @@ Add a new database user (different than your mlab credentials):
 
 Under Tools, copy the mongorestore command line and execute it in gitbash(windows)/ your terminal(linux):
 
-replace <\user_name>\, <\password>\ with the credentials created above, and <\input db directory>\ with the folder name.
+replace <user>, <password> with the credentials created above, and <input db directory> with the folder name.
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
 

@@ -44,7 +44,7 @@ Use different credentials than your mlab account; these credentials will be used
 
 In mLabs, click on the Tools tab, copy the mongorestore command line and execute it in gitbash(windows)/ your terminal(linux):
 
-replace "user", "password" with the credentials created above, and "input db directory" with the folder name and click enter... Make sure that you are in the correct directory while executing the command (else navigate to it using CD "change directory").
+replace "user", "password" with the credentials created above, and "input db directory" with the name of the folder you downloaded above, then click enter... Make sure that you are in the correct directory while executing the command (else navigate to it using CD "change directory").
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
 

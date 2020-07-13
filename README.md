@@ -20,19 +20,19 @@ click on the following link to download an empty copy of the database: (link to 
 
 This database contains the minimum information required to get you up and running.
 
-#### Create new deployement
+#### 1. Create a new deployement
 
 Login to your mLab account and click on "create new"
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/new+deployement.png "create new deployment")
 
-#### Select your Cloud provider, Plan type and Region:
+#### 2. Select your Cloud provider, Plan type and Region:
 
 We recomend using the free SANDBOX Plan from Amazon Web Services, choose the nearest location.
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/select+could+provider.png "select cloud provider")
 
-#### Add a new database user
+#### 3. Add a new database user
 
 Click on the User tab and create a new user.
 
@@ -40,11 +40,17 @@ Use different credentials than your mlab account; these credentials will be used
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/new+user.png "new user")
 
-#### Import Database (Binary)
+#### 4. Import Database (Binary)
 
-Click on the Tools tab, copy the mongorestore command line and execute it in gitbash(windows)/ your terminal(linux):
+In gitbash(windows)/ your terminal(linux), navigate to the directory where the database has bin downloaded.
 
-replace <\user>, <\password> with the credentials created above, and <\input db directory> with the folder name.
+In mLabs, click on the Tools tab, copy the mongorestore command line and execute it in gitbash(windows)/ your terminal(linux):
+
+replace <\user>, <\password> with the credentials created above, and <\input db directory> with the folder name and click enter.
+
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
+
+You should see the following logs in your terminal during the upload:
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
 

@@ -38,7 +38,7 @@ Click on the User tab and create a new user.
 
 Use different credentials than your mlab account; these credentials will be used to execute the Git command below.
 
-![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/new+user.png "new user")
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/add+new+user.png "add new user")
 
 #### 4. Import Database (Binary)
 

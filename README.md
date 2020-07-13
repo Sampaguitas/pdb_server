@@ -32,7 +32,7 @@ We recomend using the free SANDBOX Plan from Amazon Web Services, choose the nea
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/select+could+provider.png "select cloud provider")
 
-#### Add a new db user
+#### Add a new database user
 
 Click on the User tab and create a new user.
 

@@ -50,9 +50,9 @@ replace "user", "password" with the credentials created above, and "input db dir
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
 
-You should see the following logs in your terminal during the upload:
+You should see the following logs in your terminal during the upload if everithing whent well:
 
-![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/import+logs.png "import logs")
 
 ### Installing the Back End
 

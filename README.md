@@ -34,7 +34,7 @@ We recomend using the free SANDBOX Plan from Amazon Web Services, choose the nea
 
 #### 3. Add a new database user
 
-Click on the User tab and create a new user.
+Click on the Users tab and click on "Add database user".
 
 Use different credentials than your mlab account; these credentials will be used to execute the Git command below.
 

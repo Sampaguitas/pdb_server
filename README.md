@@ -46,7 +46,7 @@ In gitbash(windows)/ your terminal(linux), navigate to the directory where the d
 
 In mLabs, click on the Tools tab, copy the mongorestore command line and execute it in gitbash(windows)/ your terminal(linux):
 
-replace <\user>, <\password> with the credentials created above, and <\input db directory> with the folder name and click enter.
+replace "user", "password" with the credentials created above, and "input db directory" with the folder name and click enter.
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
 

@@ -92,6 +92,7 @@ DocDefSchema.post('findOneAndDelete', function(doc, next) {
     
     let docdefId = doc._id;
     let fileName = doc.field;
+    let projectId = doc.projectId;
 
     findDocFields(docdefId).then( () => {
         deleteFile(fileName, projectId).then( () => next());

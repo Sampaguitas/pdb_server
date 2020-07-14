@@ -71,7 +71,11 @@ Install all other dependencies:
 ```
 $ npm install
 ```
-create a **keys_dev.js** file in **pdb_server/config**, insert the object below and replace the values with your own keys:
+create a **keys_dev.js** file in **pdb_server/config/**, insert the object below:
+
+This file has been added to .gitignore file and will not be visible github when you push your commits.
+
+It contains all your private keys (and should not be visible to the public), we will add these keys in Heroku in the next steps.
 
 ```
 module.exports = {
@@ -94,6 +98,13 @@ module.exports = {
     myPhone: ''
 };
 ```
+
+1. the "mongoURI" can be found in your mLab deployment,
+2. Insert a random string for the secret, it will be used to hash passwords and generate Json Web Tokens,
+3. The accessKeyId, secretAccessKey, region will be provided while setting up your AWS S3 bucket,
+4. create a new bucket in AWS S3, and provide your awsBucketName in the keys_dev.js file.
+5. mailerHost, mailerPort, mailerAuthUser and mailerAuthPass (see [nodemailer](https://nodemailer.com/about/)).
+6. myName, myPosition, myPhone will be used in the email signature (while sending a reset password link to users).
 
 Run the app:
 

@@ -137,6 +137,11 @@ Click on your back_end application and under the deploy tab, click on use github
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/use+github.png "use github")
 
+Now click on the Settings Tab, then click on "Reveal Config Vars", and add your secret keys from the keys_dev.js file
+
+Note: the KEYS should be in capital letters (same as in your keys_prod.js file) and VALUES do not require double quotes.
+
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/configs.png "config vars")
 
 <!-- To deploy your Git repository on Heroku, click on the following link and follow the instructions: 
 

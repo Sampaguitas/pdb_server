@@ -154,7 +154,7 @@ Note: the KEYS should be in capital letters (same as in your keys_prod.js file) 
 * [npm](https://www.npmjs.com) - Dependency Management
 * [express](http://expressjs.com/) - The framework
 
-This application contains 416 files and 33,442 lines of code.
+This application contains 416 files and 33,442 lines of code (98,162 including front_end).
 
 ## Contributing
 

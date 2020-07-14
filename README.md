@@ -71,7 +71,7 @@ Install all other dependencies:
 ```
 $ npm install
 ```
-create a keys_dev.js file in pdb_server/config, insert the object below and replace the values with your own keys:
+create a **keys_dev.js** file in **pdb_server/config**, insert the object below and replace the values with your own keys:
 
 ```
 module.exports = {

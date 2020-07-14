@@ -111,6 +111,9 @@ Run the app:
 ```
 $ nodemon start
 ```
+If everithing whent well, you should see below log in your terminal:
+
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/nodemon.png "nodemon")
 
 ## Deployment
 

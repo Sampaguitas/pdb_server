@@ -115,6 +115,14 @@ If everithing whent well, you should see below log in your terminal:
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/nodemon.png "nodemon")
 
+now clear the git info with the following command:
+
+```
+git init
+```
+
+And push your application to a new Git repo... 
+
 ## Deployment
 
 Sign in to your Heroku account and create a new pipeline (that will host both our back_end front_end appliction):
@@ -125,6 +133,9 @@ Then in your pipline create a two new apps under staging (one for the back_end, 
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/staging.png "staging")
 
+Click on your back_end application and under the deploy tab, click on use github (then link it to your git repo):
+
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/use+github.png "use github")
 
 
 <!-- To deploy your Git repository on Heroku, click on the following link and follow the instructions: 

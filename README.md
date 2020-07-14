@@ -12,7 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need to install [nodejs](https://nodejs.org/en/) and [gitbash](https://git-scm.com/downloads) (to execute git commands if you are running on windows).
 
-Our database will be hosted on [mLab](https://mlab.com/) and our git repository deployed on [heroku](https://dashboard.heroku.com/); sign up to both of these websites if you do not already have an account...
+Our database will be hosted on [mLab](https://mlab.com/) and our git repository deployed on [heroku](https://dashboard.heroku.com/). the documents (report templates and material test certificates) will be stored in [aws S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_fs_s3); sign up to if you do not already have an account...
 
 ### Set up the Database
 

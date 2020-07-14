@@ -108,7 +108,7 @@ module.exports = {
 
 In your **index.js** file, in the whitelist array: 
 
-Change 'https://pdb-client.herokuapp.com' by the domain name of your front_end application
+Change 'https://pdb-client.herokuapp.com' with the address of your front_end application
 
 This will allow your front_end application to make API calls without being blocked by CORS,
 

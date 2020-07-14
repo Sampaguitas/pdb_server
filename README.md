@@ -117,9 +117,19 @@ If everithing whent well, you should see below log in your terminal:
 
 ## Deployment
 
-To deploy your Git repository on Heroku, click on the following link and follow the instructions: 
+Sign in to your Heroku account and create a new pipeline (that will host both our back_end front_end appliction):
 
-[https://devcenter.heroku.com/articles/git](https://devcenter.heroku.com/articles/git)
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/pipeline.png "pipeline")
+
+Then in your pipline create a two new apps under staging (one for the back_end, one for the front_end):
+
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/staging.png "staging")
+
+
+
+<!-- To deploy your Git repository on Heroku, click on the following link and follow the instructions: 
+
+[https://devcenter.heroku.com/articles/git](https://devcenter.heroku.com/articles/git) -->
 
 ## Built With
 

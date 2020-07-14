@@ -110,7 +110,7 @@ In your **index.js** file, in the whitelist array:
 
 Change 'https://pdb-client.herokuapp.com' with the address of your front_end application
 
-This will allow your front_end application to make API calls without being blocked by CORS,
+This will allow your front_end application to make API calls to your back_end without being blocked by CORS,
 
 Port 8080 will be used by your front_end when running locally, port 5555 is left open so that you can test your API's with [postman](https://www.postman.com/)
 

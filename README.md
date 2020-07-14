@@ -52,7 +52,7 @@ If everithing whent well, you should see the following logs in your terminal dur
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/import+logs.png "import logs")
 
-### Installing the Back End
+### Set up the Back End
 
 Clone this repository:
 
@@ -70,6 +70,25 @@ Install all other dependencies:
 
 ```
 $ npm install
+```
+create a keys_dev.js file in pdb_server/config, insert the object below and replace the values with your own keys:
+
+```
+module.exports = {
+    mongoURI: '',
+    secret: '',
+    accessKeyId: '',
+    secretAccessKey: '',
+    region: '',
+    awsBucketName: '',
+    mailerHost: '',
+    mailerPort: '',
+    mailerAuthUser: '',
+    mailerAuthPass: '',
+    myName: '',
+    myPosition: '',
+    myPhone: ''
+};
 ```
 
 Run the app:

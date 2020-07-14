@@ -46,7 +46,7 @@ In mLabs, click on the Tools tab, copy the mongorestore command line and execute
 
 replace "user", "password" with the credentials created above, and "input db directory" with the name of the folder you downloaded above, then click enter... Make sure that you are in the correct directory while executing the command (else navigate to it using CD "change directory").
 
-<!-- ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore") -->
+![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/mongorestore.png "mongorestore")
 
 If everithing whent well, you should see the following logs in your terminal during the upload:
 

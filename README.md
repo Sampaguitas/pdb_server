@@ -104,7 +104,7 @@ module.exports = {
 3. The accessKeyId, secretAccessKey, region will be provided while setting up your AWS S3 bucket,
 4. create a new bucket in AWS S3, and provide your awsBucketName in the keys_dev.js file.
 5. mailerHost, mailerPort, mailerAuthUser and mailerAuthPass (see [nodemailer](https://nodemailer.com/about/)).
-6. myName, myPosition, myPhone will be used in the email signature (while sending a reset password link to users).
+6. myName, myPosition, myPhone will be used in your email signature (while sending reset password links to users).
 
 Run the app:
 

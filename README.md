@@ -71,7 +71,7 @@ Install all other dependencies:
 ```
 $ npm install
 ```
-create a **keys_dev.js** file in **pdb_server/config/**, insert the object below:
+create a **keys_dev.js** file in **/config/**, insert the object below:
 
 This file has been added to .gitignore file and will not be visible github when you push your commits.
 
@@ -106,6 +106,27 @@ module.exports = {
 5. mailerHost, mailerPort, mailerAuthUser and mailerAuthPass (see [nodemailer](https://nodemailer.com/about/)).
 6. myName, myPosition, myPhone will be used in your email signature (while sending reset password links to users).
 
+In your **index.js** file, in the whitelist array: 
+
+Change 'https://pdb-client.herokuapp.com' by the domain name of your front_end application
+
+This will allow your front_end application to make API calls without being blocked by CORS,
+
+Port 8080 will be used by your front_end when running locally, port 5555 is left open so that you can test your API's with [postman](https://www.postman.com/)
+
+```
+var whitelist = ['http://localhost:8080', 'http://localhost:5555', 'https://pdb-client.herokuapp.com']
+var corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+        } else {
+        callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+```
+
 Run the app:
 
 ```
@@ -115,7 +136,7 @@ If everithing whent well, you should see below log in your terminal:
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/nodemon.png "nodemon")
 
-now clear the git info with the following command:
+Now clear the git info with the following command:
 
 ```
 git init
@@ -142,10 +163,6 @@ Now click on the Settings Tab, then click on "Reveal Config Vars", and add your 
 Note: the KEYS should be in capital letters (same as in your keys_prod.js file) and VALUES do not require double quotes.
 
 ![alt text](https://vanleeuwenpublic.s3.eu-west-3.amazonaws.com/setup/configs.png "config vars")
-
-<!-- To deploy your Git repository on Heroku, click on the following link and follow the instructions: 
-
-[https://devcenter.heroku.com/articles/git](https://devcenter.heroku.com/articles/git) -->
 
 ## Built With
 

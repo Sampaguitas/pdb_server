@@ -75,16 +75,20 @@ create a **keys_dev.js** file in **pdb_server/config**, insert the object below 
 
 ```
 module.exports = {
+    //mlabs
     mongoURI: '',
     secret: '',
+    //AWS S3
     accessKeyId: '',
     secretAccessKey: '',
     region: '',
     awsBucketName: '',
+    //mail provider
     mailerHost: '',
     mailerPort: '',
     mailerAuthUser: '',
     mailerAuthPass: '',
+    //mail signature
     myName: '',
     myPosition: '',
     myPhone: ''

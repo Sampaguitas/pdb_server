@@ -279,7 +279,7 @@ PoSchema.post('findOneAndDelete', function(doc, next) {
                 });
             });
         });
-    })
+    });
 });
 
 function findReturns(poId) {

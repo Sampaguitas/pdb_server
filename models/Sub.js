@@ -265,7 +265,7 @@ SubSchema.pre('findOneAndUpdate', async function() {
             this._update['$set'].relQty = docToUpdate.rfiQty;
         }
     }
-})
+});
 
 SubSchema.post('findOneAndDelete', function(doc, next) {
     // doc.populate([{path: 'packitems'}, {path: 'po', populate: {path: 'subs'}}], function(err, res) {

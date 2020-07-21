@@ -27,7 +27,11 @@ const SettingSchema = new Schema({
                 ref: 'fieldnames',
                 required: true
             }
-        ]
+        ],
+        colWidth: {
+            type: mongoose.SchemaTypes.Mixed,
+            default: {}
+        }
     },
     screenId: {
         type: mongoose.SchemaTypes.ObjectId,

@@ -47,14 +47,14 @@ router.get('/', function (req, res) {
 
 Array.prototype.generateFields = function() {
   return this.reduce(function (accumulator, currentValue) {
-    accumulator.push(String(moment(currentValue.date).format('DD-MMM-YY')));
+    accumulator.push(String(moment.utc(currentValue.date).format('DD-MMM-YY')));
     return accumulator;
   }, [])
 }
 
 Array.prototype.generateDatas = function(key) {
   return this.reduce(function (accumulator, currentValue) {
-    accumulator[String(moment(currentValue.date).format('DD-MMM-YY'))] = parseFloat(currentValue[key]);
+    accumulator[String(moment.utc(currentValue.date).format('DD-MMM-YY'))] = parseFloat(currentValue[key]);
     return accumulator;
   }, {})
 }

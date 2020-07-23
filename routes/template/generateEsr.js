@@ -235,11 +235,10 @@ function wsPageSetup(firstRow, ws, lastCol) {
 
 function getDateFormat(locale) {
   
-  const options = Intl.DateTimeFormat(locale, {'year': 'numeric', 'month': '2-digit', day: '2-digit'})
-  const myLocale = Intl.DateTimeFormat(locale, options);
+  const options = {'year': 'numeric', 'month': '2-digit', day: '2-digit', timeZone: 'GMT'};
+  let tempDateFormat = '';
 
-  let tempDateFormat = ''
-  myLocale.formatToParts().map(function (element) {
+  Intl.DateTimeFormat(locale, options).formatToParts().map(function (element) {
       switch(element.type) {
           case 'month': 
               tempDateFormat = tempDateFormat + 'MM';
@@ -261,7 +260,7 @@ function getDateFormat(locale) {
 function TypeToString(fieldValue, fieldType, locale) {
   if (fieldValue) {
       switch (fieldType) {
-          case 'Date': return String(moment(fieldValue).format(getDateFormat(locale)));
+          case 'Date': return String(moment.utc(fieldValue).format(getDateFormat(locale)));
           case 'Number': return String(new Intl.NumberFormat(locale).format(fieldValue)); 
           default: return fieldValue;
       }

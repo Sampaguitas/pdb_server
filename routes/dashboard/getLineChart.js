@@ -40,7 +40,7 @@ router.get('/', function (req, res) {
 
 Array.prototype.generateLables = function() {
   return this.reduce(function (accumulator, currentValue) {
-    accumulator.push(String(moment(currentValue.date).format('DD-MMM-YY')));
+    accumulator.push(String(moment.utc(currentValue.date).format('DD-MMM-YY')));
     return accumulator;
   }, [])
 }

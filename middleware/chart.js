@@ -54,33 +54,33 @@ function populateDates(earliest, latest, period) {
   let array = [];
   switch(period) {
     case 'day':
-      for (var i = 0; moment(earliest).add(i, 'days') < moment(latest).add(1, 'days'); i++ ) {
-        array.push(moment(earliest).add(i, 'days'));
+      for (var i = 0; moment.utc(earliest).add(i, 'days') < moment.utc(latest).add(1, 'days'); i++ ) {
+        array.push(moment.utc(earliest).add(i, 'days'));
       }
       break;
     case 'week':
-        for (var i = 0; moment(earliest).add(i, 'weeks') < moment(latest).add(1, 'weeks'); i++ ) {
-          array.push(moment(earliest).add(i, 'weeks'));
+        for (var i = 0; moment.utc(earliest).add(i, 'weeks') < moment.utc(latest).add(1, 'weeks'); i++ ) {
+          array.push(moment.utc(earliest).add(i, 'weeks'));
         }
       break;
     case 'fortnight':
-        for (var i = 0; moment(earliest).add(i * 2, 'weeks') < moment(latest).add(2, 'weeks'); i++ ) {
-          array.push(moment(earliest).add(i * 2, 'weeks'));
+        for (var i = 0; moment.utc(earliest).add(i * 2, 'weeks') < moment.utc(latest).add(2, 'weeks'); i++ ) {
+          array.push(moment.utc(earliest).add(i * 2, 'weeks'));
         }
       break;
     case 'month':
-        for (var i = 0; moment(earliest).add(i, 'months') < moment(latest).add(1, 'months'); i++ ) {
-          array.push(moment(earliest).add(i, 'months'));
+        for (var i = 0; moment.utc(earliest).add(i, 'months') < moment.utc(latest).add(1, 'months'); i++ ) {
+          array.push(moment.utc(earliest).add(i, 'months'));
         }
       break;
     case 'quarter':
-        for (var i = 0; moment(earliest).add(i * 3, 'months') < moment(latest).add(3, 'months'); i++ ) {
-          array.push(moment(earliest).add(i * 3, 'months'));
+        for (var i = 0; moment.utc(earliest).add(i * 3, 'months') < moment.utc(latest).add(3, 'months'); i++ ) {
+          array.push(moment.utc(earliest).add(i * 3, 'months'));
         }      
       break;
     default:
-      for (var i = 0; moment(earliest).add(i * 3, 'months') < moment(latest).add(3, 'months'); i++ ) {
-        array.push(moment(earliest).add(i * 3, 'months'));
+      for (var i = 0; moment.utc(earliest).add(i * 3, 'months') < moment.utc(latest).add(3, 'months'); i++ ) {
+        array.push(moment.utc(earliest).add(i * 3, 'months'));
       } 
   }
   return array;

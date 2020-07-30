@@ -2,7 +2,6 @@ var express = require('express');
 const router = express.Router();
 var aws = require('aws-sdk');
 var path = require('path');
-const fault = require('../../utilities/Errors'); //../utilities/Errors
 const accessKeyId = require('../../config/keys').accessKeyId; //../config/keys
 const secretAccessKey = require('../../config/keys').secretAccessKey;
 const region = require('../../config/keys').region;
@@ -11,11 +10,8 @@ const DocDef = require('../../models/DocDef');
 const DocField = require('../../models/DocField');
 const Field = require('../../models/Field');
 const Project = require('../../models/Project');
-const Po = require('../../models/Po');
 var Excel = require('exceljs');
 fs = require('fs');
-const stream = require('stream');
-
 
 aws.config.update({
   accessKeyId: accessKeyId,

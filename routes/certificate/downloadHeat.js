@@ -6,7 +6,6 @@ var accessKeyId = require('../../config/keys').accessKeyId; //../config/keys
 var secretAccessKey = require('../../config/keys').secretAccessKey;
 var region = require('../../config/keys').region;
 var awsBucketName = require('../../config/keys').awsBucketName;
-var archiver = require('archiver');
 var _ = require('lodash');
 var Heat = require('../../models/Heat');
 

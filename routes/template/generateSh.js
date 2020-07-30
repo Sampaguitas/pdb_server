@@ -7,10 +7,8 @@ const secretAccessKey = require('../../config/keys').secretAccessKey;
 const region = require('../../config/keys').region;
 const awsBucketName = require('../../config/keys').awsBucketName;
 const DocDef = require('../../models/DocDef');
-const Article = require('../../models/Article');
 var Excel = require('exceljs');
 fs = require('fs');
-const stream = require('stream');
 const moment = require('moment');
 const _ = require('lodash');
 

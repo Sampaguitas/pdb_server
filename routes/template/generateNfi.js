@@ -9,10 +9,8 @@ const awsBucketName = require('../../config/keys').awsBucketName;
 const DocDef = require('../../models/DocDef');
 var Excel = require('exceljs');
 fs = require('fs');
-const stream = require('stream');
 const moment = require('moment');
 const _ = require('lodash');
-
 
 aws.config.update({
   accessKeyId: accessKeyId,

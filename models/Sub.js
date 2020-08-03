@@ -260,7 +260,7 @@ SubSchema.set('toJSON', { virtuals: true });
 
 SubSchema.pre('findOneAndUpdate', async function() {
     const docToUpdate = await this.model.findOne(this.getQuery());
-    if (!!docToUpdate && this._update['$set'].hasOwnProperty('inspRelDate') && !!this._update['$set'].inspRelDate) {
+    if (!!docToUpdate && this._update.hasOwnProperty('$set') && this._update['$set'].hasOwnProperty('inspRelDate') && !!this._update['$set'].inspRelDate) {
         if (!_.isUndefined(docToUpdate) && !docToUpdate.inspRelDate && !docToUpdate.relQty && !!docToUpdate.rfiQty) {
             this._update['$set'].relQty = docToUpdate.rfiQty;
         }

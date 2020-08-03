@@ -330,6 +330,8 @@ app.put('/erp/update', passport.authenticate('jwt', { session: false }), erpUpda
 //extract X
 const extractDownload = require('./routes/extract/download');
 app.post('/extract/download', passport.authenticate('jwt', { session: false }), extractDownload);
+const extractDownloadExp = require('./routes/extract/downloadExp');
+app.post('/extract/downloadExp', passport.authenticate('jwt', { session: false }), extractDownloadExp);
 const extractSetCollitype = require('./routes/extract/setCollitype');
 app.put('/extract/setCollitype', passport.authenticate('jwt', { session: false }), extractSetCollitype);
 const extractSetWeight = require('./routes/extract/setWeight');
@@ -342,6 +344,8 @@ const extractUpdate = require('./routes/extract/update');
 app.put('/extract/update', passport.authenticate('jwt', { session: false }), extractUpdate);
 const extractUpload = require('./routes/extract/upload');
 app.post('/extract/upload', passport.authenticate('jwt', { session: false }), extractUpload);
+const extractUploadExp = require('./routes/extract/uploadExp');
+app.post('/extract/uploadExp', passport.authenticate('jwt', { session: false }), extractUploadExp);
 //field X
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);

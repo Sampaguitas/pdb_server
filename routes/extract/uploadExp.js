@@ -21,7 +21,6 @@ router.post('/', upload.single('file'), function (req, res) {
 
     let tempPo = {};
     let tempSub = {};
-    // let tempPackItem = {};
   
     let rejections = [];
     let nProcessed = 0;
@@ -83,7 +82,6 @@ router.post('/', upload.single('file'), function (req, res) {
                 //initialise objects
                 for (var member in tempPo) delete tempPo[member];
                 for (var member in tempSub) delete tempSub[member];
-                // for (var member in tempPackItem) delete tempPackItem[member];
                 
                 //assign Po Ids
                 tempPo.projectId = projectId;
@@ -92,10 +90,6 @@ router.post('/', upload.single('file'), function (req, res) {
                 tempSub._id = clean(worksheet.getCell('B' + row).value);
                 tempSub.poId = clean(worksheet.getCell('A' + row).value);;
                 //assign PackItem Ids
-                // tempPackItem._id = clean(worksheet.getCell('C' + row).value);
-                // tempPackItem.collipackId = clean(worksheet.getCell('D' + row).value);
-                // tempPackItem.subId = tempSub._id;
-
 
                 resFieldNames.map((resFieldName, index) => {
                   let cell = alphabet(index + 3) + row;
@@ -103,7 +97,6 @@ router.post('/', upload.single('file'), function (req, res) {
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
                   let value = clean(worksheet.getCell(cell).value);
-                  // console.log(`cell: ${cell}, key: ${key}, value: ${value}`);
                   
                   colPromises.push(testFormat(row, cell, type, value));
                   
@@ -114,9 +107,6 @@ router.post('/', upload.single('file'), function (req, res) {
                     case 'sub':
                       tempSub[key] = value;
                       break;
-                    // case 'packitem':
-                    //   tempPackItem[key] = value;
-                    //   break;
                   }
                 });// end map
 
@@ -184,11 +174,6 @@ router.post('/', upload.single('file'), function (req, res) {
           } else {
             Sub.findByIdAndUpdate(tempSub._id, tempSub, function(errNewSub, resNewSub) {
               if (errNewSub || !resNewSub) {
-                if (errNewSub) {
-                  console.log('errNewSub:', errNewSub);
-                } else {
-                  console.log('resNewSub:', resNewSub);
-                }
                 resolve({
                   row: row,
                   isRejected: true,

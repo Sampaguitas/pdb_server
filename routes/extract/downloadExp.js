@@ -10,7 +10,9 @@ router.post('/', function (req, res) {
     const screenId = req.query.screenId;
     const projectId = req.query.projectId;
     const unlocked = req.query.unlocked;
+    const locale = req.query.locale || "en-US";
     const selectedIds = req.body.selectedIds;
+    
     
     let poIds = [];
     let subIds = [];
@@ -44,6 +46,9 @@ router.post('/', function (req, res) {
           populate: {
               path: 'subs',
               match: { _id: { $in: subIds} },
+              populate: {
+                path: 'packitems'
+              }
           }
         }
       ])
@@ -95,7 +100,7 @@ router.post('/', function (req, res) {
           }
 
           //add lines
-          let myLines = getLines(resProject, resProject.fieldnames, screenId);
+          let myLines = getLines(resProject, resProject.fieldnames, screenId, locale);
           if (!_.isEmpty(myLines)) {
             myLines.map(function (line, indexLine) {
               worksheet.getRow(indexLine + 3).height = 25;
@@ -204,19 +209,117 @@ function getHeaders(fieldnames) {
           val: fieldname.fields.custom,
           col: index + 3,
           type: 'String',
-          align: fieldname.align       
+          align: fieldname.align
         });
       });
     return arr;
   }
 
-function getLines (resProject, fieldnames, screenId) {
+function getLines (resProject, fieldnames, screenId, locale) {
     let arrayBody = [];
     let arrayRow = [];
+    let hasPackitems = getScreenTbls(fieldnames, screenId).includes('packitem');
         if (resProject.pos) {
           resProject.pos.map(po => {
             if (po.subs) {
               po.subs.map(sub => {
+                if (!_.isEmpty(sub.packitems) && hasPackitems) {
+                  virtuals(sub.packitems, po.uom, getTblFields(fieldnames, 'packitem'), locale).map(virtual => {
+                    arrayRow = [];
+                    arrayRow.push({
+                      val: po._id, //poId
+                      col: 1,
+                      type: 'String',
+                      align: 'left',
+                      edit: true
+                    });
+                    arrayRow.push({
+                      val: sub._id, //subId
+                      col: 2,
+                      type: 'String',
+                      align: 'left',
+                      edit: true
+                    });
+                    fieldnames.map( (fieldname, index) => {
+                      switch(fieldname.fields.fromTbl) {
+                        case 'po':
+                          if (['project', 'projectNr'].includes(fieldname.fields.name)) {
+                            arrayRow.push({
+                              val: fieldname.fields.name === 'project' ? getValue('name', resProject) || '' : getValue('number', resProject) || '',
+                              col: index + 3,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          } else {
+                            arrayRow.push({
+                              val: getValue(fieldname.fields.name, po),
+                              col: index + 3,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          }
+                          break;
+                        case 'sub':
+                          if (fieldname.fields.name === 'heatNr') {
+                            arrayRow.push({
+                              val: '',
+                              col: index + 3,
+                              type: "String",
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          } else if (fieldname.fields.name === 'shippedQty') {
+                            arrayRow.push({
+                              val: getValue(fieldname.fields.name, virtual),
+                              col: index + 3,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          } else {
+                            arrayRow.push({
+                              val: getValue(fieldname.fields.name, sub),
+                              col: index + 3,
+                              type: fieldname.fields.type,
+                              align: fieldname.align,
+                              edit: fieldname.edit
+                            });
+                          }
+                          break;
+                          case 'packitem':
+                            if (fieldname.fields.name === 'plNr') {
+                              arrayRow.push({
+                                val: getValue(fieldname.fields.name, virtual),
+                                col: index + 3,
+                                type: fieldname.fields.type,
+                                align: fieldname.align,
+                                edit: fieldname.edit
+                              });
+                            } else {
+                              arrayRow.push({
+                                val: virtual[screenHeader.fields.name].join(' | '),
+                                col: index + 3,
+                                type: "String",
+                                align: fieldname.align,
+                                edit: fieldname.edit
+                              });
+                            }
+                            break;
+                        default: arrayRow.push({
+                          val: '',
+                          col: index + 3,
+                          type: "String",
+                          align: fieldname.align,
+                          edit: fieldname.edit
+                        });
+                      }
+                    });
+                    arrayBody.push(arrayRow);
+                  });
+                } else {
+
                   arrayRow = [];
                   arrayRow.push({
                     val: po._id, //poId
@@ -259,8 +362,16 @@ function getLines (resProject, fieldnames, screenId) {
                             val: '',
                             col: index + 3,
                             type: "String",
-                            align: 'left',
-                            edit: true
+                            align: fieldname.align,
+                            edit: fieldname.edit
+                          });
+                        } else if (fieldname.fields.name === 'shippedQty') {
+                          arrayRow.push({
+                            val: '',
+                            col: index + 3,
+                            type: "String",
+                            align: fieldname.align,
+                            edit: fieldname.edit
                           });
                         } else {
                           arrayRow.push({
@@ -276,12 +387,13 @@ function getLines (resProject, fieldnames, screenId) {
                         val: '',
                         col: index + 3,
                         type: "String",
-                        align: 'left',
-                        edit: true
+                        align: fieldname.align,
+                        edit: fieldname.edit
                       });
                     }
                   });
                   arrayBody.push(arrayRow);
+                }
               });
             }
           });
@@ -310,6 +422,180 @@ function alphabet(num){
       num = (num - t)/26 | 0;
     }
     return s || undefined;
+  }
+
+  function getScreenTbls (fieldnames, screenId) {
+    if (!_.isUndefined(fieldnames) && fieldnames.hasOwnProperty('items') && !_.isEmpty(fieldnames.items)) {
+        return fieldnames.items.reduce(function (acc, cur) {
+            if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
+                acc.push(cur.fields.fromTbl)
+            }
+            return acc;
+        },[]);
+    } else {
+        return [];
+    }
+  }
+
+  function getTblFields (fieldnames, fromTbl) {
+    if (fieldnames) {
+        let tempArray = [];
+        fieldnames.reduce(function (acc, cur) {
+            if (cur.fields.fromTbl === fromTbl && !acc.includes(cur.fields._id)) {
+                tempArray.push(cur.fields);
+                acc.push(cur.fields._id);
+            }
+            return acc;
+        },[]);
+        return tempArray;
+    } else {
+        return [];
+    }
+  }
+
+  function hasPackingList(packItemFields) {
+    let tempResult = false;
+    if (packItemFields) {
+        packItemFields.map(function (packItemField) {
+            if (packItemField.name === 'plNr') {
+                tempResult = true;
+            }
+        });
+    }
+    return tempResult;
+  }
+
+  function getDateFormat(locale) {
+  
+    const options = {'year': 'numeric', 'month': '2-digit', day: '2-digit', timeZone: 'GMT'};
+    let tempDateFormat = '';
+  
+    Intl.DateTimeFormat(locale, options).formatToParts().map(function (element) {
+        switch(element.type) {
+            case 'month': 
+                tempDateFormat = tempDateFormat + 'MM';
+                break;
+            case 'literal': 
+                tempDateFormat = tempDateFormat + element.value;
+                break;
+            case 'day': 
+                tempDateFormat = tempDateFormat + 'DD';
+                break;
+            case 'year': 
+                tempDateFormat = tempDateFormat + 'YYYY';
+                break;
+        }
+    });
+    return tempDateFormat;
+  }
+  
+  function TypeToString(fieldValue, fieldType, locale) {
+    if (fieldValue) {
+        switch (fieldType) {
+            case 'Date': return String(moment.utc(fieldValue).format(getDateFormat(locale)));
+            case 'Number': return String(new Intl.NumberFormat(locale).format(fieldValue)); 
+            default: return fieldValue;
+        }
+    } else {
+        return '';
+    }
+  }
+
+  function virtuals(packitems, uom, packItemFields, locale) {
+    let tempVirtuals = [];
+    let tempUom = ['M', 'MT', 'MTR', 'MTRS', 'F', 'FT', 'FEET', 'LM'].includes(uom.toUpperCase()) ? 'mtrs' : 'pcs';
+    if (hasPackingList(packItemFields)) {
+      packitems.reduce(function (acc, cur){
+          if (cur.plNr){
+              if (!acc.includes(cur.plNr)) {
+  
+                  let tempObject = {};
+                  tempObject['shippedQty'] = cur[tempUom];
+                  packItemFields.map(function (packItemField) {
+                      if (packItemField.name === 'plNr') {
+                          tempObject['plNr'] = cur['plNr'];
+                          tempObject['_id'] = cur['plNr'];
+                      } else {
+                          tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)]
+                      }               
+                  });
+                  tempVirtuals.push(tempObject);
+                  acc.push(cur.plNr);
+                  
+              } else if (acc.includes(cur.plNr)) {
+      
+                  let tempVirtual = tempVirtuals.find(element => element.plNr === cur.plNr);            
+                  tempVirtual['shippedQty'] += cur[tempUom];
+                  packItemFields.map(function (packItemField) {
+                      if (packItemField.name != 'plNr' && !tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                          tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                      }               
+                  });
+                  // acc.push(cur.plNr);
+              }
+            } else if (!acc.includes('0')) {
+              let tempObject = {_id: '0'}
+              tempObject['shippedQty'] = '';
+              packItemFields.map(function (packItemField) {
+                if (packItemField.name === 'plNr') {
+                    tempObject['plNr'] = ''
+                } else {
+                    tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)];
+                }
+              });
+              tempVirtuals.push(tempObject);
+              acc.push('0');
+            } else {
+              let tempVirtual = tempVirtuals.find(element => element._id === '0');
+              packItemFields.map(function (packItemField) {
+                  if (packItemField.name != 'plNr' && !tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                      tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                  }               
+              });
+            }
+          return acc;
+      }, []);
+    } else {
+      packitems.reduce(function(acc, cur) {
+        if (cur.plNr){
+            if (!acc.includes('1')) {
+                let tempObject = {_id: '1'}
+                tempObject['shippedQty'] = cur[tempUom];
+                packItemFields.map(function (packItemField) {
+                    tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)];
+                });
+                tempVirtuals.push(tempObject);
+                acc.push('1');
+            } else {
+                let tempVirtual = tempVirtuals.find(element => element._id === '1');
+                tempVirtual['shippedQty'] += cur[tempUom];
+                packItemFields.map(function (packItemField) {
+                    if (!tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                        tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                    }
+                });
+            }
+        } else {
+            if (!acc.includes('0')) {
+                let tempObject = {_id: '0'}
+                packItemFields.map(function (packItemField) {
+                    tempObject[packItemField.name] = [TypeToString(cur[packItemField.name], packItemField.type, locale)];
+                });
+                tempVirtuals.push(tempObject);
+                acc.push('0');
+            } else {
+                let tempVirtual = tempVirtuals.find(element => element._id === '0');
+                packItemFields.map(function (packItemField) {
+                    if (!tempVirtual[packItemField.name].includes(TypeToString(cur[packItemField.name], packItemField.type, locale))) {
+                        tempVirtual[packItemField.name].push(TypeToString(cur[packItemField.name], packItemField.type, locale));
+                    }
+                });
+            }
+        }
+        return acc;
+      }, [])
+    }
+    return tempVirtuals;
   }
 
 module.exports = router;

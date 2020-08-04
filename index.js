@@ -327,11 +327,13 @@ const erpFindOne = require('./routes/erp/findOne');
 app.get('/erp/findOne', passport.authenticate('jwt', { session: false }), erpFindOne);
 const erpUpdate = require('./routes/erp/update');
 app.put('/erp/update', passport.authenticate('jwt', { session: false }), erpUpdate);
-//extract X
+//extract X downloadInspRel
 const extractDownload = require('./routes/extract/download');
 app.post('/extract/download', passport.authenticate('jwt', { session: false }), extractDownload);
 const extractDownloadExp = require('./routes/extract/downloadExp');
 app.post('/extract/downloadExp', passport.authenticate('jwt', { session: false }), extractDownloadExp);
+const extractDownloadInspRel = require('./routes/extract/downloadInspRel');
+app.post('/extract/downloadInspRel', passport.authenticate('jwt', { session: false }), extractDownloadInspRel);
 const extractSetCollitype = require('./routes/extract/setCollitype');
 app.put('/extract/setCollitype', passport.authenticate('jwt', { session: false }), extractSetCollitype);
 const extractSetWeight = require('./routes/extract/setWeight');
@@ -346,6 +348,8 @@ const extractUpload = require('./routes/extract/upload');
 app.post('/extract/upload', passport.authenticate('jwt', { session: false }), extractUpload);
 const extractUploadExp = require('./routes/extract/uploadExp');
 app.post('/extract/uploadExp', passport.authenticate('jwt', { session: false }), extractUploadExp);
+const extractUploadInspRel = require('./routes/extract/uploadInspRel');
+app.post('/extract/uploadInspRel', passport.authenticate('jwt', { session: false }), extractUploadInspRel);
 //field X
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);

@@ -332,6 +332,8 @@ const extractDownload = require('./routes/extract/download');
 app.post('/extract/download', passport.authenticate('jwt', { session: false }), extractDownload);
 const extractDownloadExp = require('./routes/extract/downloadExp');
 app.post('/extract/downloadExp', passport.authenticate('jwt', { session: false }), extractDownloadExp);
+const extractDownloadInspCert = require('./routes/extract/downloadInspCert');
+app.post('/extract/downloadInspCert', passport.authenticate('jwt', { session: false }), extractDownloadInspCert);
 const extractDownloadInspRel = require('./routes/extract/downloadInspRel');
 app.post('/extract/downloadInspRel', passport.authenticate('jwt', { session: false }), extractDownloadInspRel);
 const extractSetCollitype = require('./routes/extract/setCollitype');

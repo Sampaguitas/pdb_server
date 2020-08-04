@@ -234,14 +234,6 @@ SubSchema.virtual("heats", {
     justOne: false
 });
 
-
-SubSchema.virtual("certificates", {
-    ref: "certificates",
-    localField: "_id",
-    foreignField: "subId",
-    justOne: false
-});
-
 SubSchema.virtual("packitems", {
     ref: "packitems",
     localField: "_id",

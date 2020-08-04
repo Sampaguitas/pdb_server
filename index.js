@@ -327,7 +327,7 @@ const erpFindOne = require('./routes/erp/findOne');
 app.get('/erp/findOne', passport.authenticate('jwt', { session: false }), erpFindOne);
 const erpUpdate = require('./routes/erp/update');
 app.put('/erp/update', passport.authenticate('jwt', { session: false }), erpUpdate);
-//extract X downloadInspRel
+//extract X
 const extractDownload = require('./routes/extract/download');
 app.post('/extract/download', passport.authenticate('jwt', { session: false }), extractDownload);
 const extractDownloadExp = require('./routes/extract/downloadExp');
@@ -336,6 +336,8 @@ const extractDownloadInspCert = require('./routes/extract/downloadInspCert');
 app.post('/extract/downloadInspCert', passport.authenticate('jwt', { session: false }), extractDownloadInspCert);
 const extractDownloadInspRel = require('./routes/extract/downloadInspRel');
 app.post('/extract/downloadInspRel', passport.authenticate('jwt', { session: false }), extractDownloadInspRel);
+const extractDownloadPackDetails = require('./routes/extract/downloadPackDetails');
+app.post('/extract/downloadPackDetails', passport.authenticate('jwt', { session: false }), extractDownloadPackDetails);
 const extractSetCollitype = require('./routes/extract/setCollitype');
 app.put('/extract/setCollitype', passport.authenticate('jwt', { session: false }), extractSetCollitype);
 const extractSetWeight = require('./routes/extract/setWeight');
@@ -352,6 +354,8 @@ const extractUploadExp = require('./routes/extract/uploadExp');
 app.post('/extract/uploadExp', passport.authenticate('jwt', { session: false }), extractUploadExp);
 const extractUploadInspRel = require('./routes/extract/uploadInspRel');
 app.post('/extract/uploadInspRel', passport.authenticate('jwt', { session: false }), extractUploadInspRel);
+const extractUploadPackDetails = require('./routes/extract/uploadPackDetails');
+app.post('/extract/uploadPackDetails', passport.authenticate('jwt', { session: false }), extractUploadPackDetails);
 //field X
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);

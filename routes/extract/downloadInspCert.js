@@ -26,8 +26,6 @@ router.post('/', function (req, res) {
         element.certificateId && !certificateIds.includes(element.certificateId) && certificateIds.push(element.certificateId);
     });
 
-    console.log(heatIds);
-
     if (!screenId || !projectId) {
       res.status(400).json({
           message: 'screenId or projectId is missing'

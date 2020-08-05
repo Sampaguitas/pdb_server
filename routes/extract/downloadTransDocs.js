@@ -384,7 +384,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                     edit: true
                   });
                   arrayRow.push({
-                    val: packitem._id, //packitemId
+                    val: '', //packitemId
                     col: 3,
                     type: 'String',
                     align: 'left',

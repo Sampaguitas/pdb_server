@@ -341,6 +341,14 @@ function getLines (resProject, fieldnames, screenId) {
                             align: fieldname.align,
                             edit: fieldname.edit,
                           });
+                        } else if (fieldname.fields.name === 'relQty' && !resProject.enableInspection) {
+                          arrayRow.push({
+                            val: getValue('splitQty', sub),
+                            col: index + 6,
+                            type: fieldname.fields.type,
+                            align: fieldname.align,
+                            edit: fieldname.edit
+                          });
                         } else {
                           arrayRow.push({
                             val: getValue(fieldname.fields.name, sub),
@@ -434,15 +442,7 @@ function getLines (resProject, fieldnames, screenId) {
                         }
                         break;
                       case 'sub':
-                        if (fieldname.fields.name === 'shippedQty') {
-                          arrayRow.push({
-                            val: '',
-                            col: index + 6,
-                            type: "String",
-                            align: fieldname.align,
-                            edit: fieldname.edit,
-                          });
-                        } else if (fieldname.fields.name === 'heatNr') {
+                        if (fieldname.fields.name === 'heatNr') {
                           arrayRow.push({
                             val: getValue(fieldname.fields.name, virtual),
                             col: index + 6,
@@ -452,9 +452,9 @@ function getLines (resProject, fieldnames, screenId) {
                           });
                         } else {
                           arrayRow.push({
-                            val: getValue(fieldname.fields.name, sub),
+                            val: '',
                             col: index + 6,
-                            type: fieldname.fields.type,
+                            type: "String",
                             align: fieldname.align,
                             edit: fieldname.edit,
                           });

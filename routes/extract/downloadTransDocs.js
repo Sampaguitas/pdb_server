@@ -13,13 +13,14 @@ router.post('/', function (req, res) {
     const locale = req.query.locale || "en-US";
     const selectedIds = req.body.selectedIds;
     
-    
     let poIds = [];
     let subIds = [];
+    let packitemIds = [];
 
     selectedIds.forEach(element => {
         element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
         element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
+        element.packitemId && !packitemIds.includes(element.packitemId) && packitemIds.push(element.packitemId);
     });
 
     if (!screenId || !projectId) {
@@ -44,20 +45,21 @@ router.post('/', function (req, res) {
           match: { _id: { $in: poIds} },
           options: { sort: { clPo: 'asc', clPoRev: 'asc', clPoItem: 'asc' } },
           populate: {
-            path: 'subs',
-            match: { _id: { $in: subIds} },
-            populate: [
-              {
-                path: 'packitems'
-              },
-              {
-                path: 'heats',
-                options: { sort: { heatNr: 'asc' } },
-                populate: {
-                  path: 'certificate'
+              path: 'subs',
+              match: { _id: { $in: subIds} },
+              populate: [
+                {
+                  path: 'packitems',
+                  match: { _id: { $in: packitemIds} },
+                },
+                {
+                  path: 'heats',
+                  options: { sort: { heatNr: 'asc' } },
+                  populate: {
+                    path: 'certificate'
+                  }
                 }
-              }
-            ]
+              ]
           }
         }
       ])
@@ -78,7 +80,7 @@ router.post('/', function (req, res) {
             worksheet.getRow(1).height = 30;
             myHeaders.map(function (header) {
               let cell = worksheet.getCell(`${alphabet(header.col)}1`);
-              myFgColour = header.col < 3 ? { argb: 'A8052C'} : { argb: '0070C0'}
+              myFgColour = header.col < 4 ? { argb: 'A8052C'} : { argb: '0070C0'}
               with (cell) {
                 style = Object.create(cell.style), //shallow-clone the style, break references
                 border ={
@@ -117,7 +119,7 @@ router.post('/', function (req, res) {
                 let cell = worksheet.getCell(`${alphabet(myCell.col) + (indexLine + 3)}`);
                 
                 let myColour = function () {
-                  if (myCell.col < 3) {
+                  if (myCell.col < 4) {
                     return {argb: 'd3d3d3'};
                   } else if (unlocked == 'false' && myCell.edit) {
                     return {argb: 'd3d3d3'};
@@ -127,7 +129,7 @@ router.post('/', function (req, res) {
                 }
 
                 let myProtection = function () {
-                  if (myCell.col < 3) {
+                  if (myCell.col < 4) {
                     return { locked: true };
                   } else if (unlocked == 'false' && myCell.edit) {
                     return { locked: true };
@@ -167,11 +169,12 @@ router.post('/', function (req, res) {
           }
 
           //add autofilter in row 2
-          worksheet.autoFilter = `A2:${alphabet(resProject.fieldnames.length + 2)}2`;
+          worksheet.autoFilter = `A2:${alphabet(resProject.fieldnames.length + 3)}2`;
 
           //hide Ids
           worksheet.getColumn('A').hidden = true; //poId
           worksheet.getColumn('B').hidden = true; //subId
+          worksheet.getColumn('C').hidden = true; //packitemId
           
           //set worksheet protection options
           let options = {
@@ -213,10 +216,16 @@ function getHeaders(fieldnames) {
         type: 'String',
         align: 'left'
       });
+      arr.push({
+        val: 'PACKITEM ID',
+        col: 3,
+        type: 'String',
+        align: 'left'
+      });
       fieldnames.map( function (fieldname, index) {
         arr.push({
           val: fieldname.fields.custom,
-          col: index + 3,
+          col: index + 4,
           type: 'String',
           align: fieldname.align
         });
@@ -249,7 +258,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                     inspQty: ''
                 });
                 if (!_.isEmpty(sub.packitems) && hasPackitems) {
-                  virtuals(sub.packitems, po.uom, getTblFields(fieldnames, 'packitem'), locale).map(virtual => {
+                  sub.packitems.map(packitem => {
                     arrayRow = [];
                     arrayRow.push({
                       val: po._id, //poId
@@ -265,13 +274,20 @@ function getLines (resProject, fieldnames, screenId, locale) {
                       align: 'left',
                       edit: true
                     });
+                    arrayRow.push({
+                      val: packitem._id, //packitemId
+                      col: 3,
+                      type: 'String',
+                      align: 'left',
+                      edit: true
+                    });
                     fieldnames.map( (fieldname, index) => {
                       switch(fieldname.fields.fromTbl) {
                         case 'po':
                           if (['project', 'projectNr'].includes(fieldname.fields.name)) {
                             arrayRow.push({
                               val: fieldname.fields.name === 'project' ? getValue('name', resProject) || '' : getValue('number', resProject) || '',
-                              col: index + 3,
+                              col: index + 4,
                               type: fieldname.fields.type,
                               align: fieldname.align,
                               edit: fieldname.edit
@@ -279,7 +295,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                           } else {
                             arrayRow.push({
                               val: getValue(fieldname.fields.name, po),
-                              col: index + 3,
+                              col: index + 4,
                               type: fieldname.fields.type,
                               align: fieldname.align,
                               edit: fieldname.edit
@@ -290,23 +306,23 @@ function getLines (resProject, fieldnames, screenId, locale) {
                           if (fieldname.fields.name === 'heatNr') {
                             arrayRow.push({
                               val: getValue(fieldname.fields.name, certificate),
-                              col: index + 3,
+                              col: index + 4,
                               type: fieldname.fields.type,
                               align: fieldname.align,
                               edit: fieldname.edit
                             });
                           } else if (fieldname.fields.name === 'shippedQty') {
                             arrayRow.push({
-                              val: getValue(fieldname.fields.name, virtual),
-                              col: index + 3,
-                              type: fieldname.fields.type,
+                              val: '',
+                              col: index + 4,
+                              type: "String",
                               align: fieldname.align,
                               edit: fieldname.edit
                             });
                           } else if (fieldname.fields.name === 'relQty' && !resProject.enableInspection) {
                             arrayRow.push({
                               val: getValue('splitQty', sub),
-                              col: index + 3,
+                              col: index + 4,
                               type: fieldname.fields.type,
                               align: fieldname.align,
                               edit: fieldname.edit
@@ -314,44 +330,34 @@ function getLines (resProject, fieldnames, screenId, locale) {
                           } else {
                             arrayRow.push({
                               val: getValue(fieldname.fields.name, sub),
-                              col: index + 3,
+                              col: index + 4,
                               type: fieldname.fields.type,
                               align: fieldname.align,
                               edit: fieldname.edit
                             });
                           }
                           break;
-                          case 'certificate':
+                        case 'certificate':
                           arrayRow.push({
                             val: getValue(fieldname.fields.name, certificate),
-                            col: index + 3,
+                            col: index + 4,
                             type: fieldname.fields.type,
                             align: fieldname.align,
                             edit: fieldname.edit
                           });
                           break;
-                          case 'packitem':
-                            if (fieldname.fields.name === 'plNr') {
+                        case 'packitem':
                               arrayRow.push({
-                                val: getValue(fieldname.fields.name, virtual),
-                                col: index + 3,
+                                val: getValue(fieldname.fields.name, packitem),
+                                col: index + 4,
                                 type: fieldname.fields.type,
                                 align: fieldname.align,
                                 edit: fieldname.edit
                               });
-                            } else {
-                              arrayRow.push({
-                                val: virtual[screenHeader.fields.name].join(' | '),
-                                col: index + 3,
-                                type: "String",
-                                align: fieldname.align,
-                                edit: fieldname.edit
-                              });
-                            }
                             break;
                         default: arrayRow.push({
                           val: '',
-                          col: index + 3,
+                          col: index + 4,
                           type: "String",
                           align: fieldname.align,
                           edit: fieldname.edit
@@ -377,13 +383,20 @@ function getLines (resProject, fieldnames, screenId, locale) {
                     align: 'left',
                     edit: true
                   });
+                  arrayRow.push({
+                    val: packitem._id, //packitemId
+                    col: 3,
+                    type: 'String',
+                    align: 'left',
+                    edit: true
+                  });
                   fieldnames.map( (fieldname, index) => {
                     switch(fieldname.fields.fromTbl) {
                       case 'po':
                         if (['project', 'projectNr'].includes(fieldname.fields.name)) {
                           arrayRow.push({
                             val: fieldname.fields.name === 'project' ? getValue('name', resProject) || '' : getValue('number', resProject) || '',
-                            col: index + 3,
+                            col: index + 4,
                             type: fieldname.fields.type,
                             align: fieldname.align,
                             edit: fieldname.edit
@@ -391,7 +404,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                         } else {
                           arrayRow.push({
                             val: getValue(fieldname.fields.name, po),
-                            col: index + 3,
+                            col: index + 4,
                             type: fieldname.fields.type,
                             align: fieldname.align,
                             edit: fieldname.edit
@@ -402,7 +415,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                         if (fieldname.fields.name === 'heatNr') {
                           arrayRow.push({
                             val: getValue(fieldname.fields.name, certificate),
-                            col: index + 3,
+                            col: index + 4,
                             type: fieldname.fields.type,
                             align: fieldname.align,
                             edit: fieldname.edit
@@ -410,7 +423,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                         } else if (fieldname.fields.name === 'shippedQty') {
                           arrayRow.push({
                             val: '',
-                            col: index + 3,
+                            col: index + 4,
                             type: "String",
                             align: fieldname.align,
                             edit: fieldname.edit
@@ -418,7 +431,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                         } else if (fieldname.fields.name === 'relQty' && !resProject.enableInspection) {
                           arrayRow.push({
                             val: getValue('splitQty', sub),
-                            col: index + 3,
+                            col: index + 4,
                             type: fieldname.fields.type,
                             align: fieldname.align,
                             edit: fieldname.edit
@@ -426,7 +439,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                         } else {
                           arrayRow.push({
                             val: getValue(fieldname.fields.name, sub),
-                            col: index + 3,
+                            col: index + 4,
                             type: fieldname.fields.type,
                             align: fieldname.align,
                             edit: fieldname.edit
@@ -436,7 +449,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                       case 'certificate':
                         arrayRow.push({
                           val: getValue(fieldname.fields.name, certificate),
-                          col: index + 3,
+                          col: index + 4,
                           type: fieldname.fields.type,
                           align: fieldname.align,
                           edit: fieldname.edit
@@ -444,7 +457,7 @@ function getLines (resProject, fieldnames, screenId, locale) {
                         break;
                       default: arrayRow.push({
                         val: '',
-                        col: index + 3,
+                        col: index + 4,
                         type: "String",
                         align: fieldname.align,
                         edit: fieldname.edit

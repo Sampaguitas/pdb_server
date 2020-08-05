@@ -7,6 +7,7 @@ fs = require('fs');
 const FieldName = require('../../models/FieldName');
 const Po = require('../../models/Po');
 const Sub = require('../../models/Sub');
+const PackItem = require('../../models/PackItem');
 var Excel = require('exceljs');
 var _ = require('lodash');
 
@@ -50,7 +51,7 @@ router.post('/', upload.single('file'), function (req, res) {
             nEdited: nEdited
         });
       } else {
-        var hasPackitems = getScreenTbls(resFieldNames).includes('packitem');
+        var hasPackitems = getScreenTbls(resFieldNames, screenId).includes('packitem');
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => { //edited
           
@@ -91,20 +92,17 @@ router.post('/', upload.single('file'), function (req, res) {
                 tempPo._id = clean(worksheet.getCell('A' + row).value);
                 //assign Sub Ids
                 tempSub._id = clean(worksheet.getCell('B' + row).value);
-                tempSub.poId = tempPo._id;
+                tempSub.poId = clean(worksheet.getCell('A' + row).value);
                 //assign PackItem Ids
                 tempPackItem._id = clean(worksheet.getCell('C' + row).value);
-                tempPackItem.collipackId = clean(worksheet.getCell('D' + row).value);
-                tempPackItem.subId = tempSub._id;
-
+                tempPackItem.subId = clean(worksheet.getCell('B' + row).value);
 
                 resFieldNames.map((resFieldName, index) => {
-                  let cell = alphabet(index + 5) + row;
+                  let cell = alphabet(index + 4) + row;
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
                   let value = clean(worksheet.getCell(cell).value);
-                  // console.log(`cell: ${cell}, key: ${key}, value: ${value}`);
                   
                   colPromises.push(testFormat(row, cell, type, value));
                   
@@ -269,9 +267,9 @@ function alphabet(num){
   return s || undefined;
 }
 
-function getScreenTbls (resFieldNames) {
+function getScreenTbls (resFieldNames, screenId) {
   return resFieldNames.reduce(function (acc, cur) {
-      if(!acc.includes(cur.fields.fromTbl)) {
+      if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
           acc.push(cur.fields.fromTbl)
       }
       return acc;

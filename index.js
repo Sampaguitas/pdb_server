@@ -370,6 +370,8 @@ const extractUploadInspRel = require('./routes/extract/uploadInspRel');
 app.post('/extract/uploadInspRel', passport.authenticate('jwt', { session: false }), extractUploadInspRel);
 const extractUploadPackDetails = require('./routes/extract/uploadPackDetails');
 app.post('/extract/uploadPackDetails', passport.authenticate('jwt', { session: false }), extractUploadPackDetails);
+const extractUploadPickTicket = require('./routes/extract/uploadPickTicket');
+app.post('/extract/uploadPickTicket', passport.authenticate('jwt', { session: false }), extractUploadPickTicket);
 const extractUploadTransDocs = require('./routes/extract/uploadTransDocs');
 app.post('/extract/uploadTransDocs', passport.authenticate('jwt', { session: false }), extractUploadTransDocs);
 //field X downloadMir

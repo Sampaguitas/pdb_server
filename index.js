@@ -338,6 +338,8 @@ const extractDownloadInspRel = require('./routes/extract/downloadInspRel');
 app.post('/extract/downloadInspRel', passport.authenticate('jwt', { session: false }), extractDownloadInspRel);
 const extractDownloadMir = require('./routes/extract/downloadMir');
 app.post('/extract/downloadMir', passport.authenticate('jwt', { session: false }), extractDownloadMir);
+const extractDownloadMirSplit = require('./routes/extract/downloadMirSplit');
+app.post('/extract/downloadMirSplit', passport.authenticate('jwt', { session: false }), extractDownloadMirSplit);
 const extractDownloadStockMana = require('./routes/extract/downloadStockMana');
 app.post('/extract/downloadStockMana', passport.authenticate('jwt', { session: false }), extractDownloadStockMana);
 const extractDownloadTransDocs = require('./routes/extract/downloadTransDocs');

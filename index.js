@@ -336,6 +336,8 @@ const extractDownloadInspCert = require('./routes/extract/downloadInspCert');
 app.post('/extract/downloadInspCert', passport.authenticate('jwt', { session: false }), extractDownloadInspCert);
 const extractDownloadInspRel = require('./routes/extract/downloadInspRel');
 app.post('/extract/downloadInspRel', passport.authenticate('jwt', { session: false }), extractDownloadInspRel);
+const extractDownloadMir = require('./routes/extract/downloadMir');
+app.post('/extract/downloadMir', passport.authenticate('jwt', { session: false }), extractDownloadMir);
 const extractDownloadStockMana = require('./routes/extract/downloadStockMana');
 app.post('/extract/downloadStockMana', passport.authenticate('jwt', { session: false }), extractDownloadStockMana);
 const extractDownloadTransDocs = require('./routes/extract/downloadTransDocs');
@@ -362,7 +364,7 @@ const extractUploadPackDetails = require('./routes/extract/uploadPackDetails');
 app.post('/extract/uploadPackDetails', passport.authenticate('jwt', { session: false }), extractUploadPackDetails);
 const extractUploadTransDocs = require('./routes/extract/uploadTransDocs');
 app.post('/extract/uploadTransDocs', passport.authenticate('jwt', { session: false }), extractUploadTransDocs);
-//field X StockMana
+//field X downloadMir
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);
 const fieldDelete = require('./routes/field/delete');

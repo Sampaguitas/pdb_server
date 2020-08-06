@@ -191,6 +191,13 @@ ProjectSchema.virtual("transactions", {
     justOne: false
 });
 
+ProjectSchema.virtual("mirs", {
+    ref: "mirs",
+    localField: "_id",
+    foreignField: "projectId",
+    justOne: false
+});
+
 ProjectSchema.virtual("picktickets", {
     ref: "picktickets",
     localField: "_id",

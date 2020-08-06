@@ -360,6 +360,8 @@ const extractUpload = require('./routes/extract/upload');
 app.post('/extract/upload', passport.authenticate('jwt', { session: false }), extractUpload);
 const extractUploadExp = require('./routes/extract/uploadExp');
 app.post('/extract/uploadExp', passport.authenticate('jwt', { session: false }), extractUploadExp);
+const extractUploadMirSplit = require('./routes/extract/uploadMirSplit');
+app.post('/extract/uploadMirSplit', passport.authenticate('jwt', { session: false }), extractUploadMirSplit);
 const extractUploadInspRel = require('./routes/extract/uploadInspRel');
 app.post('/extract/uploadInspRel', passport.authenticate('jwt', { session: false }), extractUploadInspRel);
 const extractUploadPackDetails = require('./routes/extract/uploadPackDetails');

@@ -10,7 +10,6 @@ router.post('/', function (req, res) {
     const screenId = req.query.screenId;
     const projectId = req.query.projectId;
     const unlocked = req.query.unlocked;
-    const locale = req.query.locale || "en-US";
     const selectedIds = req.body.selectedIds;
     
     let mirIds = [];

@@ -180,7 +180,7 @@ PackItemSchema.pre('findOneAndDelete', async function() {
 
 PackItemSchema.pre('findOneAndUpdate', async function() {
     const docToUpdate = await this.model.findOne(this.getQuery());
-    if (!!docToUpdate && (this._update['$set'].hasOwnProperty('plNr') || this._update['$set'].hasOwnProperty('colliNr'))) {
+    if (!!docToUpdate && this._update.hasOwnProperty('$set') && (this._update['$set'].hasOwnProperty('plNr') || this._update['$set'].hasOwnProperty('colliNr'))) {
         isUnique(docToUpdate.collipackId, !!docToUpdate.plNr && !!docToUpdate.colliNr).then(res => res.isUnique && ColliPack.findByIdAndDelete(docToUpdate.collipackId));
         this._update['$set'].collipackId = undefined;
     }

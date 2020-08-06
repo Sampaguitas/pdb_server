@@ -346,6 +346,8 @@ const extractDownloadTransDocs = require('./routes/extract/downloadTransDocs');
 app.post('/extract/downloadTransDocs', passport.authenticate('jwt', { session: false }), extractDownloadTransDocs);
 const extractDownloadPackDetails = require('./routes/extract/downloadPackDetails');
 app.post('/extract/downloadPackDetails', passport.authenticate('jwt', { session: false }), extractDownloadPackDetails);
+const extractDownloadPickTicket = require('./routes/extract/downloadPickTicket');
+app.post('/extract/downloadPickTicket', passport.authenticate('jwt', { session: false }), extractDownloadPickTicket);
 const extractSetCollitype = require('./routes/extract/setCollitype');
 app.put('/extract/setCollitype', passport.authenticate('jwt', { session: false }), extractSetCollitype);
 const extractSetWeight = require('./routes/extract/setWeight');

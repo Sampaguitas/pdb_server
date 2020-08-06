@@ -21,8 +21,6 @@ router.post('/', upload.single('file'), function (req, res) {
     let rowPromises = [];
 
     let tempMir = {};
-    let tempMirItem = {};
-    let tempPo = {};
   
     let rejections = [];
     let nProcessed = 0;
@@ -83,23 +81,14 @@ router.post('/', upload.single('file'), function (req, res) {
 
                 //initialise objects
                 for (var member in tempMir) delete tempMir[member];
-                for (var member in tempMirItem) delete tempMirItem[member];
-                for (var member in tempPo) delete tempPo[member];
                 
                 
                 //assign Mir Ids
                 tempMir._id = clean(worksheet.getCell('A' + row).value);
                 tempMir.projectId = projectId;
-                //assign MirItem Ids
-                tempMirItem._id = clean(worksheet.getCell('B' + row).value);
-                tempMirItem.mirId = clean(worksheet.getCell('A' + row).value);
-                tempMirItem.poId = clean(worksheet.getCell('C' + row).value);
-                //assign Po Ids
-                tempPo._id = clean(worksheet.getCell('C' + row).value);
-                tempPo.projectId = projectId;
 
                 resFieldNames.map((resFieldName, index) => {
-                  let cell = alphabet(index + 4) + row;
+                  let cell = alphabet(index + 2) + row;
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
@@ -111,17 +100,11 @@ router.post('/', upload.single('file'), function (req, res) {
                     case 'mir':
                       tempMir[key] = value;
                       break;
-                    case 'miritem':
-                      tempMirItem[key] = value;
-                      break;
-                    case 'po':
-                      tempPo[key] = value;
-                      break;
                   }
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(update(row, tempMir, tempMirItem, tempPo));
+                  rowPromises.push(update(row, tempMir));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
@@ -170,7 +153,7 @@ router.post('/', upload.single('file'), function (req, res) {
     })
   }
 
-  function update(row, tempMir, tempMirItem, tempPo) {
+  function update(row, tempMir) {
     return new Promise (function (resolve) {
       Mir.findByIdAndUpdate(tempMir._id, tempMir, function(errNewMir, resNewMir){
           if (errNewMir || !resNewMir) {
@@ -182,36 +165,12 @@ router.post('/', upload.single('file'), function (req, res) {
               reason: 'Fields from Table MIR could not be saved.'
             });
           } else {
-            MirItem.findByIdAndUpdate(tempMirItem._id, tempMirItem, function(errNewMirItem, resNewMirItem) {
-              if (errNewMirItem || !resNewMirItem) {
-                resolve({
-                  row: row,
-                  isRejected: true,
-                  isEdited: false,
-                  isAdded: false,
-                  reason: 'Fields from Table MirItem could not be saved.'
-                });
-              } else {
-                Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
-                  if (errNewPo || !resNewPo) {
-                    resolve({
-                      row: row,
-                      isRejected: true,
-                      isEdited: false,
-                      isAdded: false,
-                      reason: 'Fields from Table Po could not be saved.'
-                    });
-                  } else {
-                    resolve({
-                      row: row,
-                      isRejected: false,
-                      isEdited: true,
-                      isAdded: false,
-                      reason: ''
-                    });
-                  }
-                });
-              }
+            resolve({
+              row: row,
+              isRejected: false,
+              isEdited: true,
+              isAdded: false,
+              reason: ''
             });
           }
         });

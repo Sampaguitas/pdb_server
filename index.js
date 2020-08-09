@@ -372,11 +372,13 @@ const extractUploadInspRel = require('./routes/extract/uploadInspRel');
 app.post('/extract/uploadInspRel', passport.authenticate('jwt', { session: false }), extractUploadInspRel);
 const extractUploadPackDetails = require('./routes/extract/uploadPackDetails');
 app.post('/extract/uploadPackDetails', passport.authenticate('jwt', { session: false }), extractUploadPackDetails);
+const extractUploadPickItem = require('./routes/extract/uploadPickItem');
+app.post('/extract/uploadPickItem', passport.authenticate('jwt', { session: false }), extractUploadPickItem);
 const extractUploadPickTicket = require('./routes/extract/uploadPickTicket');
 app.post('/extract/uploadPickTicket', passport.authenticate('jwt', { session: false }), extractUploadPickTicket);
 const extractUploadTransDocs = require('./routes/extract/uploadTransDocs');
 app.post('/extract/uploadTransDocs', passport.authenticate('jwt', { session: false }), extractUploadTransDocs);
-//field X downloadMir
+//field X
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);
 const fieldDelete = require('./routes/field/delete');

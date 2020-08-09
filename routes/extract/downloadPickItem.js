@@ -19,10 +19,6 @@ router.post('/', function (req, res) {
     let poIds = [];
     let mirIds = [];
     
-    
-    
-    
-
     selectedIds.forEach(element => { 
       element.pickticketId && !pickticketIds.includes(element.pickticketId) && pickticketIds.push(element.pickticketId);
       element.pickitemId && !pickitemIds.includes(element.pickitemId) && pickitemIds.push(element.pickitemId);

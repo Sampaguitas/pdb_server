@@ -346,6 +346,8 @@ const extractDownloadTransDocs = require('./routes/extract/downloadTransDocs');
 app.post('/extract/downloadTransDocs', passport.authenticate('jwt', { session: false }), extractDownloadTransDocs);
 const extractDownloadWhPackDetails = require('./routes/extract/downloadWhPackDetails');
 app.post('/extract/downloadWhPackDetails', passport.authenticate('jwt', { session: false }), extractDownloadWhPackDetails);
+const extractDownloadWhTransDocs = require('./routes/extract/downloadWhTransDocs');
+app.post('/extract/downloadWhTransDocs', passport.authenticate('jwt', { session: false }), extractDownloadWhTransDocs);
 const extractDownloadPackDetails = require('./routes/extract/downloadPackDetails');
 app.post('/extract/downloadPackDetails', passport.authenticate('jwt', { session: false }), extractDownloadPackDetails);
 const extractDownloadPickItem = require('./routes/extract/downloadPickItem');
@@ -382,7 +384,7 @@ const extractUploadTransDocs = require('./routes/extract/uploadTransDocs');
 app.post('/extract/uploadTransDocs', passport.authenticate('jwt', { session: false }), extractUploadTransDocs);
 const extractUploadWhPackDetails = require('./routes/extract/uploadWhPackDetails');
 app.post('/extract/uploadWhPackDetails', passport.authenticate('jwt', { session: false }), extractUploadWhPackDetails);
-//field X uploadWhPackDetails
+//field X downloadWhTransDocs
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);
 const fieldDelete = require('./routes/field/delete');

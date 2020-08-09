@@ -64,7 +64,7 @@ router.post('/', upload.single('file'), function (req, res) {
           
           if (rowCount < 3) { //2
             return res.status(400).json({
-              message: 'the File seams to be empty',
+              message: 'the file seems to be empty.',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,

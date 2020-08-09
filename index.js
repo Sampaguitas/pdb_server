@@ -380,7 +380,9 @@ const extractUploadPickTicket = require('./routes/extract/uploadPickTicket');
 app.post('/extract/uploadPickTicket', passport.authenticate('jwt', { session: false }), extractUploadPickTicket);
 const extractUploadTransDocs = require('./routes/extract/uploadTransDocs');
 app.post('/extract/uploadTransDocs', passport.authenticate('jwt', { session: false }), extractUploadTransDocs);
-//field X downloadWhPackDetails
+const extractUploadWhPackDetails = require('./routes/extract/uploadWhPackDetails');
+app.post('/extract/uploadWhPackDetails', passport.authenticate('jwt', { session: false }), extractUploadWhPackDetails);
+//field X uploadWhPackDetails
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);
 const fieldDelete = require('./routes/field/delete');

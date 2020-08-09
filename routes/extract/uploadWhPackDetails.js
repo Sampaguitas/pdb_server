@@ -1,12 +1,11 @@
 var express = require('express');
 const router = express.Router();
 var multer = require('multer');
-var storage = multer.memoryStorage()
-var upload = multer({ storage: storage })
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
 fs = require('fs');
 const FieldName = require('../../models/FieldName');
-const Po = require('../../models/Po');
-const Sub = require('../../models/Sub');
+const WhColliPack = require('../../models/WhColliPack');
 var Excel = require('exceljs');
 var _ = require('lodash');
 
@@ -19,8 +18,7 @@ router.post('/', upload.single('file'), function (req, res) {
     let colPromises = [];
     let rowPromises = [];
 
-    let tempPo = {};
-    let tempSub = {};
+    let tempWhColliPack = {};
   
     let rejections = [];
     let nProcessed = 0;
@@ -80,19 +78,14 @@ router.post('/', upload.single('file'), function (req, res) {
                 colPromises = [];
 
                 //initialise objects
-                for (var member in tempPo) delete tempPo[member];
-                for (var member in tempSub) delete tempSub[member];
+                for (var member in tempWhColliPack) delete tempWhColliPack[member];
                 
-                //assign Po Ids
-                tempPo.projectId = projectId;
-                tempPo._id = clean(worksheet.getCell('A' + row).value);
-                //assign Sub Ids
-                tempSub._id = clean(worksheet.getCell('B' + row).value);
-                tempSub.poId = clean(worksheet.getCell('A' + row).value);;
-                //assign PackItem Ids
+                //assign WhColliPack Ids
+                tempWhColliPack.projectId = projectId;
+                tempWhColliPack._id = clean(worksheet.getCell('A' + row).value);
 
                 resFieldNames.map((resFieldName, index) => {
-                  let cell = alphabet(index + 3) + row;
+                  let cell = alphabet(index + 2) + row;
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
@@ -101,17 +94,16 @@ router.post('/', upload.single('file'), function (req, res) {
                   colPromises.push(testFormat(row, cell, type, value));
                   
                   switch (fromTbl) {
-                    case 'po':
-                      tempPo[key] = value;
-                      break;
-                    case 'sub':
-                      tempSub[key] = value;
+                    case 'collipack':
+                      if (key != 'plNr' && key != 'colliNr') {
+                        tempWhColliPack[key] = value;
+                      }
                       break;
                   }
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(update(row, tempPo, tempSub));
+                  rowPromises.push(update(row, tempWhColliPack));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
@@ -160,36 +152,24 @@ router.post('/', upload.single('file'), function (req, res) {
     })
   }
 
-  function update(row, tempPo, tempSub) {
+  function update(row, tempWhColliPack) {
     return new Promise (function (resolve) {
-        Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
-          if (errNewPo || !resNewPo) {
+      WhColliPack.findByIdAndUpdate(tempWhColliPack._id, tempWhColliPack, { new: true }, function(errNewWhColliPack, resNewWhColliPack){
+          if (errNewWhColliPack || !resNewWhColliPack) {
             resolve({
               row: row,
               isRejected: true,
               isEdited: false,
               isAdded: false,
-              reason: 'Fields from Table Po could not be saved.'
+              reason: 'Fields from Table WhColliPack could not be saved.'
             });
           } else {
-            Sub.findByIdAndUpdate(tempSub._id, tempSub, function(errNewSub, resNewSub) {
-              if (errNewSub || !resNewSub) {
-                resolve({
-                  row: row,
-                  isRejected: true,
-                  isEdited: false,
-                  isAdded: false,
-                  reason: 'Fields from Table Sub could not be saved.'
-                });
-              } else {
-                resolve({
-                  row: row,
-                  isRejected: false,
-                  isEdited: true,
-                  isAdded: false,
-                  reason: ''
-                });
-              }
+            resolve({
+              row: row,
+              isRejected: false,
+              isEdited: true,
+              isAdded: false,
+              reason: ''
             });
           }
         });
@@ -250,7 +230,7 @@ function clean(value) {
   if(DbQuotes.test(value)){
     return value.slice(1,-1);
   } else if (sQuote.test(value)) {
-    return value.substr(1)
+    return value.substr(1);
   } else {
     return value
   }

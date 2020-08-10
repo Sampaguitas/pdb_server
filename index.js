@@ -384,7 +384,9 @@ const extractUploadTransDocs = require('./routes/extract/uploadTransDocs');
 app.post('/extract/uploadTransDocs', passport.authenticate('jwt', { session: false }), extractUploadTransDocs);
 const extractUploadWhPackDetails = require('./routes/extract/uploadWhPackDetails');
 app.post('/extract/uploadWhPackDetails', passport.authenticate('jwt', { session: false }), extractUploadWhPackDetails);
-//field X downloadWhTransDocs
+const extractUploadWhTransDocs = require('./routes/extract/uploadWhTransDocs');
+app.post('/extract/uploadWhTransDocs', passport.authenticate('jwt', { session: false }), extractUploadWhTransDocs);
+//field X uploadWhTransDocs
 const fieldCreate = require('./routes/field/create');
 app.post('/field/create', passport.authenticate('jwt', { session: false }), fieldCreate);
 const fieldDelete = require('./routes/field/delete');

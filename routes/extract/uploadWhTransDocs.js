@@ -5,9 +5,12 @@ var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
 fs = require('fs');
 const FieldName = require('../../models/FieldName');
+const PickTicket = require('../../models/PickTicket');
+const PickItem = require('../../models/PickItem');
+const MirItem = require('../../models/MirItem');
 const Po = require('../../models/Po');
-const Sub = require('../../models/Sub');
-const PackItem = require('../../models/PackItem');
+const Mir = require('../../models/Mir');
+const WhPackItem = require('../../models/WhPackItem');
 var Excel = require('exceljs');
 var _ = require('lodash');
 
@@ -20,10 +23,13 @@ router.post('/', upload.single('file'), function (req, res) {
     let colPromises = [];
     let rowPromises = [];
 
+    let tempPickticket = {};
+    let tempPickitem = {};
+    let tempMiritem = {};
     let tempPo = {};
-    let tempSub = {};
-    let tempPackItem = {};
-  
+    let tempMir = {};
+    let tempWhPackItem = {};
+
     let rejections = [];
     let nProcessed = 0;
     let nRejected = 0;
@@ -51,7 +57,6 @@ router.post('/', upload.single('file'), function (req, res) {
             nEdited: nEdited
         });
       } else {
-        var hasPackitems = getScreenTbls(resFieldNames, screenId).includes('packitem');
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => { //edited
           
@@ -83,22 +88,22 @@ router.post('/', upload.single('file'), function (req, res) {
                 colPromises = [];
 
                 //initialise objects
+                for (var member in tempPickticket) delete tempPickticket[member];
+                for (var member in tempPickitem) delete tempPickitem[member];
+                for (var member in tempMiritem) delete tempMiritem[member];
                 for (var member in tempPo) delete tempPo[member];
-                for (var member in tempSub) delete tempSub[member];
-                for (var member in tempPackItem) delete tempPackItem[member];
+                for (var member in tempMir) delete tempMir[member];
+                for (var member in tempWhPackItem) delete tempWhPackItem[member];
                 
-                //assign Po Ids
-                tempPo.projectId = projectId;
-                tempPo._id = clean(worksheet.getCell('A' + row).value);
-                //assign Sub Ids
-                tempSub._id = clean(worksheet.getCell('B' + row).value);
-                tempSub.poId = clean(worksheet.getCell('A' + row).value);
-                //assign PackItem Ids
-                tempPackItem._id = clean(worksheet.getCell('C' + row).value);
-                tempPackItem.subId = clean(worksheet.getCell('B' + row).value);
-
+                tempPickticket._id = clean(worksheet.getCell('A' + row).value);
+                tempPickitem._id = clean(worksheet.getCell('B' + row).value);
+                tempMiritem._id = clean(worksheet.getCell('C' + row).value);
+                tempPo._id = clean(worksheet.getCell('D' + row).value);
+                tempWhPackItem._id = clean(worksheet.getCell('E' + row).value);
+                tempMir._id = clean(worksheet.getCell('F' + row).value);
+                
                 resFieldNames.map((resFieldName, index) => {
-                  let cell = alphabet(index + 4) + row;
+                  let cell = alphabet(index + 7) + row;
                   let fromTbl = resFieldName.fields.fromTbl;
                   let type = resFieldName.fields.type;
                   let key = resFieldName.fields.name;
@@ -107,20 +112,31 @@ router.post('/', upload.single('file'), function (req, res) {
                   colPromises.push(testFormat(row, cell, type, value));
                   
                   switch (fromTbl) {
-                    case 'po':
-                      tempPo[key] = value;
+                    case 'pickticket':
+                      if (key != 'pickStatus') {
+                        tempPickticket[key] = value
+                      }
                       break;
-                    case 'sub':
-                      tempSub[key] = value;
+                    case 'pickitem':
+                      tempPickitem[key] = value
+                      break;
+                    case 'miritem':
+                      tempMiritem[key] = value
+                      break;
+                    case 'po':
+                      tempPo[key] = value
                       break;
                     case 'packitem':
-                      tempPackItem[key] = value;
+                      tempWhPackItem[key] = value;
+                      break;
+                    case 'mir':
+                      tempMir[key] = value;
                       break;
                   }
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(update(row, tempPo, tempSub, tempPackItem, hasPackitems));
+                  rowPromises.push(update(row, tempPickticket, tempPickitem, tempMiritem, tempPo, tempWhPackItem, tempMir));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
@@ -169,54 +185,90 @@ router.post('/', upload.single('file'), function (req, res) {
     })
   }
 
-  function update(row, tempPo, tempSub, tempPackItem, hasPackitems) {
+  function update(row, tempPickticket, tempPickitem, tempMiritem, tempPo, tempWhPackItem, tempMir) {
     return new Promise (function (resolve) {
-        Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
-          if (errNewPo || !resNewPo) {
+      PickTicket.findByIdAndUpdate(tempPickticket._id, tempPickticket, function(errNewPickticket, resNewPickticket){
+          if (errNewPickticket || !resNewPickticket) {
             resolve({
               row: row,
               isRejected: true,
               isEdited: false,
               isAdded: false,
-              reason: 'Fields from Table Po could not be saved.'
+              reason: 'Fields from Table Pickticket could not be saved.'
             });
           } else {
-            Sub.findByIdAndUpdate(tempSub._id, tempSub, function(errNewSub, resNewSub) {
-              if (errNewSub || !resNewSub) {
+            PickItem.findByIdAndUpdate(tempPickitem._id, tempPickitem, function(errNewPickitem, resNewPickitem){
+              if (errNewPickitem || !resNewPickitem) {
                 resolve({
                   row: row,
                   isRejected: true,
                   isEdited: false,
                   isAdded: false,
-                  reason: 'Fields from Table Sub could not be saved.'
+                  reason: 'Fields from Table PickItem could not be saved.'
                 });
-              } else if (!!tempPackItem._id){ //hasPackitems && 
-                PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
-                  if (errNewPackItem || !resNewPackItem) {
+              } else {
+                MirItem.findByIdAndUpdate(tempMiritem._id, tempMiritem, function(errNewMiritem, resNewMiritem){
+                  if (errNewMiritem || !resNewMiritem) {
                     resolve({
                       row: row,
                       isRejected: true,
                       isEdited: false,
                       isAdded: false,
-                      reason: 'Fields from Table PackItem could not be saved.'
+                      reason: 'Fields from Table MirItem could not be saved.'
                     });
                   } else {
-                    resolve({
-                      row: row,
-                      isRejected: false,
-                      isEdited: true,
-                      isAdded: false,
-                      reason: ''
+                    Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
+                      if (errNewPo || !resNewPo) {
+                        resolve({
+                          row: row,
+                          isRejected: true,
+                          isEdited: false,
+                          isAdded: false,
+                          reason: 'Fields from Table Po could not be saved.'
+                        });
+                      } else {
+                        Mir.findByIdAndUpdate(tempMir._id, tempMir, function(errNewMir, resNewMir){
+                          if (errNewMir || !resNewMir) {
+                            resolve({
+                              row: row,
+                              isRejected: true,
+                              isEdited: false,
+                              isAdded: false,
+                              reason: 'Fields from Table Mir could not be saved.'
+                            });
+                          } else if (!!tempWhPackItem._id) {
+                            WhPackItem.findByIdAndUpdate(tempWhPackItem._id, tempWhPackItem, function(errNewWhPackItem, resNewWhPackItem){
+                              if (errNewWhPackItem || !resNewWhPackItem) {
+                                resolve({
+                                  row: row,
+                                  isRejected: true,
+                                  isEdited: false,
+                                  isAdded: false,
+                                  reason: 'Fields from Table WhPackItem could not be saved.'
+                                });
+                              } else {
+                                resolve({
+                                  row: row,
+                                  isRejected: false,
+                                  isEdited: true,
+                                  isAdded: false,
+                                  reason: ''
+                                });
+                              }
+                            });
+                          } else {
+                            resolve({
+                              row: row,
+                              isRejected: false,
+                              isEdited: true,
+                              isAdded: false,
+                              reason: ''
+                            });
+                          }
+                        });
+                      }
                     });
                   }
-                });
-              } else {
-                resolve({
-                  row: row,
-                  isRejected: false,
-                  isEdited: true,
-                  isAdded: false,
-                  reason: ''
                 });
               }
             });
@@ -265,15 +317,6 @@ function alphabet(num){
     num = (num - t)/26 | 0;
   }
   return s || undefined;
-}
-
-function getScreenTbls (resFieldNames, screenId) {
-  return resFieldNames.reduce(function (acc, cur) {
-      if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
-          acc.push(cur.fields.fromTbl)
-      }
-      return acc;
-  },[]);
 }
 
 function clean(value) {

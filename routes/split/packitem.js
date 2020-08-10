@@ -100,10 +100,12 @@ module.exports = router;
 
 function upsert (element) {
     return new Promise(function (resolve, reject) {
-        let query = { _id: new ObjectId() };
+        // let query = { _id: new ObjectId() }; new ObjectId()
+        let query = new ObjectId();
         let update = { $set: element };
         let options = { new: true, upsert: true };
-        PackItem.findOneAndUpdate(query, update, options, function(err) {
+        // PackItem.findOneAndUpdate(query, update, options, function(err) {
+        PackItem.findByIdAndUpdate(query, update, options, function(err) {
             if (err) {
                 resolve({
                     isAdded: false,

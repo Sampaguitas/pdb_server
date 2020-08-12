@@ -467,7 +467,7 @@ function getRow(docDef, docfields, pickticket, itemCount, mirWeight, pickitem, h
                         });
                     } else {
                         arrayRow.push({
-                            val: !!heatIndex ? '' : pickticket.isProcessed ? 'Closed' : 'Open',
+                            val: !!heatIndex ? '' : pickticket[docfield.fields.name],
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type
@@ -477,7 +477,7 @@ function getRow(docDef, docfields, pickticket, itemCount, mirWeight, pickitem, h
                 case 'pickitem': 
                     if (_.isEqual(docfield.fields.name, 'qtyPrepared')) {
                         arrayRow.push({
-                            val: pickitem.qtyPrepared,
+                            val: !!heatIndex ? '' : pickitem.qtyPrepared,
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type

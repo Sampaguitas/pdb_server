@@ -262,124 +262,143 @@ function TypeToString(fieldValue, fieldType, locale) {
 function getHeaders(docDef, docfields, locale) {
     return new Promise(async function (resolve) {
         arrayLines = [];
-        let pickticket = docDef.project.picktickets[0];
-        if(!_.isUndefined(pickticket) && !_.isEmpty(pickticket.pickitems)) {
-            let itemCount = !_.isEmpty(pickticket.pickitems) ? pickticket.pickitems.length : '';
-            let mirWeight = 0;
-            if (!_.isEmpty(pickticket.pickitems)) {
-                mirWeight = pickticket.pickitems.reduce(function (acc, cur) {
-                    if (!!cur.miritem.totWeight) {
-                        acc += cur.miritem.totWeight;
-                    }
-                    return acc;
-                }, 0);
-            }
-            pickticket.pickitems.map(pickitem => {
-                let arrayRow = [];
-                docfields.map(docfield => {
-                    switch(docfield.fields.fromTbl) {
-                        case 'pickticket':
-                            if (_.isEqual(docfield.fields.name, 'pickStatus')) {
-                                arrayRow.push({
-                                    val: pickticket.isProcessed ? 'Closed' : 'Open',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            } else {
-                                arrayRow.push({
-                                    val: pickticket.isProcessed ? 'Closed' : 'Open',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            }
-                            break;
-                        case 'mir':
-                            if (['itemCount', 'mirWeight'].includes(docfield.fields.name)) {
-                                arrayRow.push({
-                                    val: _.isEqual(docfield.fields.name, 'itemCount') ? itemCount : mirWeight,
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            } else {
-                                arrayRow.push({
-                                    val: pickticket.mir[docfield.fields.name],
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            }
-                            break;
-                        case 'miritem':
-                                arrayRow.push({
-                                    val: pickitem.miritem[docfield.fields.name],
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            break;
-                        case 'po':
-                            if (['project', 'projectNr'].includes(docfield.fields.name)) {
-                                arrayRow.push({
-                                    val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            } else {
-                                arrayRow.push({
-                                    val: pickitem.miritem.po[docfield.fields.name] || '',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            }
-                            break;
-                        case 'location': 
-                            if (docfield.fields.name === 'warehouse') {
-                                arrayRow.push({
-                                    val: pickticket.warehouse.warehouse || '',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type
-                                });
-                            } else if (docfield.fields.name === 'area'){
-                                arrayRow.push({
-                                    val: pickitem.location.area.area,
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type 
-                                });
-                            } else if (docfield.fields.name === 'location') {
-                                let locName = getLocName(pickitem.location, pickitem.location.area);
-                                arrayRow.push({
-                                    val: locName,
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type 
-                                });
-                            } else {
-                                arrayRow.push({
-                                    val: '',
-                                    row: docfield.row,
-                                    col: docfield.col,
-                                    type: docfield.fields.type 
-                                });
-                            }
-                            break;
-                        default: arrayRow.push({
-                            val: '',
-                            row: docfield.row,
-                            col: docfield.col,
-                            type: docfield.fields.type 
-                        });
-                    }
+        docDef.project.picktickets.map(pickticket => {
+            if(!_.isEmpty(pickticket.pickitems)) {
+                let itemCount = !_.isEmpty(pickticket.pickitems) ? pickticket.pickitems.length : '';
+                let mirWeight = 0;
+                if (!_.isEmpty(pickticket.pickitems)) {
+                    mirWeight = pickticket.pickitems.reduce(function (acc, cur) {
+                        if (!!cur.miritem.totWeight) {
+                            acc += cur.miritem.totWeight;
+                        }
+                        return acc;
+                    }, 0);
+                }
+                pickticket.pickitems.map(pickitem => {
+                    let arrayRow = [];
+                    docfields.map(docfield => {
+                        switch(docfield.fields.fromTbl) {
+                            case 'pickticket':
+                                if (_.isEqual(docfield.fields.name, 'pickStatus')) {
+                                    arrayRow.push({
+                                        val: pickticket.isProcessed ? 'Closed' : 'Open',
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                } else {
+                                    arrayRow.push({
+                                        val: pickticket.isProcessed ? 'Closed' : 'Open',
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                }
+                                break;
+                            case 'pickitem': 
+                                if (_.isEqual(docfield.fields.name, 'qtyPrepared')) {
+                                    arrayRow.push({
+                                        val: pickitem.qtyPrepared,
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                } else {
+                                    arrayRow.push({
+                                        val: '',
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                }
+                                break;
+                            case 'mir':
+                                if (['itemCount', 'mirWeight'].includes(docfield.fields.name)) {
+                                    arrayRow.push({
+                                        val: _.isEqual(docfield.fields.name, 'itemCount') ? itemCount : mirWeight,
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                } else {
+                                    arrayRow.push({
+                                        val: pickticket.mir[docfield.fields.name],
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                }
+                                break;
+                            case 'miritem':
+                                    arrayRow.push({
+                                        val: pickitem.miritem[docfield.fields.name],
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                break;
+                            case 'po':
+                                if (['project', 'projectNr'].includes(docfield.fields.name)) {
+                                    arrayRow.push({
+                                        val: docfield.fields.name === 'project' ? docDef.project.name || '' : docDef.project.number || '',
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                } else {
+                                    arrayRow.push({
+                                        val: pickitem.miritem.po[docfield.fields.name] || '',
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                }
+                                break;
+                            case 'location': 
+                                if (docfield.fields.name === 'warehouse') {
+                                    arrayRow.push({
+                                        val: pickticket.warehouse.warehouse || '',
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type
+                                    });
+                                } else if (docfield.fields.name === 'area'){
+                                    arrayRow.push({
+                                        val: pickitem.location.area.area,
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type 
+                                    });
+                                } else if (docfield.fields.name === 'location') {
+                                    let locName = getLocName(pickitem.location, pickitem.location.area);
+                                    arrayRow.push({
+                                        val: locName,
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type 
+                                    });
+                                } else {
+                                    arrayRow.push({
+                                        val: '',
+                                        row: docfield.row,
+                                        col: docfield.col,
+                                        type: docfield.fields.type 
+                                    });
+                                }
+                                break;
+                            default: arrayRow.push({
+                                val: '',
+                                row: docfield.row,
+                                col: docfield.col,
+                                type: docfield.fields.type 
+                            });
+                        }
+                    });
+                    arrayLines.push(arrayRow);
                 });
-                arrayLines.push(arrayRow);
-            });
-        }
+            }
+        });
+        
         return resolve(arrayLines);
     });
 }
@@ -449,6 +468,23 @@ function getRow(docDef, docfields, pickticket, itemCount, mirWeight, pickitem, h
                     } else {
                         arrayRow.push({
                             val: !!heatIndex ? '' : pickticket.isProcessed ? 'Closed' : 'Open',
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                    }
+                    break;
+                case 'pickitem': 
+                    if (_.isEqual(docfield.fields.name, 'qtyPrepared')) {
+                        arrayRow.push({
+                            val: pickitem.qtyPrepared,
+                            row: docfield.row,
+                            col: docfield.col,
+                            type: docfield.fields.type
+                        });
+                    } else {
+                        arrayRow.push({
+                            val: '',
                             row: docfield.row,
                             col: docfield.col,
                             type: docfield.fields.type

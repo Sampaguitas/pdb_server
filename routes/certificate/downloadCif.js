@@ -37,25 +37,3 @@ router.get('/', function (req, res) {
 module.exports = router;
 
 
-// s3.getObject(params).createReadStream()
-    
-    // const HummusRecipe = require('hummus-recipe');
-    // const pdfDoc = new HummusRecipe('input.pdf', 'output.pdf');
-    
-    // pdfDoc
-    // // edit 1st page
-    // .editPage(1)
-    // .text('this is', 10, 10)
-    // .text('my first', 200, 10)
-    // .text('test line', 400, 10)
-    // .text('this is', 10, 25)
-    // .text('my second', 200, 25)
-    // .text('test line', 400, 25)
-    // .text('this is', 10, 40)
-    // .text('my third', 200, 40)
-    // .text('test line', 400, 40)
-    // .endPage()
-    // // end and save
-    // .endPDF();
-
-    // res.status(400).json({message: 'toto'});

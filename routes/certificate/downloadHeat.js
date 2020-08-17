@@ -126,13 +126,13 @@ function getStream(heat, timeStamp) {
     // Listen for errors returned by the service
     s3Stream.on('error', function(err) {
       // NoSuchKey: The specified key does not exist
-      console.log(err);
+      // console.log(err);
       reject({message: 'The specified key does not exist'});
     });
 
     s3Stream.pipe(fileStream).on('error', function(err) {
       // capture any errors that occur when writing data to the file
-      console.log(err);
+      // console.log(err);
       reject({message: 'An error occured when writing data to the file'});
     }).on('close', function() {
         resolve({

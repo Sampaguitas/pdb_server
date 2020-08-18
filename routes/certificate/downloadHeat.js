@@ -107,10 +107,12 @@ function writeFile(heat, inputFile, outputFile) {
     var s3Stream = s3.getObject(params).createReadStream();
 
     s3Stream.on('error', function(err) {
+      console.log(`specified key does not exist:${err}`);
       reject({message: 'The specified key does not exist'});
     });
 
     s3Stream.pipe(fileStream).on('error', function(err) {
+      console.log(`An error occured when writing data to the file:${err}`);
       reject({message: 'An error occured when writing data to the file'});
     }).on('close', () => {
       addHeader(inputFile, outputFile)

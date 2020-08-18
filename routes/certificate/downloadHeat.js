@@ -8,7 +8,7 @@ var region = require('../../config/keys').region;
 var awsBucketName = require('../../config/keys').awsBucketName;
 var _ = require('lodash');
 var Heat = require('../../models/Heat');
-// const { fstat } = require('fs');
+const HummusRecipe = require('hummus-recipe');
 const fs = require('fs');
 
 aws.config.update({
@@ -17,10 +17,14 @@ aws.config.update({
   region: region
 });
 
+
+
 router.get('/', function (req, res) {
 
   const heatId = decodeURI(req.query.heatId);
-  let timeStamp = Date.now();
+  const timeStamp = Date.now();
+  const inputFile = path.join('temp', 'input', `${timeStamp}.pdf`);
+  const outputFile = path.join('temp', 'output', `${timeStamp}.pdf`);
 
   if (!heatId) {
     return res.status(400).json({message: 'heatId is missing.'});
@@ -50,8 +54,7 @@ router.get('/', function (req, res) {
       } else if (!heat.certificate.hasFile) {
         res.status(400).json({ message: 'No file has been uploaded for selected certificate'});
       } else {
-        // getFile(heat).then(file => {
-        getStream(heat, timeStamp)
+        writeFile(heat, inputFile, outputFile)
         .then(file => {
           res.set({
             'Cache-Control': 'no-cache',
@@ -62,7 +65,6 @@ router.get('/', function (req, res) {
           file.stream.pipe(res);
         })
         .catch(error => {
-          console.log(error.message),
           res.status(400).json({message: error.message})
         });
       }
@@ -71,23 +73,6 @@ router.get('/', function (req, res) {
 });
 
 module.exports = router;
-
-
-function getFile(heat) {//cifName, po, sub, heat
-  return new Promise(function (resolve) {
-    var s3 = new aws.S3();
-    var params = {
-        Bucket: awsBucketName,
-        Key: path.join('certificates', `${heat.certificateId}.pdf`),
-    };
-    let stream = s3.getObject(params).createReadStream();
-
-    resolve({
-      stream: stream,
-      name: getName(heat)
-    });
-  });
-}
 
 function getName(heat) { //cifName, po, sub, heat
   let cifName = heat.sub.po.project.cifName || '';
@@ -110,9 +95,7 @@ function getName(heat) { //cifName, po, sub, heat
   }
 }
 
-//let file = require('fs').createWriteStream(`${id}.pdf`);
-
-function getStream(heat, timeStamp) {
+function writeFile(heat, inputFile, outputFile) {
   return new Promise(function(resolve, reject) {
     
     var s3 = new aws.S3();
@@ -120,46 +103,35 @@ function getStream(heat, timeStamp) {
         Bucket: awsBucketName,
         Key: path.join('certificates', `${heat.certificateId}.pdf`),
     };
-    var fileStream = fs.createWriteStream(path.join('temp', `${timeStamp}.pdf`));
+    var fileStream = fs.createWriteStream(inputFile);
     var s3Stream = s3.getObject(params).createReadStream();
 
-    // Listen for errors returned by the service
     s3Stream.on('error', function(err) {
-      // NoSuchKey: The specified key does not exist
-      // console.log(err);
       reject({message: 'The specified key does not exist'});
     });
 
     s3Stream.pipe(fileStream).on('error', function(err) {
-      // capture any errors that occur when writing data to the file
-      // console.log(err);
       reject({message: 'An error occured when writing data to the file'});
-    }).on('close', function() {
+    }).on('close', () => {
+      addHeader(inputFile, outputFile)
+      .then(stream => {
         resolve({
-          stream: fs.createReadStream(path.join('temp', `${timeStamp}.pdf`)),
+          stream: stream,
           name: getName(heat)
         });
+      })
+        
     });
   });
 }
 
-
-// function streamTemp(id) {
-//   return new Promise(function(resolve, reject) {
-//     let file = require('fs').createReadStream(`${id}.pdf`);
-//   });
-// }
-
-
-
-// s3.getObject(params).createReadStream()
+function addHeader(inputFile, outputFile) {
+  return new Promise(function(resolve) {
+    const pdfDoc = new HummusRecipe(inputFile, outputFile);
     
-    // const HummusRecipe = require('hummus-recipe');
-    // const pdfDoc = new HummusRecipe('input.pdf', 'output.pdf');
-    
-    // pdfDoc
-    // // edit 1st page
-    // .editPage(1)
+    pdfDoc
+    // edit 1st page
+    .editPage(1)
     // .text('this is', 10, 10)
     // .text('my first', 200, 10)
     // .text('test line', 400, 10)
@@ -169,8 +141,27 @@ function getStream(heat, timeStamp) {
     // .text('this is', 10, 40)
     // .text('my third', 200, 40)
     // .text('test line', 400, 40)
-    // .endPage()
-    // // end and save
-    // .endPDF();
+    .endPage()
+    // end and save
+    .endPDF( () => {
+      let stream = fs.createReadStream(outputFile, { emitClose: true });
+      stream.on('end', function () {
+        stream.close();
+      });
+      stream.on("close", function () {
+        stream.destroy();
+        deleteFile(inputFile);
+        deleteFile(outputFile);
+      });
+      resolve(stream);
+    });
+  }) 
+}
 
-    // res.status(400).json({message: 'toto'});
+function deleteFile(targetPath) {
+  fs.unlink(targetPath, function (err) {
+    if (err) {
+      console.log(`Error in deleting the file: ${err}`);
+    }
+  });
+}

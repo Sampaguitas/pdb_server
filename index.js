@@ -381,13 +381,13 @@ app.use('/transaction/goodsReceiptPl', passport.authenticate('jwt', { session: f
 app.use('/transaction/goodsReceiptPo', passport.authenticate('jwt', { session: false }), require('./routes/transaction/goodsReceiptPo'));
 app.use('/transaction/goodsReceiptRet', passport.authenticate('jwt', { session: false }), require('./routes/transaction/goodsReceiptRet'));
 app.use('/transaction/transfer', passport.authenticate('jwt', { session: false }), require('./routes/transaction/transfer'));
-//user closeX
+//user X
 app.use('/user/changePwd', passport.authenticate('jwt', { session: false }), require('./routes/user/changePwd'));
 app.use('/user/delete', passport.authenticate('jwt', { session: false }), require('./routes/user/delete'));
 app.use('/user/findAll', passport.authenticate('jwt', { session: false }), require('./routes/user/findAll'));
 app.use('/user/findOne', passport.authenticate('jwt', { session: false }), require('./routes/user/findOne'));
 app.use('/user/register', passport.authenticate('jwt', { session: false }), require('./routes/user/register'));
-//---------user open---------------
+//---------open routes---------------
 app.use('/user/login', require('./routes/user/login'));
 app.use('/user/requestPwd', require('./routes/user/requestPwd'));
 app.use('/user/resetPwd', require('./routes/user/resetPwd'));
@@ -416,18 +416,3 @@ app.use('/whpackitem/update', passport.authenticate('jwt', { session: false }), 
 // Listen on port
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running on ${port}`));
-
-// // Compile all routers   
-// var routeFolders = [],     
-// routePaths = "./routes"   
-// glob.sync('**/*', { cwd: routePaths }).forEach(route => {     
-//     var _isFolder = !_.endsWith(route, '.js')     
-//     route = '/' + route.replace(/\.[^/.]+$/, '')     
-//     if (!_.endsWith(route, 'index')) {       
-//         var _router = require(routePaths + route)       
-//         app.use(route, _router)       
-//         if (_isFolder) routeFolders.push(route)     }   })   
-//         routeFolders.forEach(route => {     var _pathDeindex = routePaths + route + '/deindex.js'     
-//         if (fs.existsSync(_pathDeindex))       
-//         app.use(route, require(_pathDeindex))   
-//     })

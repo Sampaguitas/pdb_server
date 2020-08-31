@@ -3,21 +3,6 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-variables:
-  ACCESS_KEY_ID: $(accessKeyId)
-  AWS_BUCKET_NAME: $(awsBucketName)
-  MAILER_AUTH_PASS: $(mailerAuthPass)
-  MAILER_AUTH_USER: $(mailerAuthUser)
-  MAILER_HOST: $(mailerHost)
-  MAILER_PORT: $(mailerPort)
-  MONGO_URI: $(mongoURI)
-  MY_NAME: $(myName)
-  MY_PHONE: $(myPhone)
-  MY_POSITION: $(myPosition)
-  REGION: $(region)
-  SECRET: $(secret)
-  SECRET_ACCESS_KEY: $(secretAccessKey)
-
 trigger:
 - master
 
@@ -37,3 +22,17 @@ steps:
 - script: |
     NODE_ENV=production npm start
   displayName: 'npm start'
+  env:
+    ACCESS_KEY_ID: $(accessKeyId)
+    AWS_BUCKET_NAME: $(awsBucketName)
+    MAILER_AUTH_PASS: $(mailerAuthPass)
+    MAILER_AUTH_USER: $(mailerAuthUser)
+    MAILER_HOST: $(mailerHost)
+    MAILER_PORT: $(mailerPort)
+    MONGO_URI: $(mongoURI)
+    MY_NAME: $(myName)
+    MY_PHONE: $(myPhone)
+    MY_POSITION: $(myPosition)
+    REGION: $(region)
+    SECRET: $(secret)
+    SECRET_ACCESS_KEY: $(secretAccessKey)

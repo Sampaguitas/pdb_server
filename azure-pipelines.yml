@@ -3,20 +3,20 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-# variables:
-#   ACCESS_KEY_ID: $(ACCESS_KEY_ID)
-#   AWS_BUCKET_NAME: $(AWS_BUCKET_NAME)
-#   MAILER_AUTH_PASS: $(MAILER_AUTH_PASS)
-#   MAILER_AUTH_USER: $(MAILER_AUTH_USER)
-#   MAILER_HOST: $(MAILER_HOST)
-#   MAILER_PORT: $(MAILER_PORT)
-#   MONGO_URI: $(MONGO_URI)
-#   MY_NAME: $(MY_NAME)
-#   MY_PHONE: $(MY_PHONE)
-#   MY_POSITION: $(MY_POSITION)
-#   REGION: $(REGION)
-#   SECRET: $(SECRET)
-#   SECRET_ACCESS_KEY: $(SECRET_ACCESS_KEY)
+variables:
+  ACCESS_KEY_ID: $(ACCESS_KEY_ID)
+  AWS_BUCKET_NAME: $(AWS_BUCKET_NAME)
+  MAILER_AUTH_PASS: $(MAILER_AUTH_PASS)
+  MAILER_AUTH_USER: $(MAILER_AUTH_USER)
+  MAILER_HOST: $(MAILER_HOST)
+  MAILER_PORT: $(MAILER_PORT)
+  MONGO_URI: $(MONGO_URI)
+  MY_NAME: $(MY_NAME)
+  MY_PHONE: $(MY_PHONE)
+  MY_POSITION: $(MY_POSITION)
+  REGION: $(REGION)
+  SECRET: $(SECRET)
+  SECRET_ACCESS_KEY: $(SECRET_ACCESS_KEY)
 
 trigger:
 - master
@@ -35,5 +35,5 @@ steps:
   displayName: 'npm install'
 
 - script: |
-    set NODE_ENV=production&&npm start
+    npm start
   displayName: 'npm start'

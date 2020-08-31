@@ -31,7 +31,7 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm install
+    npm install --production
   displayName: 'npm install'
 
 - script: |

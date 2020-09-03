@@ -26,16 +26,21 @@ router.get('/', function (req, res) {
     .populate([
     {
       path: 'sub',
-      populate: [
-        {
-          path: 'po',
-          populate: [
-            {
-              path: 'project',
-            }
-          ]
-        },
-      ]
+      populate: {
+        path: 'po',
+        populate: {
+          path: 'project',
+        }
+      },
+    },
+    {
+      path: 'return',
+      populate: {
+        path: 'po',
+        populate: {
+          path: 'project',
+        }
+      },
     },
     {
       path: 'certificate'
@@ -81,18 +86,18 @@ function getFile(heat) {//cifName, po, sub, heat
 }
 
 function getName(heat) { //cifName, po, sub, heat
-  let cifName = heat.sub.po.project.cifName || '';
+  let cifName = heat.hasOwnProperty('sub') ? heat.sub.po.project.cifName || '' : heat.hasOwnProperty('return') && heat.return.po.project.cifName || '';
   if (!cifName) {
     return `MTC${heat.certificate.cif}_HeatNr${heat.heatNr}.pdf`
   } else {
     let badChars = /[^\w\s\_\-]/mg
-    cifName = cifName.replace('[clPo]', String(heat.sub.po.clPo) || '');
-    cifName = cifName.replace('[clPoRev]', String(heat.sub.po.clPoRev) || '');
-    cifName = cifName.replace('[clPoItem]', String(heat.sub.po.clPoItem) || '');
-    cifName = cifName.replace('[clCode]', String(heat.sub.po.clCode) || ''); //
-    cifName = cifName.replace('[vlSo]', String(heat.sub.po.vlSo) || '');
-    cifName = cifName.replace('[vlSoItem]', String(heat.sub.po.vlSoItem) || '');
-    cifName = cifName.replace('[nfi]', String(heat.sub.nfi) || '');
+    cifName = cifName.replace('[clPo]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clPo) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clPo) || '' : '');
+    cifName = cifName.replace('[clPoRev]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clPoRev) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clPoRev) || '' : '');
+    cifName = cifName.replace('[clPoItem]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clPoItem) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clPoItem) || '' : '');
+    cifName = cifName.replace('[clCode]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clCode) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clCode) || '' : ''); //
+    cifName = cifName.replace('[vlSo]', heat.hasOwnProperty('sub') ? String(heat.sub.po.vlSo) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.vlSo) || '' : '');
+    cifName = cifName.replace('[vlSoItem]', heat.hasOwnProperty('sub') ? String(heat.sub.po.vlSoItem) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.vlSoItem) || '' : '');
+    cifName = cifName.replace('[nfi]', heat.hasOwnProperty('sub') ? String(heat.sub.nfi) || '' : '');
     cifName = cifName.replace('[cif]', String(heat.certificate.cif) || '');
     cifName = cifName.replace('[heatNr]', String(heat.heatNr) || '');
     cifName = cifName.replace('[inspQty]', String(heat.inspQty) || '');

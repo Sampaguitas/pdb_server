@@ -93,14 +93,14 @@ module.exports = router;
 
 function updateWhColliPack(whcollipackId, netWeight, type, length, width, height, pkWeight) {
     return new Promise(function (resolve) {
-        let grossWeight = !!netWeight ? netWeight + pkWeight : 0;
+        let totWeight = !!netWeight ? netWeight + pkWeight : 0;
         let update = {
             $set: {
                 type: type,
                 length: length,
                 width: width,
                 height: height,
-                grossWeight: grossWeight,
+                totWeight: totWeight,
                 netWeight: netWeight
             }
         }

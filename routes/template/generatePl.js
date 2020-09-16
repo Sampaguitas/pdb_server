@@ -464,18 +464,3 @@ function calcWeight(tempUom, pcs, mtrs, weight) {
         default: return 0;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -173,7 +173,7 @@ PackItemSchema.set('toJSON', { virtuals: true });
 PackItemSchema.pre('findOneAndDelete', async function() {
     const docToDelete = await this.model.findOne(this.getQuery());
     if (!!docToDelete) {
-        isUnique(docToDelete.collipackId, false).then(res => res.isUnique && ColliPack.findByIdAndDelete(docToDelete.collipackId));
+        isUnique(docToDelete.collipackId, false).then(res => res.isUnique && mongoose.model('collipacks').findByIdAndDelete(docToDelete.collipackId));
     }
 });
 
@@ -181,7 +181,7 @@ PackItemSchema.pre('findOneAndDelete', async function() {
 PackItemSchema.pre('findOneAndUpdate', async function() {
     const docToUpdate = await this.model.findOne(this.getQuery());
     if (!!docToUpdate && this._update.hasOwnProperty('$set') && (this._update['$set'].hasOwnProperty('plNr') || this._update['$set'].hasOwnProperty('colliNr'))) {
-        isUnique(docToUpdate.collipackId, !!docToUpdate.plNr && !!docToUpdate.colliNr).then(res => res.isUnique && ColliPack.findByIdAndDelete(docToUpdate.collipackId));
+        isUnique(docToUpdate.collipackId, !!docToUpdate.plNr && !!docToUpdate.colliNr).then(res => res.isUnique && mongoose.model('collipacks').findByIdAndDelete(docToUpdate.collipackId));
         this._update['$set'].collipackId = undefined;
     }
 });
@@ -199,7 +199,7 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
                     let update = { plNr: plNr, colliNr: colliNr, projectId: projectId };
                     let options = { new: true, upsert: true };
                     //we want to create a colli in the collipack collection (if it does not already exist);
-                    ColliPack.findOneAndUpdate(filter, update, options, function(errColliPack, resColliPack) {
+                    mongoose.model('collipacks').findOneAndUpdate(filter, update, options, function(errColliPack, resColliPack) {
                         if (!errColliPack && !!resColliPack._id) {
                             // removeDirtyCollis(projectId).then(onfulfilled => {
                                 doc.collipackId = resColliPack._id;
@@ -225,7 +225,7 @@ module.exports = PackItem = mongoose.model('packitems', PackItemSchema);
 async function isUnique(collipackId, noblank) {
     return new Promise(function(resolve) {
         if (!!collipackId) {
-            ColliPack.findById(collipackId)
+            mongoose.model('collipacks').findById(collipackId)
             .populate('packitems')
             .exec(function(err, res) {
                 if (!!err || !res || (res.packitems.length + noblank > 1)) {

@@ -21,7 +21,7 @@ const ColliPackSchema = new Schema({
     height: {
         type: Number,
     },
-    grossWeight: { //one
+    totWeight: { //one
         type: Number,
     },
     netWeight: { //one

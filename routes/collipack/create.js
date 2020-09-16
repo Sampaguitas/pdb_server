@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
                 length: req.body.length,
                 width: req.body.width,
                 height: req.body.height,
-                grossWeight: req.body.grossWeight,
+                totWeight: req.body.totWeight,
                 netWeight: req.body.netWeight,
                 bundlesQty: req.body.bundlesQty,
                 udfCpX1: req.body.udfCpX1,

@@ -44,3 +44,4 @@ steps:
     azureSubscription: $(azureSubscription)
     appName: pdb-server
     appType: webApp
+

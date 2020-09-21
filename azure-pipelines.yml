@@ -37,11 +37,3 @@ steps:
     REGION: $(region)
     SECRET: $(secret)
     SECRET_ACCESS_KEY: $(secretAccessKey)
-
-# deploy to Azure Web App production
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: $(azureSubscription)
-    appName: pdb-server
-    appType: webApp
-    StartupCommand: 'npm start'

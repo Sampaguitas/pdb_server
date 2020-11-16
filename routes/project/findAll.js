@@ -12,83 +12,53 @@ router.get('/', (req, res) => {
     });
 
     const user = req.user;
+    
     User.findById(user._id)
     .populate({
         path:'opco',
         select: 'regionId'
-            // populate: {
-            //     path: 'locale'
-            // },
-            // populate: {
-            //     path: 'region',
-            // }
     })
     .then(foundUser=>{
         Project.find(data)
         .sort({
             number: 'asc'
         })
-        .populate({
-            path: 'erp', 
-            select: 'name'
-        })
-        .populate({
-            path: 'accesses',
-            populate: {
-                path: 'user'
-            }
-        })
-        .populate({
-            path: 'opco',
-            select: ('regionId','name')
-            // populate: {
-            //     path: 'locale'
-            // },
-            // populate: {
-            //     path: 'region'
-            // }
-        })
-        .exec(function (err, projects) {
-            if (!projects) {
-                return res.status(400).json({ message: 'We could not find any Projects'});
-            }
-            else {
-                if (foundUser.isSuperAdmin) {
-                    return res.json(projects);
-                } else if (foundUser.isAdmin) {
-                    var userProjects = []
-                    projects.forEach(function(project) {
-                        if(project.number === 999999){
-                            userProjects.push(project);
-                        } else if (_.isEqual(foundUser.opco.regionId, project.opco.regionId)) {
-                            userProjects.push(project);
-                        } else {
-                            project.accesses.forEach(function(access) {
-                                if (_.isEqual(foundUser._id, access.userId) && (access.isExpediting || access.isInspection || access.isShipping || access.isWarehouse || access.isConfiguration)){
-                                    userProjects.push(project);
-                                }
-                            });
-                        }
-                    });
-                    return res.json(userProjects);
-                } else {
-                    var userProjects = []
-                    projects.forEach(function(project) {
-                        if(project.number === 999999){
-                            userProjects.push(project); 
-                        } else {
-                            project.accesses.forEach(function(access) {
-                                if (_.isEqual(foundUser._id, access.userId) && (access.isExpediting || access.isInspection || access.isShipping || access.isWarehouse || access.isConfiguration)){
-                                    userProjects.push(project);
-                                }
-                            });
-                        }
-                    });
-                    return res.json(userProjects);
+        .populate([
+            {
+                path: 'erp', 
+                select: 'name'
+            },
+            {
+                path: 'accesses',
+                populate: {
+                    path: 'user'
                 }
+            },
+            {
+                path: 'opco',
+                select: ('regionId name')
+            }
+        ])
+        .exec(function (err, projects) {
+            if (!!err || !projects) {
+                return res.status(400).json({ message: 'We could not find any Projects'});
+            } else {
+                return res.status(200).json(projects.reduce(function(acc, cur) {
+                    if (_.isEqual(cur.number, 999999) || !!foundUser.isSuperAdmin) {
+                        acc.push(cur);
+                    } else if (!!foundUser.isAdmin && _.isEqual(String(foundUser.opco.regionId), String(cur.opco.regionId))) {
+                        acc.push(cur);
+                    } else {
+                        let found = cur.accesses.find(access => _.isEqual(String(access.userId), String(foundUser._id)));
+                        if (!_.isUndefined(found) && (!!found.isExpediting || !!found.isInspection || !!found.isShipping || !!found.isWarehouse || !!found.isConfiguration)) {
+                            acc.push(cur);
+                        }
+                    }
+                    return acc;
+                }, []));
             }
         });
-    });
+    }).catch(err => res.status(400).json({ message: 'An error has occured'}));
 });
 
 module.exports = router;

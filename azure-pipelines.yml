@@ -6,6 +6,9 @@
 trigger:
 - master
 
+variables:
+  group: my-variable-group
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -20,5 +23,20 @@ steps:
   displayName: 'npm install'
 
 - script: |
-    echo $(NODE_ENV)
+    echo NODE_ENV
+  env:
+    NODE_ENV: 'production'
+    MONGO_URI: $(mongoURI)
+    SECRET: $(secret)
+    ACCESS_KEY_ID: $(accessKeyId)
+    SECRET_ACCESS_KEY: $(secretAccessKey)
+    REGION: $(region)
+    AWS_BUCKET_NAME: $(awsBucketName)
+    MAILER_HOST: $(mailerHost)
+    MAILER_PORT: $(mailerPort)
+    MAILER_AUTH_USER: $(mailerAuthUser)
+    MAILER_AUTH_PASS: $(mailerAuthPass)
+    MY_NAME: $(myName)
+    MY_POSITION: $(myPosition)
+    MY_PHONE: $(myPhone)
   displayName: 'test variables'

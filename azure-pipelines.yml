@@ -2,5 +2,5 @@ variables:
 - group: my-variable-group
 
 steps:
-- script: echo $(myName) # uses macro syntax
-- script: echo $[variables.myName]
+- script: echo 'toto' + $(myName) # uses macro syntax
+#- script: echo $[variables.myName]

@@ -1,6 +1,40 @@
+trigger:
+- master
+
 variables:
 - group: my-variable-group
 
+pool:
+  vmImage: 'ubuntu-latest'
+
 steps:
-- script: echo 'toto' + $(myName) # uses macro syntax
-#- script: echo $[variables.myName]
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.18.1'
+  displayName: 'Install Node.js'
+
+- powershell: |
+    echo "Using an input-macro works: $(accessKeyId)"
+  env:
+    NODE_ENV: 'production'
+    ACCESS_KEY_ID: $(accessKeyId)
+    AWS_BUCKET_NAME: $(awsBucketName)
+    MAILER_AUTH_PASS: $(mailerAuthPass)
+    MAILER_AUTH_USER: $(mailerAuthUser)
+    MAILER_HOST: $(mailerHost)
+    MAILER_PORT: $(mailerPort)
+    MONGO_URI: $(mongoURI)
+    MY_NAME: $(myName)
+    MY_PHONE: $(myPhone)
+    MY_POSITION: $(myPosition)
+    REGION: $(region)
+    SECRET: $(secret)
+    SECRET_ACCESS_KEY: $(secretAccessKey)
+
+- script: |
+    npm install
+  displayName: 'npm install'
+
+- script: |
+    npm start
+  displayName: 'npm start'

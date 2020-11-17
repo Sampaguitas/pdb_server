@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Project = require('../../models/Project');
 const User = require('../../models/User');
-const fault = require('../../utilities/Errors');
 const _ =require('lodash');
 
 router.get('/', (req, res) => {

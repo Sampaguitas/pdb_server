@@ -108,7 +108,7 @@ router.get('/', function (req, res) {
                 const lastColSol = getColumnLast(docFieldSol, docDef.col1);
                 const soh = await getLines(docDef, docFieldSoh, locale, spColli);
                 const sol = await getLines(docDef, docFieldSol, locale, spColli);
-
+                
                 const docFieldStl = filterDocFiled(docDef.docfields, 'Sheet2', 'Line');
                 const docFieldSth = filterDocFiled(docDef.docfields, 'Sheet2', 'Header');
                 const firstColStl = getColumnFirst(docFieldStl);
@@ -326,18 +326,37 @@ function TypeToString(fieldValue, fieldType, locale) {
   }
 }
 
-//---group(1)----params row: 1 or 2 or 3....
-//po.description
-//po.material
-//---display(1)---
+// function reverseCollection(docDef) {
+//     let pos = [];
+//     docDef.project.collipacks.map(collipack => {
+//         collipack.packitems.map(packitem => {
+//             let foundPo = pos.find(po => _.isEqual(String(po._id), String(packitem.sub.poId)));
+//             if (!_.isUndefined(foundPo)) {
+//                 let foundSub = foundPo.subs.find(sub => _.isEqual(String(sub._id), String(packitem.subId)));
+//                 if (!_.isUndefined(foundSub)) {
+                    
+//                     let clonePackitem = packitem.splice();
+//                     clonePackitem.collipack = collipack.splice();
 
-//---group(2)----params row: 1 or 2 or 3....
-//po.size
-//po.sch
-//---display(2)---
+//                     foundSub.packitems.push(clonePackitem);
 
-// function getGroups(docfields) {
+//                 } else {
 
+//                     let clonePackitem = packitem.splice();
+//                     let cloneSub = packitem.sub.splice();
+                    
+//                     clonePackitem.collipack = collipack.splice();
+//                     cloneSub.packitem = clonePackitem;
+
+//                     foundPo.subs.push(cloneSub);
+//                 }
+//             } else {
+
+//                 let clonePackitem
+
+//             }
+//         });
+//     });
 // }
 
 function getLines(docDef, docfields, locale, spColli) {
@@ -350,7 +369,6 @@ function getLines(docDef, docfields, locale, spColli) {
         if(docDef.project.collipacks) {
             
             docDef.project.collipacks.map(collipack => {
-                // console.log('collipack.packitems:', collipack.packitems);
                 if(collipack.packitems){
                     collipack.packitems.map(function (packitem, itemIndex) {
                         myRowPromises.push(getRows(docDef, docfields, collipack, packitem, itemIndex, spColli));

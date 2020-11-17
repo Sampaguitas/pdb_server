@@ -2,19 +2,19 @@ trigger:
 - master
 
 variables:
-  ACCESS_KEY_ID: $(my-variable-group.accessKeyId)
-  AWS_BUCKET_NAME: $(my-variable-group.awsBucketName)
-  MAILER_AUTH_PASS: $(my-variable-group.mailerAuthPass)
-  MAILER_AUTH_USER: $(my-variable-group.mailerAuthUser)
-  MAILER_HOST: $(my-variable-group.mailerHost)
-  MAILER_PORT: $(my-variable-group.mailerPort)
-  MONGO_URI: $(my-variable-group.mongoURI)
-  MY_NAME: $(my-variable-group.myName)
-  MY_PHONE: $(my-variable-group.myPhone)
-  MY_POSITION: $(my-variable-group.myPosition)
-  REGION: $(my-variable-group.region)
-  SECRET: $(my-variable-group.secret)
-  SECRET_ACCESS_KEY: $(my-variable-group.secretAccessKey)
+  ACCESS_KEY_ID: my-variable-group.accessKeyId
+  AWS_BUCKET_NAME: my-variable-group.awsBucketName
+  MAILER_AUTH_PASS: my-variable-group.mailerAuthPass
+  MAILER_AUTH_USER: my-variable-group.mailerAuthUser
+  MAILER_HOST: my-variable-group.mailerHost
+  MAILER_PORT: my-variable-group.mailerPort
+  MONGO_URI: my-variable-group.mongoURI
+  MY_NAME: my-variable-group.myName
+  MY_PHONE: my-variable-group.myPhone
+  MY_POSITION: my-variable-group.myPosition
+  REGION: my-variable-group.region
+  SECRET: my-variable-group.secret
+  SECRET_ACCESS_KEY: my-variable-group.secretAccessKey
 
 pool:
   vmImage: 'ubuntu-latest'

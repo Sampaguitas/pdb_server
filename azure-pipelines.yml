@@ -2,7 +2,20 @@ trigger:
 - master
 
 variables:
-- group: my-variable-group
+  NODE_ENV: 'production'
+  ACCESS_KEY_ID: $(my-variable-group.accessKeyId)
+  AWS_BUCKET_NAME: $(my-variable-group.awsBucketName)
+  MAILER_AUTH_PASS: $(my-variable-group.mailerAuthPass)
+  MAILER_AUTH_USER: $(my-variable-group.mailerAuthUser)
+  MAILER_HOST: $(my-variable-group.mailerHost)
+  MAILER_PORT: $(my-variable-group.mailerPort)
+  MONGO_URI: $(my-variable-group.mongoURI)
+  MY_NAME: $(my-variable-group.myName)
+  MY_PHONE: $(my-variable-group.myPhone)
+  MY_POSITION: $(my-variable-group.myPosition)
+  REGION: $(my-variable-group.region)
+  SECRET: $(my-variable-group.secret)
+  SECRET_ACCESS_KEY: $(my-variable-group.secretAccessKey)
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -13,28 +26,7 @@ steps:
     versionSpec: '12.18.1'
   displayName: 'Install Node.js'
 
-- powershell: |
-    echo "Using an input-macro works: $(accessKeyId)"
-  env:
-    NODE_ENV: 'production'
-    ACCESS_KEY_ID: $(accessKeyId)
-    AWS_BUCKET_NAME: $(awsBucketName)
-    MAILER_AUTH_PASS: $(mailerAuthPass)
-    MAILER_AUTH_USER: $(mailerAuthUser)
-    MAILER_HOST: $(mailerHost)
-    MAILER_PORT: $(mailerPort)
-    MONGO_URI: $(mongoURI)
-    MY_NAME: $(myName)
-    MY_PHONE: $(myPhone)
-    MY_POSITION: $(myPosition)
-    REGION: $(region)
-    SECRET: $(secret)
-    SECRET_ACCESS_KEY: $(secretAccessKey)
-
 - script: |
     npm install
-  displayName: 'npm install'
-
-- script: |
     npm start
-  displayName: 'npm start'
+  displayName: 'npm install & start'

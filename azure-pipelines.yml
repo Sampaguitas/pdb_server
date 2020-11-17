@@ -23,7 +23,7 @@ steps:
   displayName: 'npm install'
 
 - script: |
-    echo NODE_ENV
+    echo $(mongoURI)
   env:
     NODE_ENV: 'production'
     MONGO_URI: $(mongoURI)

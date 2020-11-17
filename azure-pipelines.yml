@@ -2,7 +2,6 @@ trigger:
 - master
 
 variables:
-  NODE_ENV: 'production'
   ACCESS_KEY_ID: $(my-variable-group.accessKeyId)
   AWS_BUCKET_NAME: $(my-variable-group.awsBucketName)
   MAILER_AUTH_PASS: $(my-variable-group.mailerAuthPass)
@@ -31,6 +30,5 @@ steps:
   displayName: 'npm install'
 
 - script: |
-    npm start
-    echo $(MONGO_URI)
+    NODE_ENV=production npm start
   displayName: 'npm start'

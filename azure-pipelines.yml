@@ -6,6 +6,20 @@
 trigger:
 - master
 
+variables:
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: $(azureSubscription)
+  
+  # Web app name
+  webAppName: 'pdb-server'
+  
+  # Environment name
+  environmentName: 'pdb-server'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -18,3 +32,7 @@ steps:
 - script: |
     npm install
   displayName: 'npm install'
+
+- script: |
+    echo "toto"
+  displayName: 'say toto'

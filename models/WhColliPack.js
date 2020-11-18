@@ -21,7 +21,7 @@ const WhColliPackSchema = new Schema({
     height: {
         type: Number,
     },
-    totWeight: { //one
+    grossWeight: {
         type: Number,
     },
     netWeight: { //one

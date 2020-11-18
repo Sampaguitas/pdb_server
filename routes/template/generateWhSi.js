@@ -97,10 +97,10 @@ router.get('/', function (req, res) {
 
                 let spColli = docDef.project.whcollipacks.reduce(function(acc, cur) {
                     if (!!cur.type && !acc.hasOwnProperty(cur.type.toUpperCase())){
-                        acc[cur.type.toUpperCase()] = { spColliQty: 1, spColliWeight: cur.totWeight || 0 }
+                        acc[cur.type.toUpperCase()] = { spColliQty: 1, spColliWeight: cur.grossWeight || 0 }
                     } else if (!!cur.type && acc.hasOwnProperty(cur.type.toUpperCase())){
                         acc[cur.type.toUpperCase()].spColliQty += 1;
-                        acc[cur.type.toUpperCase()].spColliWeight += cur.totWeight || 0;
+                        acc[cur.type.toUpperCase()].spColliWeight += cur.grossWeight || 0;
                     }
                     return acc;
                 }, {});

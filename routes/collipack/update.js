@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const ColliPack = require('../../models/ColliPack');
-const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     var data = {};
@@ -12,17 +11,13 @@ router.put('/', (req, res) => {
     
     const id = req.query.id;
 
-    console.log('id:', id);
-    console.log('data:', data);
     if (!data.hasOwnProperty('plNr') && !data.hasOwnProperty('colliNr')) {
         ColliPack.findByIdAndUpdate(id, { $set: data }, { new: true }, function (err, collipack) {
             if (err) {
-                console.log('err:', err);
                 return res.status(400).json({ message: 'An error has occured.' });
             } else if (!collipack) {
                 return res.status(400).json({ message: 'ColliPack does not exist.' });
             } else {
-                console.log('collipack:', collipack);
                 return res.status(200).json({ message: 'ColliPack has been updated.' });
             }
         });

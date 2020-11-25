@@ -28,6 +28,13 @@ const SettingSchema = new Schema({
                 required: true
             }
         ],
+        position: [
+            {
+                type: mongoose.SchemaTypes.ObjectId,
+                ref: 'fieldnames',
+                required: true
+            }
+        ],
         colWidth: {
             type: mongoose.SchemaTypes.Mixed,
             default: {}

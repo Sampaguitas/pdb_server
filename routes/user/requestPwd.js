@@ -28,7 +28,6 @@ router.post('/', (req, res) => {
             ResetPassword.findOne({ userId: user._id, status: 0 })
             .then(function (resetPassword) {
                 if (resetPassword) {
-                    console.log('position 2');
                     ResetPassword.findByIdAndDelete(resetPassword._id, function (err, result) {
                         if (err) {
                             console.log('there was not other tokens for this user');

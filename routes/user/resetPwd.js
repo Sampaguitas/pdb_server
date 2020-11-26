@@ -39,7 +39,6 @@ router.put('/', (req, res) => {
                     console.log('expiry:', expiry);
                     console.log('currentTime:', currentTime);
                     if (expiry <= currentTime) {
-                        console.log('position 3');
                         return res.status(404).json({
                             message: fault(1610).message
                             //"1610": "Invalid or expired token"

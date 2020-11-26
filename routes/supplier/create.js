@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Supplier = require('../../models/Supplier');
-const fault = require('../../utilities/Errors');
 
 router.post('/', (req, res) => {
     if (!req.body.hasOwnProperty('projectId')){

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Supplier = require('../../models/Supplier');
-const fault = require('../../utilities/Errors');
 
 router.put('/', (req, res) => {
     
@@ -12,12 +11,11 @@ router.put('/', (req, res) => {
     });
 
     const id = decodeURI(req.query.id);
-
+    
     Supplier.findByIdAndUpdate(id, { $set: data }, function (err, supplier) {
-        if (err) {
+        if (!!err || !supplier) {
             return res.status(400).json({ message: 'Could not update supplier.' });
-        }
-        else {
+        } else {
             return res.status(200).json({ message: 'Supplier has been updated.' });
         }
     });

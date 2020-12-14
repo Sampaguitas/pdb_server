@@ -86,22 +86,22 @@ function getFile(heat) {//cifName, po, sub, heat
 }
 
 function getName(heat) { //cifName, po, sub, heat
-  let cifName = heat.hasOwnProperty('sub') ? heat.sub.po.project.cifName || '' : heat.hasOwnProperty('return') && heat.return.po.project.cifName || '';
+  let cifName = ("sub" in heat) ? heat.sub.po.project.cifName || "" : ("return" in heat) ? heat.return.po.project.cifName || "" : "";
   if (!cifName) {
     return `MTC${heat.certificate.cif}_HeatNr${heat.heatNr}.pdf`
   } else {
     let badChars = /[^\w\s\_\-]/mg
-    cifName = cifName.replace('[clPo]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clPo) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clPo) || '' : '');
-    cifName = cifName.replace('[clPoRev]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clPoRev) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clPoRev) || '' : '');
-    cifName = cifName.replace('[clPoItem]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clPoItem) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clPoItem) || '' : '');
-    cifName = cifName.replace('[clCode]', heat.hasOwnProperty('sub') ? String(heat.sub.po.clCode) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.clCode) || '' : ''); //
-    cifName = cifName.replace('[vlSo]', heat.hasOwnProperty('sub') ? String(heat.sub.po.vlSo) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.vlSo) || '' : '');
-    cifName = cifName.replace('[vlSoItem]', heat.hasOwnProperty('sub') ? String(heat.sub.po.vlSoItem) || '' : heat.hasOwnProperty('return') ? String(heat.return.po.vlSoItem) || '' : '');
-    cifName = cifName.replace('[nfi]', heat.hasOwnProperty('sub') ? String(heat.sub.nfi) || '' : '');
-    cifName = cifName.replace('[cif]', String(heat.certificate.cif) || '');
-    cifName = cifName.replace('[heatNr]', String(heat.heatNr) || '');
-    cifName = cifName.replace('[inspQty]', String(heat.inspQty) || '');
-    cifName = cifName.replace(badChars, '');
+    cifName = cifName.replace("[clPo]", ("sub" in heat) ? String(heat.sub.po.clPo) || "" : ("return" in heat) ? String(heat.return.po.clPo) || "" : "");
+    cifName = cifName.replace("[clPoRev]", ("sub" in heat) ? String(heat.sub.po.clPoRev) || "" : ("return" in heat) ? String(heat.return.po.clPoRev) || "" : "");
+    cifName = cifName.replace("[clPoItem]", ("sub" in heat) ? String(heat.sub.po.clPoItem) || "" : ("return" in heat) ? String(heat.return.po.clPoItem) || "" : "");
+    cifName = cifName.replace("[clCode]", ("sub" in heat) ? String(heat.sub.po.clCode) || "" : ("return" in heat) ? String(heat.return.po.clCode) || "" : ""); //
+    cifName = cifName.replace("[vlSo]", ("sub" in heat) ? String(heat.sub.po.vlSo) || "" : ("return" in heat) ? String(heat.return.po.vlSo) || "" : "");
+    cifName = cifName.replace("[vlSoItem]", ("sub" in heat) ? String(heat.sub.po.vlSoItem) || "" : ("return" in heat) ? String(heat.return.po.vlSoItem) || "" : "");
+    cifName = cifName.replace("[nfi]", ("sub" in heat) ? String(heat.sub.nfi) || "" : "");
+    cifName = cifName.replace("[cif]", String(heat.certificate.cif) || "");
+    cifName = cifName.replace("[heatNr]", String(heat.heatNr) || "");
+    cifName = cifName.replace("[inspQty]", String(heat.inspQty) || "");
+    cifName = cifName.replace(badChars, "");
     return `${cifName}.pdf`
   }
 }

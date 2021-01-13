@@ -15,6 +15,12 @@ router.get('/', (req, res) => {
             populate: [
                 {
                     path: 'packitems',
+                    options: {
+                        sort: {
+                            plNr: 'asc',
+                            colliNr: 'asc'
+                        }
+                    }
                 },
                 {
                     path: 'heats',

@@ -82,9 +82,9 @@ router.post('/', upload.single('file'), function (req, res) {
               nAdded: nAdded,
               nEdited: nEdited
             });
-          } else if (rowCount > 1001) {
+          } else if (rowCount > 801) {
             return res.status(400).json({
-              message: 'Try to upload less than 1000 rows at the time.',
+              message: 'Try to upload less than 800 rows at the time.',
               rejections: rejections,
               nProcessed: nProcessed,
               nRejected: nRejected,

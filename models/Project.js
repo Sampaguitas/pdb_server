@@ -38,9 +38,9 @@ const _ = require('lodash');
 
 //Create Schema
 const ProjectSchema = new Schema({
-    // _id: {
-    //     type: mongoose.SchemaTypes.ObjectId,
-    // },
+    _id: {
+        type: mongoose.SchemaTypes.ObjectId,
+    },
     number: {
         type: Number,
     },
@@ -944,7 +944,7 @@ function findDocDefs(projectId) {
         if (!projectId) {
             resolve();
         } else {
-            DocDef.find({ projectId: projectId }, function (err, docdefs) {
+            require('./DocDef').find({ projectId: projectId }, function (err, docdefs) {
                 if (err || _.isEmpty(docdefs)) {
                     resolve();
                 } else {
@@ -962,7 +962,7 @@ function deleteDocDef(docdefId) {
         if (!docdefId) {
             resolve();
         } else {
-            DocDef.findByIdAndDelete(docdefId, function (err) {
+            require('./DocDef').findByIdAndDelete(docdefId, function (err) {
                 if (err) {
                     resolve();
                 } else {

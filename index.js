@@ -10,7 +10,7 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-//'https://www.vanleeuwenpdb.com', 'http://www.vanleeuwenpdb.com', 
+ 
 var whitelist = ['http://localhost:8080', 'http://localhost:5555', 'https://pdb-client.herokuapp.com']
 var corsOptions = {
     origin: function (origin, callback) {
@@ -23,11 +23,15 @@ var corsOptions = {
 }
 
 app.use(cors(corsOptions));
-
 // app.use(cors());
+
 //bodyParser middleware
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-app.use(bodyParser.json({ limit: '10mb' }));
+// app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+// app.use(bodyParser.json({ limit: '10mb' }));
+
+app
+.use(bodyParser.urlencoded({extended:false}))
+.use(bodyParser.json());
 
 //Passport config file
 app.use(passport.initialize());
@@ -311,7 +315,7 @@ app.use('/po/openOrders', passport.authenticate('jwt', { session: false }), requ
 app.use('/po/update', passport.authenticate('jwt', { session: false }), require('./routes/po/update'));
 //project X
 app.use('/project/cleanup', passport.authenticate('jwt', { session: false }), require('./routes/project/cleanup'));
-app.use('/project/create', passport.authenticate('jwt', { session: false }), require('./routes/project/create'));
+app.use('/project/create', passport.authenticate('jwt', { session: false }), require('./routes/project/create_old'));
 app.use('/project/delete', passport.authenticate('jwt', { session: false }), require('./routes/project/delete'));
 app.use('/project/findAll', passport.authenticate('jwt', { session: false }), require('./routes/project/findAll'));
 app.use('/project/findOne', passport.authenticate('jwt', { session: false }), require('./routes/project/findOne'));
@@ -387,6 +391,7 @@ app.use('/user/findAll', passport.authenticate('jwt', { session: false }), requi
 app.use('/user/findOne', passport.authenticate('jwt', { session: false }), require('./routes/user/findOne'));
 app.use('/user/register', passport.authenticate('jwt', { session: false }), require('./routes/user/register'));
 //---------open routes---------------
+app.use('/project/new_create', require('./routes/project/new_create'));
 app.use('/user/login', require('./routes/user/login'));
 app.use('/user/requestPwd', require('./routes/user/requestPwd'));
 app.use('/user/resetPwd', require('./routes/user/resetPwd'));

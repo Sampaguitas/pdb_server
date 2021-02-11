@@ -155,41 +155,39 @@ function deleteProject(project) {
 // }
 
 function duplicateProject(oldProject, newProject) {
-  return new Promise(
-    function (resolve, reject) {
-      if (!oldProject || !newProject) {
-        reject('No Project selected'); //"2400": "No Project selected",
-      } else {
-        var s3 = new aws.S3();
-        var listParams = {
-          Bucket: awsBucketName,
-          Prefix: path.join('templates', oldProject),
-        };
-        s3.listObjectsV2(listParams, function(err, listData) {
-          if (err) {
-            reject('An error occurred'); //"2405": "An error occurred",           
-          } else if (_.isEmpty(listData.Contents)) {
-            reject('An error occurred'); //"2405": "An error occurred",         
-          } else {
-            listData.Contents.map(a => {
-              var copyParams = {
-                Bucket: awsBucketName,
-                CopySource: path.join(awsBucketName,a.Key),
-                Key: a.Key.replace(oldProject, newProject)
-              };
-              s3.copyObject(copyParams, function(err) {
-                if (err) {
-                  reject('An error occurred'); //"2405": "An error occurred",
-                } else {
-                  resolve('Templates have been copied to the new Project'); //"2407": "Templates have been copied to the new Project"
-                }                     
-              });
+  return new Promise(function (resolve) {
+    if (!oldProject || !newProject) {
+      resolve(); //"2400": "No Project selected",
+    } else {
+      var s3 = new aws.S3();
+      var listParams = {
+        Bucket: awsBucketName,
+        Prefix: path.join('templates', oldProject),
+      };
+      s3.listObjectsV2(listParams, function(err, listData) {
+        if (err) {
+          resolve(); //"2405": "An error occurred",           
+        } else if (_.isEmpty(listData.Contents)) {
+          resolve(); //"2405": "An error occurred",         
+        } else {
+          listData.Contents.map(a => {
+            var copyParams = {
+              Bucket: awsBucketName,
+              CopySource: path.join(awsBucketName,a.Key),
+              Key: a.Key.replace(oldProject, newProject)
+            };
+            s3.copyObject(copyParams, function(err) {
+              if (err) {
+                resolve(); //"2405": "An error occurred",
+              } else {
+                resolve();
+              }                     
             });
-          }
-        });
-      }          
-    }
-  );
+          });
+        }
+      });
+    }       
+  });
 }
 
 function findAll(req, res) {

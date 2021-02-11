@@ -31,6 +31,22 @@ const FieldSchema = new Schema({
     }
 });
 
+FieldSchema.virtual("fieldnames", {
+    ref: "fieldnames",
+    localField: "_id",
+    foreignField: "fieldId",
+    justOne: false
+});
+
+FieldSchema.virtual("docfields", {
+    ref: "docfields",
+    localField: "_id",
+    foreignField: "fieldId",
+    justOne: false
+});
+
+FieldSchema.set('toJSON', { virtuals: true });
+
 FieldSchema.post('findOneAndDelete', function(doc, next) {
     findDocFields(doc._id).then( () => {
         findFieldNames(doc._id).then( () => next());

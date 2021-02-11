@@ -5,7 +5,6 @@ const Project = require('./Project');
 const s3bucket = require('../middleware/s3bucket');
 const _ = require('lodash');
 
-
 //Create Schema
 const DocDefSchema = new Schema({
     // _id: {
@@ -102,7 +101,7 @@ DocDefSchema.post('findOneAndDelete', function(doc, next) {
 function deleteFile(fileName, projectId) {
     return new Promise(function(resolve) {
         Project.findById(projectId, function (err, project) {
-            if (err) {
+            if (!!err || !project) {
                 resolve();
             } else {
                 s3bucket.deleteFile(fileName, String(project.number))

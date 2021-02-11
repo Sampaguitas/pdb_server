@@ -51,6 +51,13 @@ DocFieldSchema.virtual("fields", {
     justOne: true
 });
 
+DocFieldSchema.virtual("docdef", {
+    ref: "docdefs",
+    localField: "docdefId",
+    foreignField: "_id",
+    justOne: true
+});
+
 DocFieldSchema.set('toJSON', { virtuals: true });
 
 module.exports = DocField = mongoose.model('docfields',DocFieldSchema);

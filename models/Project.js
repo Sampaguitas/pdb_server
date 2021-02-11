@@ -205,6 +205,111 @@ ProjectSchema.virtual("picktickets", {
     justOne: false
 });
 
+ProjectSchema.virtual("doccountesr", {
+    ref: "doccountesrs",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountinspect", {
+    ref: "doccountinspects",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountinsprel", {
+    ref: "doccountinsprels",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountnfi", {
+    ref: "doccountnfis",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountpf", {
+    ref: "doccountpfs",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountpl", {
+    ref: "doccountpls",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountpn", {
+    ref: "doccountpns",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountpt", {
+    ref: "doccountpts",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountsh", {
+    ref: "doccountshs",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountsi", {
+    ref: "doccountsis",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountsm", {
+    ref: "doccountsms",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountwhpl", {
+    ref: "doccountwhpls",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountwhpn", {
+    ref: "doccountwhpns",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountwhsi", {
+    ref: "doccountwhsis",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
+ProjectSchema.virtual("doccountwhsm", {
+    ref: "doccountwhsms",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
 ProjectSchema.set('toJSON', { virtuals: true });
 
 ProjectSchema.pre("save", function (next) {
@@ -656,7 +761,7 @@ function deleteDocCountPn(doccountpnId) {
         if (!doccountpnId) {
             resolve();
         } else {
-            DocCountPn.ffindByIdAndDelete(doccountpnId, function (err) {
+            DocCountPn.findByIdAndDelete(doccountpnId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -690,7 +795,7 @@ function deleteDocCountPt(doccountptId) {
         if (!doccountptId) {
             resolve();
         } else {
-            DocCountPt.ffindByIdAndDelete(doccountptId, function (err) {
+            DocCountPt.findByIdAndDelete(doccountptId, function (err) {
                 if (err) {
                     resolve();
                 } else {
@@ -724,7 +829,7 @@ function deleteDocCountSh(doccountshId) {
         if (!doccountshId) {
             resolve();
         } else {
-            DocCountSh.ffindByIdAndDelete(doccountshId, function (err) {
+            DocCountSh.findByIdAndDelete(doccountshId, function (err) {
                 if (err) {
                     resolve();
                 } else {

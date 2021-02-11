@@ -1,33 +1,22 @@
-//config file that will define the token strategy that we will use
-
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const mongoose = require('mongoose');
 const User = mongoose.model('users');
-const keys = require('../config/keys');
+const keys = require('./keys');
 
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = keys.secret;
 
 module.exports = passport => {
-    passport.use(
-        new JwtStrategy(opts, (jwt_payload, done) => {
-            User.findById(jwt_payload.id)
-            // .populate({
-            //     path:'opco', 
-            //     populate: {
-            //         path: 'locale'
-            //     }
-            // })
-            .then(user => {
-                if (user) {
-                    return done(null, user);
-                }
+    passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
+        User.findById(jwt_payload.id, function(err, user) {
+            if (err || !user) {
                 return done(null, false);
-            })
-            .catch(err => console.log(err));
-        })
-    );
+            } else {
+                return done(null, user);
+            }
+        });
+    }));
 };
 

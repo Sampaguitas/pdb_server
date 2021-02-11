@@ -23,59 +23,62 @@ let counters = [
 ];
 
 router.post("/", (req, res) => {
-    let myPromisesFirst = [];
-    let myPromisesSecond = [];
-    const { copyId, projectUsers } = req.body;
-    const projectId = mongoose.Types.ObjectId();
-    
-    require("../../models/Project")
-    .findById(copyId)
-    .populate([
-        { path:"suppliers" },
-        { path: "collitypes" },
-        { path: "docdefs" },
-        { path: "fields", populate: [ { path: "fieldnames" }, { path: "docfields", populate: { path: "docdef" } } ] },
-        { path: "doccountesr" },
-        { path: "doccountinspect" },
-        { path: "doccountinsprel" },
-        { path: "doccountnfi" },
-        { path: "doccountpf" },
-        { path: "doccountpl" },
-        { path: "doccountpn" },
-        { path: "doccountpt" },
-        { path: "doccountsh" },
-        { path: "doccountsi" },
-        { path: "doccountsm" },
-        { path: "doccountwhpl" },
-        { path: "doccountwhpn" },
-        { path: "doccountwhsi" },
-        { path: "doccountwhsm" }
-    ])
-    .exec(function(err, parentTemplate) {
-        if (!!err || !parentTemplate) {
-            return res.status(400).json({ message: "could not locate parent template."});
-        } else {
-            createProject(projectId, parentTemplate.cifName, req.body)
-            .then(newProject => {
-                myPromisesFirst.push(require('../../middleware/s3bucket').duplicateProject(String(parentTemplate.number), String(newProject.number)));
-                assignedUsers(projectUsers).map(assignedUser => myPromisesFirst.push(createAccess(projectId, assignedUser)));
-                parentTemplate.suppliers.map(supplier => myPromisesFirst.push(createSupplier(projectId, supplier)));
-                parentTemplate.collitypes.map(collitype => myPromisesFirst.push(createCollitype(projectId, collitype)));
-                parentTemplate.docdefs.map(docdef => myPromisesFirst.push(createDocDef(projectId, docdef)));
-                counters.map(counter => myPromisesFirst.push(createDocCount(projectId, counter.collection, parentTemplate[counter.populated])));
-                Promise.all(myPromisesFirst).then( () => { 
-                    parentTemplate.fields.map(field => {
-                        let fieldId = mongoose.Types.ObjectId();
-                        myPromisesSecond.push(createField(projectId, fieldId, field));
-                        field.fieldnames.map(fieldname => myPromisesSecond.push(createFieldName(projectId, fieldId, fieldname)));
-                        field.docfields.map(docfield => myPromisesSecond.push(createDocField(projectId, fieldId, docfield)));
+    if (!req.user.isAdmin && !req.user.isSuperAdmin) {
+        res.status(400).json({message: "You do not have permission to create new projects, please contact your admin."})
+    } else {
+        let myPromisesFirst = [];
+        let myPromisesSecond = [];
+        const { copyId, projectUsers } = req.body;
+        const projectId = mongoose.Types.ObjectId();
+        require("../../models/Project")
+        .findById(copyId)
+        .populate([
+            { path:"suppliers" },
+            { path: "collitypes" },
+            { path: "docdefs" },
+            { path: "fields", populate: [ { path: "fieldnames" }, { path: "docfields", populate: { path: "docdef" } } ] },
+            { path: "doccountesr" },
+            { path: "doccountinspect" },
+            { path: "doccountinsprel" },
+            { path: "doccountnfi" },
+            { path: "doccountpf" },
+            { path: "doccountpl" },
+            { path: "doccountpn" },
+            { path: "doccountpt" },
+            { path: "doccountsh" },
+            { path: "doccountsi" },
+            { path: "doccountsm" },
+            { path: "doccountwhpl" },
+            { path: "doccountwhpn" },
+            { path: "doccountwhsi" },
+            { path: "doccountwhsm" }
+        ])
+        .exec(function(err, parentTemplate) {
+            if (!!err || !parentTemplate) {
+                return res.status(400).json({ message: "could not locate parent template."});
+            } else {
+                createProject(projectId, parentTemplate.cifName, req.body)
+                .then(newProject => {
+                    myPromisesFirst.push(require('../../middleware/s3bucket').duplicateProject(String(parentTemplate.number), String(newProject.number)));
+                    assignedUsers(projectUsers).map(assignedUser => myPromisesFirst.push(createAccess(projectId, assignedUser)));
+                    parentTemplate.suppliers.map(supplier => myPromisesFirst.push(createSupplier(projectId, supplier)));
+                    parentTemplate.collitypes.map(collitype => myPromisesFirst.push(createCollitype(projectId, collitype)));
+                    parentTemplate.docdefs.map(docdef => myPromisesFirst.push(createDocDef(projectId, docdef)));
+                    counters.map(counter => myPromisesFirst.push(createDocCount(projectId, counter.collection, parentTemplate[counter.populated])));
+                    Promise.all(myPromisesFirst).then( () => { 
+                        parentTemplate.fields.map(field => {
+                            let fieldId = mongoose.Types.ObjectId();
+                            myPromisesSecond.push(createField(projectId, fieldId, field));
+                            field.fieldnames.map(fieldname => myPromisesSecond.push(createFieldName(projectId, fieldId, fieldname)));
+                            field.docfields.map(docfield => myPromisesSecond.push(createDocField(projectId, fieldId, docfield)));
+                        });
+                        Promise.all(myPromisesSecond).then( () => res.json(newProject));
                     });
-                    Promise.all(myPromisesSecond).then( () => res.json(newProject));
-                });
-            })
-            .catch( () => res.status(400).json({ message: "could not retreive project"}));
-        }
-    });
+                })
+                .catch( () => res.status(400).json({ message: "could not retreive project"}));
+            }
+        });
+    }
 });
 
 module.exports = router;

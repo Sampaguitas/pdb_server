@@ -123,12 +123,17 @@ router.post('/', upload.single('file'), function (req, res) {
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(update(row, tempPo, tempSub, tempPackItem, hasPackitems));
+                  // rowPromises.push(update(row, tempPo, tempSub, tempPackItem, hasPackitems));
+                  rowPromises.push(updatePo(row, tempPo));
+                  rowPromises.push(updateSub(row, tempSub));
+                  rowPromises.push(updatePackItem(row, tempPackItem, hasPackitems));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
                 });//end colPromises.all promise
 
+                nProcessed++;
+                nProcessed++;
                 nProcessed++;
               } //end for loop
 
@@ -171,63 +176,145 @@ router.post('/', upload.single('file'), function (req, res) {
       }
     })
   }
-
-  function update(row, tempPo, tempSub, tempPackItem, hasPackitems) {
-    return new Promise (function (resolve) {
-        Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
-          if (errNewPo || !resNewPo) {
-            resolve({
-              row: row,
-              isRejected: true,
-              isEdited: false,
-              isAdded: false,
-              reason: 'Fields from Table Po could not be saved.'
-            });
-          } else {
-            Sub.findByIdAndUpdate(tempSub._id, tempSub, function(errNewSub, resNewSub) {
-              if (errNewSub || !resNewSub) {
-                resolve({
-                  row: row,
-                  isRejected: true,
-                  isEdited: false,
-                  isAdded: false,
-                  reason: 'Fields from Table Sub could not be saved.'
-                });
-              } else if (hasPackitems && tempPackItem._id){
-                PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
-                  if (errNewPackItem || !resNewPackItem) {
-                    resolve({
-                      row: row,
-                      isRejected: true,
-                      isEdited: false,
-                      isAdded: false,
-                      reason: 'Fields from Table PackItem could not be saved.'
-                    });
-                  } else {
-                    resolve({
-                      row: row,
-                      isRejected: false,
-                      isEdited: true,
-                      isAdded: false,
-                      reason: ''
-                    });
-                  }
-                });
-              } else {
-                resolve({
-                  row: row,
-                  isRejected: false,
-                  isEdited: true,
-                  isAdded: false,
-                  reason: ''
-                });
-              }
-            });
-          }
-        });
-    });
-  }
 });
+
+// function update(row, tempPo, tempSub, tempPackItem, hasPackitems) {
+//   return new Promise (function (resolve) {
+//       Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
+//         if (errNewPo || !resNewPo) {
+//           resolve({
+//             row: row,
+//             isRejected: true,
+//             isEdited: false,
+//             isAdded: false,
+//             reason: 'Fields from Table Po could not be saved.'
+//           });
+//         } else {
+//           Sub.findByIdAndUpdate(tempSub._id, tempSub, function(errNewSub, resNewSub) {
+//             if (errNewSub || !resNewSub) {
+//               resolve({
+//                 row: row,
+//                 isRejected: true,
+//                 isEdited: false,
+//                 isAdded: false,
+//                 reason: 'Fields from Table Sub could not be saved.'
+//               });
+//             } else if (hasPackitems && tempPackItem._id){
+//               PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
+//                 if (errNewPackItem || !resNewPackItem) {
+//                   resolve({
+//                     row: row,
+//                     isRejected: true,
+//                     isEdited: false,
+//                     isAdded: false,
+//                     reason: 'Fields from Table PackItem could not be saved.'
+//                   });
+//                 } else {
+//                   resolve({
+//                     row: row,
+//                     isRejected: false,
+//                     isEdited: true,
+//                     isAdded: false,
+//                     reason: ''
+//                   });
+//                 }
+//               });
+//             } else {
+//               resolve({
+//                 row: row,
+//                 isRejected: false,
+//                 isEdited: true,
+//                 isAdded: false,
+//                 reason: ''
+//               });
+//             }
+//           });
+//         }
+//       });
+//   });
+// }
+
+function updatePo(row, tempPo) {
+  return new Promise (function (resolve) {
+      Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
+        if (errNewPo || !resNewPo) {
+          resolve({
+            row: row,
+            isRejected: true,
+            isEdited: false,
+            isAdded: false,
+            reason: 'Fields from Table Po could not be saved.'
+          });
+        } else {
+          resolve({
+            row: row,
+            isRejected: false,
+            isEdited: true,
+            isAdded: false,
+            reason: ''
+          });
+        }
+      });
+  });
+}
+
+function updateSub(row, tempSub) {
+  return new Promise (function (resolve) {
+    Sub.findByIdAndUpdate(tempSub._id, tempSub, function(errNewSub, resNewSub) {
+      if (errNewSub || !resNewSub) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Fields from Table Sub could not be saved.'
+        });
+      } else {
+        resolve({
+          row: row,
+          isRejected: false,
+          isEdited: true,
+          isAdded: false,
+          reason: ''
+        });
+      }
+    });
+  });
+}
+
+function updatePackItem(row, tempPackItem, hasPackitems) {
+  return new Promise (function (resolve) {
+    if (hasPackitems && tempPackItem._id){
+      PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
+        if (errNewPackItem || !resNewPackItem) {
+          resolve({
+            row: row,
+            isRejected: true,
+            isEdited: false,
+            isAdded: false,
+            reason: 'Fields from Table PackItem could not be saved.'
+          });
+        } else {
+          resolve({
+            row: row,
+            isRejected: false,
+            isEdited: true,
+            isAdded: false,
+            reason: ''
+          });
+        }
+      });
+    } else {
+      resolve({
+        row: row,
+        isRejected: false,
+        isEdited: true,
+        isAdded: false,
+        reason: ''
+      });
+    }
+  });
+}
 
 function testFormat(row, cell, type, value) {
   return new Promise(function (resolve, reject) {

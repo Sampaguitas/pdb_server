@@ -86,7 +86,6 @@ router.post('/', upload.single('file'), function (req, res) {
                 for (var member in tempMirItem) delete tempMirItem[member];
                 for (var member in tempPo) delete tempPo[member];
                 
-                
                 //assign Mir Ids
                 tempMir._id = clean(worksheet.getCell('A' + row).value);
                 tempMir.projectId = projectId;

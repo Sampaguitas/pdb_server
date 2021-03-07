@@ -134,12 +134,21 @@ router.post('/', upload.single('file'), function (req, res) {
                 });// end map
 
                 await Promise.all(colPromises).then( async () => {
-                  rowPromises.push(update(row, tempPickticket, tempPickitem, tempMiritem, tempPo, tempMir));
+                  // rowPromises.push(update(row, tempPickticket, tempPickitem, tempMiritem, tempPo, tempMir));
+                  rowPromises.push(updatePickTicket(row, tempPickticket));
+                  rowPromises.push(updatePickItem(row, tempPickitem));
+                  rowPromises.push(updateMirItem(row, tempMiritem));
+                  rowPromises.push(updatePo(row, tempPo));
+                  rowPromises.push(updateMir(row, tempMir));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
                 });//end colPromises.all promise
 
+                nProcessed++;
+                nProcessed++;
+                nProcessed++;
+                nProcessed++;
                 nProcessed++;
               } //end for loop
 
@@ -182,79 +191,199 @@ router.post('/', upload.single('file'), function (req, res) {
       }
     })
   }
-
-  function update(row, tempPickticket, tempPickitem, tempMiritem, tempPo, tempMir) {
-    return new Promise (function (resolve) {
-      PickTicket.findByIdAndUpdate(tempPickticket._id, tempPickticket, function(errNewPickticket, resNewPickticket){
-          if (errNewPickticket || !resNewPickticket) {
-            resolve({
-              row: row,
-              isRejected: true,
-              isEdited: false,
-              isAdded: false,
-              reason: 'Fields from Table Pickticket could not be saved.'
-            });
-          } else {
-            PickItem.findByIdAndUpdate(tempPickitem._id, tempPickitem, function(errNewPickitem, resNewPickitem){
-              if (errNewPickitem || !resNewPickitem) {
-                resolve({
-                  row: row,
-                  isRejected: true,
-                  isEdited: false,
-                  isAdded: false,
-                  reason: 'Fields from Table PickItem could not be saved.'
-                });
-              } else {
-                MirItem.findByIdAndUpdate(tempMiritem._id, tempMiritem, function(errNewMiritem, resNewMiritem){
-                  if (errNewMiritem || !resNewMiritem) {
-                    resolve({
-                      row: row,
-                      isRejected: true,
-                      isEdited: false,
-                      isAdded: false,
-                      reason: 'Fields from Table MirItem could not be saved.'
-                    });
-                  } else {
-                    Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
-                      if (errNewPo || !resNewPo) {
-                        resolve({
-                          row: row,
-                          isRejected: true,
-                          isEdited: false,
-                          isAdded: false,
-                          reason: 'Fields from Table Po could not be saved.'
-                        });
-                      } else {
-                        Mir.findByIdAndUpdate(tempMir._id, tempMir, function(errNewMir, resNewMir){
-                          if (errNewMir || !resNewMir) {
-                            resolve({
-                              row: row,
-                              isRejected: true,
-                              isEdited: false,
-                              isAdded: false,
-                              reason: 'Fields from Table Mir could not be saved.'
-                            });
-                          } else {
-                            resolve({
-                              row: row,
-                              isRejected: false,
-                              isEdited: true,
-                              isAdded: false,
-                              reason: ''
-                            });
-                          }
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-    });
-  }
 });
+
+// function update(row, tempPickticket, tempPickitem, tempMiritem, tempPo, tempMir) {
+//   return new Promise (function (resolve) {
+//     PickTicket.findByIdAndUpdate(tempPickticket._id, tempPickticket, function(errNewPickticket, resNewPickticket){
+//         if (errNewPickticket || !resNewPickticket) {
+//           resolve({
+//             row: row,
+//             isRejected: true,
+//             isEdited: false,
+//             isAdded: false,
+//             reason: 'Fields from Table Pickticket could not be saved.'
+//           });
+//         } else {
+//           PickItem.findByIdAndUpdate(tempPickitem._id, tempPickitem, function(errNewPickitem, resNewPickitem){
+//             if (errNewPickitem || !resNewPickitem) {
+//               resolve({
+//                 row: row,
+//                 isRejected: true,
+//                 isEdited: false,
+//                 isAdded: false,
+//                 reason: 'Fields from Table PickItem could not be saved.'
+//               });
+//             } else {
+//               MirItem.findByIdAndUpdate(tempMiritem._id, tempMiritem, function(errNewMiritem, resNewMiritem){
+//                 if (errNewMiritem || !resNewMiritem) {
+//                   resolve({
+//                     row: row,
+//                     isRejected: true,
+//                     isEdited: false,
+//                     isAdded: false,
+//                     reason: 'Fields from Table MirItem could not be saved.'
+//                   });
+//                 } else {
+//                   Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
+//                     if (errNewPo || !resNewPo) {
+//                       resolve({
+//                         row: row,
+//                         isRejected: true,
+//                         isEdited: false,
+//                         isAdded: false,
+//                         reason: 'Fields from Table Po could not be saved.'
+//                       });
+//                     } else {
+//                       Mir.findByIdAndUpdate(tempMir._id, tempMir, function(errNewMir, resNewMir){
+//                         if (errNewMir || !resNewMir) {
+//                           resolve({
+//                             row: row,
+//                             isRejected: true,
+//                             isEdited: false,
+//                             isAdded: false,
+//                             reason: 'Fields from Table Mir could not be saved.'
+//                           });
+//                         } else {
+//                           resolve({
+//                             row: row,
+//                             isRejected: false,
+//                             isEdited: true,
+//                             isAdded: false,
+//                             reason: ''
+//                           });
+//                         }
+//                       });
+//                     }
+//                   });
+//                 }
+//               });
+//             }
+//           });
+//         }
+//       });
+//   });
+// }
+
+function updatePickTicket(row, tempPickticket) {
+  return new Promise (function (resolve) {
+    PickTicket.findByIdAndUpdate(tempPickticket._id, tempPickticket, function(errNewPickticket, resNewPickticket){
+        if (errNewPickticket || !resNewPickticket) {
+          resolve({
+            row: row,
+            isRejected: true,
+            isEdited: false,
+            isAdded: false,
+            reason: 'Fields from Table Pickticket could not be saved.'
+          });
+        } else {
+          resolve({
+            row: row,
+            isRejected: false,
+            isEdited: true,
+            isAdded: false,
+            reason: ''
+          });
+        }
+      });
+  });
+}
+
+function updatePickItem(row, tempPickitem) {
+  return new Promise (function (resolve) {
+    PickItem.findByIdAndUpdate(tempPickitem._id, tempPickitem, function(errNewPickitem, resNewPickitem){
+      if (errNewPickitem || !resNewPickitem) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Fields from Table PickItem could not be saved.'
+        });
+      } else {
+        resolve({
+          row: row,
+          isRejected: false,
+          isEdited: true,
+          isAdded: false,
+          reason: ''
+        });
+      }
+    });
+  });
+}
+
+function updateMirItem(row, tempMiritem) {
+  return new Promise (function (resolve) {
+    MirItem.findByIdAndUpdate(tempMiritem._id, tempMiritem, function(errNewMiritem, resNewMiritem){
+      if (errNewMiritem || !resNewMiritem) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Fields from Table MirItem could not be saved.'
+        });
+      } else {
+        resolve({
+          row: row,
+          isRejected: false,
+          isEdited: true,
+          isAdded: false,
+          reason: ''
+        });
+      }
+    });
+  });
+}
+
+function updatePo(row, tempPo) {
+  return new Promise (function (resolve) {
+    Po.findByIdAndUpdate(tempPo._id, tempPo, function(errNewPo, resNewPo){
+      if (errNewPo || !resNewPo) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Fields from Table Po could not be saved.'
+        });
+      } else {
+        resolve({
+          row: row,
+          isRejected: false,
+          isEdited: true,
+          isAdded: false,
+          reason: ''
+        });
+      }
+    });
+  });
+}
+
+function updateMir(row, tempMir) {
+  return new Promise (function (resolve) {
+    Mir.findByIdAndUpdate(tempMir._id, tempMir, function(errNewMir, resNewMir){
+      if (errNewMir || !resNewMir) {
+        resolve({
+          row: row,
+          isRejected: true,
+          isEdited: false,
+          isAdded: false,
+          reason: 'Fields from Table Mir could not be saved.'
+        });
+      } else {
+        resolve({
+          row: row,
+          isRejected: false,
+          isEdited: true,
+          isAdded: false,
+          reason: ''
+        });
+      }
+    });
+  });
+}
 
 function testFormat(row, cell, type, value) {
   return new Promise(function (resolve, reject) {

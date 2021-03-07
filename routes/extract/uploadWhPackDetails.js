@@ -151,31 +151,31 @@ router.post('/', upload.single('file'), function (req, res) {
       }
     })
   }
-
-  function update(row, tempWhColliPack) {
-    return new Promise (function (resolve) {
-      WhColliPack.findByIdAndUpdate(tempWhColliPack._id, tempWhColliPack, { new: true }, function(errNewWhColliPack, resNewWhColliPack){
-          if (errNewWhColliPack || !resNewWhColliPack) {
-            resolve({
-              row: row,
-              isRejected: true,
-              isEdited: false,
-              isAdded: false,
-              reason: 'Fields from Table WhColliPack could not be saved.'
-            });
-          } else {
-            resolve({
-              row: row,
-              isRejected: false,
-              isEdited: true,
-              isAdded: false,
-              reason: ''
-            });
-          }
-        });
-    });
-  }
 });
+
+function update(row, tempWhColliPack) {
+  return new Promise (function (resolve) {
+    WhColliPack.findByIdAndUpdate(tempWhColliPack._id, tempWhColliPack, { new: true }, function(errNewWhColliPack, resNewWhColliPack){
+        if (errNewWhColliPack || !resNewWhColliPack) {
+          resolve({
+            row: row,
+            isRejected: true,
+            isEdited: false,
+            isAdded: false,
+            reason: 'Fields from Table WhColliPack could not be saved.'
+          });
+        } else {
+          resolve({
+            row: row,
+            isRejected: false,
+            isEdited: true,
+            isAdded: false,
+            reason: ''
+          });
+        }
+      });
+  });
+}
 
 function testFormat(row, cell, type, value) {
   return new Promise(function (resolve, reject) {

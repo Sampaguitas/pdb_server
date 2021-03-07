@@ -152,31 +152,31 @@ router.post('/', upload.single('file'), function (req, res) {
       }
     })
   }
-
-  function update(row, tempMir) {
-    return new Promise (function (resolve) {
-      Mir.findByIdAndUpdate(tempMir._id, tempMir, function(errNewMir, resNewMir){
-          if (errNewMir || !resNewMir) {
-            resolve({
-              row: row,
-              isRejected: true,
-              isEdited: false,
-              isAdded: false,
-              reason: 'Fields from Table MIR could not be saved.'
-            });
-          } else {
-            resolve({
-              row: row,
-              isRejected: false,
-              isEdited: true,
-              isAdded: false,
-              reason: ''
-            });
-          }
-        });
-    });
-  }
 });
+
+function update(row, tempMir) {
+  return new Promise (function (resolve) {
+    Mir.findByIdAndUpdate(tempMir._id, tempMir, function(errNewMir, resNewMir){
+        if (errNewMir || !resNewMir) {
+          resolve({
+            row: row,
+            isRejected: true,
+            isEdited: false,
+            isAdded: false,
+            reason: 'Fields from Table MIR could not be saved.'
+          });
+        } else {
+          resolve({
+            row: row,
+            isRejected: false,
+            isEdited: true,
+            isAdded: false,
+            reason: ''
+          });
+        }
+      });
+  });
+}
 
 function testFormat(row, cell, type, value) {
   return new Promise(function (resolve, reject) {

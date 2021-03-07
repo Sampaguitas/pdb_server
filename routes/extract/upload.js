@@ -51,7 +51,7 @@ router.post('/', upload.single('file'), function (req, res) {
             nEdited: nEdited
         });
       } else {
-        var hasPackitems = getScreenTbls(resFieldNames).includes('packitem');
+        // var hasPackitems = getScreenTbls(resFieldNames).includes('packitem');
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => { //edited
           
@@ -126,7 +126,7 @@ router.post('/', upload.single('file'), function (req, res) {
                   // rowPromises.push(update(row, tempPo, tempSub, tempPackItem, hasPackitems));
                   rowPromises.push(updatePo(row, tempPo));
                   rowPromises.push(updateSub(row, tempSub));
-                  rowPromises.push(updatePackItem(row, tempPackItem, hasPackitems));
+                  rowPromises.push(updatePackItem(row, tempPackItem));
                 }).catch(errPromises => {
                   rejections.push(errPromises)
                   nRejected++;
@@ -282,9 +282,9 @@ function updateSub(row, tempSub) {
   });
 }
 
-function updatePackItem(row, tempPackItem, hasPackitems) {
+function updatePackItem(row, tempPackItem) {
   return new Promise (function (resolve) {
-    if (hasPackitems && tempPackItem._id){
+    if (!!tempPackItem._id){
       PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
         if (errNewPackItem || !resNewPackItem) {
           resolve({

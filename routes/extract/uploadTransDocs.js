@@ -281,8 +281,8 @@ function updateSub(row, tempSub) {
 
 function updatePackItem(row, tempPackItem) {
   return new Promise (function (resolve) {
-    if (!!tempPackItem._id){
-      PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
+    // if (!!tempPackItem._id){
+      PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, { new: true, upsert: true }, function(errNewPackItem, resNewPackItem){
         if (errNewPackItem || !resNewPackItem) {
           resolve({
             row: row,
@@ -301,15 +301,15 @@ function updatePackItem(row, tempPackItem) {
           });
         }
       });
-    } else {
-      resolve({
-        row: row,
-        isRejected: false,
-        isEdited: true,
-        isAdded: false,
-        reason: ''
-      });
-    }
+    // } else {
+    //   resolve({
+    //     row: row,
+    //     isRejected: false,
+    //     isEdited: true,
+    //     isAdded: false,
+    //     reason: ''
+    //   });
+    // }
   });
 }
 

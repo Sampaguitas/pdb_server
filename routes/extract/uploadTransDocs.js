@@ -282,6 +282,7 @@ function updateSub(row, tempSub) {
 
 function updatePackItem(row, tempPackItem) {
   return new Promise (function (resolve) {
+    if (countKeys(tempPackItem) > 1) {
       if (!tempPackItem._id) tempPackItem._id = new mongoose.Types.ObjectId();
       PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, { new: true, upsert: true }, function(errNewPackItem, resNewPackItem){
         if (!!errNewPackItem || !resNewPackItem) {
@@ -302,7 +303,16 @@ function updatePackItem(row, tempPackItem) {
           });
         }
       });
+    }
   });
+}
+
+function countKeys(obj) {
+  let count = 0;
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key) && !!obj[key]) count++;
+  }
+  return count;
 }
 
 function testFormat(row, cell, type, value) {

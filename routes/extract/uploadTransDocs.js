@@ -1,4 +1,5 @@
 var express = require('express');
+var mongoose = require('mongoose');
 const router = express.Router();
 var multer = require('multer');
 var storage = multer.memoryStorage()
@@ -281,7 +282,7 @@ function updateSub(row, tempSub) {
 
 function updatePackItem(row, tempPackItem) {
   return new Promise (function (resolve) {
-      if (!tempPackItem._id) tempPackItem._id = new Mongoose.Types.ObjectId();
+      if (!tempPackItem._id) tempPackItem._id = mongoose.Types.ObjectId();
       PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, { new: true, upsert: true }, function(errNewPackItem, resNewPackItem){
         if (!!errNewPackItem || !resNewPackItem) {
           resolve({
@@ -301,15 +302,6 @@ function updatePackItem(row, tempPackItem) {
           });
         }
       });
-    // } else {
-    //   resolve({
-    //     row: row,
-    //     isRejected: false,
-    //     isEdited: true,
-    //     isAdded: false,
-    //     reason: ''
-    //   });
-    // }
   });
 }
 

@@ -127,7 +127,7 @@ router.post('/', upload.single('file'), function (req, res) {
                   let foundPo = pos.find(element => element.clCode === line.clCode);
                   if (!foundPo) {
                     await getPo(line.clCode, projectId).then(resPo => {
-                      let returnId = mongoose.Types.ObjectId();
+                      let returnId = new mongoose.Types.ObjectId();
                       pos.push({
                         _id: resPo.poId,
                         clCode: line.clCode,

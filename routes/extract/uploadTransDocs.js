@@ -283,7 +283,7 @@ function updatePackItem(row, tempPackItem) {
   return new Promise (function (resolve) {
       if (!tempPackItem._id) tempPackItem._id = new Mongoose.Types.ObjectId();
       PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, { new: true, upsert: true }, function(errNewPackItem, resNewPackItem){
-        if (errNewPackItem || !resNewPackItem) {
+        if (!!errNewPackItem || !resNewPackItem) {
           resolve({
             row: row,
             isRejected: true,

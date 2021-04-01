@@ -282,9 +282,13 @@ function updateSub(row, tempSub) {
 
 function updatePackItem(row, tempPackItem) {
   return new Promise (function (resolve) {
-    if (countKeys(tempPackItem) > 1) {
-      if (!tempPackItem._id) tempPackItem._id = new mongoose.Types.ObjectId();
-      PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, { new: true, upsert: true }, function(errNewPackItem, resNewPackItem){
+    if (!tempPackItem._id) {
+    // if (countKeys(tempPackItem) > 1) {
+    //   if (!tempPackItem._id) {
+    //     tempPackItem._id = new mongoose.Types.ObjectId();
+    //   } 
+      // PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, { new: true, upsert: true }, function(errNewPackItem, resNewPackItem){
+      PackItem.findByIdAndUpdate(tempPackItem._id, tempPackItem, function(errNewPackItem, resNewPackItem){
         if (!!errNewPackItem || !resNewPackItem) {
           resolve({
             row: row,
@@ -303,6 +307,7 @@ function updatePackItem(row, tempPackItem) {
           });
         }
       });
+    // }
     }
   });
 }

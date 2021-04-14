@@ -16,6 +16,7 @@ require('./DocCountPl');
 require('./DocCountPn');
 require('./DocCountSi');
 require('./DocCountSm');
+require('./DocCountTr');
 require('./DocDef');
 require('./DocField');
 require('./DocFlow');

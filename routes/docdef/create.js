@@ -17,6 +17,7 @@ const DocCountWhPl = require('../../models/DocCountWhPl');
 const DocCountWhPn = require('../../models/DocCountWhPn');
 const DocCountWhSi = require('../../models/DocCountWhSi');
 const DocCountWhSm = require('../../models/DocCountWhSm');
+const DocCountTr = require('../../models/DocCountTr');
 
 router.post('/', async (req, res) => {
 
@@ -265,6 +266,18 @@ function getDocDefCode(projectId, doctypeId) {
                         reject('No document was return from the callback.');
                     } else {
                         resolve('WHSM' + baseTen(doc.seq));
+                    }
+                });
+            });
+        case '6076c553827af545d02057e3': //TR01
+            return new Promise(function(resolve, reject) {
+                DocCountTr.findOneAndUpdate({_id: projectId}, {$inc: { seq: 1} }, {new: true, upsert: true }, function(error, doc)   {
+                    if(error) {
+                        reject('An error has occured.');
+                    } else if (!doc) {
+                        reject('No document was return from the callback.');
+                    } else {
+                        resolve('TR' + baseTen(doc.seq));
                     }
                 });
             });

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create Schema
-const DocCountTrSchema = new Schema({
+const DocCountWhSmSchema = new Schema({
   _id: {
       type: String,
       required: true
@@ -13,4 +13,4 @@ const DocCountTrSchema = new Schema({
   }
 });
 
-module.exports = DocCountTr = mongoose.model('doccounttrs', DocCountTrSchema);
+module.exports = DocCountWhSm = mongoose.model('doccountwhsms', DocCountWhSmSchema);

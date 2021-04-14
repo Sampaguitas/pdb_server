@@ -16,6 +16,7 @@ const DocCountPt = require('./DocCountPt');
 const DocCountSh = require('./DocCountSh');
 const DocCountSi = require('./DocCountSi');
 const DocCountSm = require('./DocCountSm');
+const DocCountTr = require('./DocCountTr');
 const DocCountWhPl = require('./DocCountWhPl');
 const DocCountWhPn = require('./DocCountWhPn');
 const DocCountWhSi = require('./DocCountWhSi');
@@ -282,6 +283,13 @@ ProjectSchema.virtual("doccountsm", {
     justOne: true
 });
 
+ProjectSchema.virtual("doccounttr", {
+    ref: "doccounttrs",
+    localField: "_id",
+    foreignField: "_id",
+    justOne: true
+});
+
 ProjectSchema.virtual("doccountwhpl", {
     ref: "doccountwhpls",
     localField: "_id",
@@ -346,24 +354,26 @@ ProjectSchema.post('findOneAndDelete', function(doc, next) {
                                                     findDocCountShs(projectId).then( () => {
                                                         findDocCountSis(projectId).then( () => {
                                                             findDocCountSms(projectId).then( () => {
-                                                                findDocCountWhPls(projectId).then( () => {
-                                                                    findDocCountWhPns(projectId).then( () => {
-                                                                        findDocCountWhSis(projectId).then( () => {
-                                                                            findDocCountWhSms(projectId).then( () => {
-                                                                                findDocDefs(projectId).then( () => {
-                                                                                    findDocFields(projectId).then( () => {
-                                                                                        findFields(projectId).then( () => {
-                                                                                            findFieldNames(projectId).then( () => {
-                                                                                                findHeatLocs(projectId).then( () => {
-                                                                                                    findHeatPicks(projectId).then( () => {
-                                                                                                        findMirs(projectId).then( () => {
-                                                                                                            findPickTickets(projectId).then( () => {
-                                                                                                                findPos(projectId).then( () => {
-                                                                                                                    findSettings(projectId).then( () => {
-                                                                                                                        findSuppliers(projectId).then( () => {
-                                                                                                                            findTransactions(projectId).then( () => {
-                                                                                                                                findWarehouse(projectId).then( () => {
-                                                                                                                                    s3bucket.deleteProject(projectNr).then( () => next());
+                                                                findDocCountTrs(projectId).then( () => {
+                                                                    findDocCountWhPls(projectId).then( () => {
+                                                                        findDocCountWhPns(projectId).then( () => {
+                                                                            findDocCountWhSis(projectId).then( () => {
+                                                                                findDocCountWhSms(projectId).then( () => {
+                                                                                    findDocDefs(projectId).then( () => {
+                                                                                        findDocFields(projectId).then( () => {
+                                                                                            findFields(projectId).then( () => {
+                                                                                                findFieldNames(projectId).then( () => {
+                                                                                                    findHeatLocs(projectId).then( () => {
+                                                                                                        findHeatPicks(projectId).then( () => {
+                                                                                                            findMirs(projectId).then( () => {
+                                                                                                                findPickTickets(projectId).then( () => {
+                                                                                                                    findPos(projectId).then( () => {
+                                                                                                                        findSettings(projectId).then( () => {
+                                                                                                                            findSuppliers(projectId).then( () => {
+                                                                                                                                findTransactions(projectId).then( () => {
+                                                                                                                                    findWarehouse(projectId).then( () => {
+                                                                                                                                        s3bucket.deleteProject(projectNr).then( () => next());
+                                                                                                                                    });
                                                                                                                                 });
                                                                                                                             });
                                                                                                                         });
@@ -898,6 +908,40 @@ function deleteDocCountSm(doccountsmId) {
             resolve();
         } else {
             DocCountSm.findByIdAndDelete(doccountsmId, function (err) {
+                if (err) {
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
+function findDocCountTrs(projectId) {
+    return new Promise(function (resolve) {
+        if (!projectId) {
+            resolve();
+        } else {
+            DocCountTr.find({ _id: projectId }, function (err, doccounttrs) {
+                if (err || _.isEmpty(doccounttrs)) {
+                    resolve();
+                } else {
+                    let myPromises = [];
+                    doccounttrs.map(doccounttr => myPromises.push(deleteDocCountTr(doccounttr._id)));
+                    Promise.all(myPromises).then( () => resolve());
+                }
+            });
+        }
+    });
+}
+
+function deleteDocCountTr(doccounttrId) {
+    return new Promise(function(resolve) {
+        if (!doccounttrId) {
+            resolve();
+        } else {
+            DocCountTr.findByIdAndDelete(doccounttrId, function (err) {
                 if (err) {
                     resolve();
                 } else {

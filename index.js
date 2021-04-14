@@ -167,6 +167,12 @@ app.use('/doccountsm/delete', passport.authenticate('jwt', { session: false }), 
 app.use('/doccountsm/findAll', passport.authenticate('jwt', { session: false }), require('./routes/doccountsm/findAll'));
 app.use('/doccountsm/findOne', passport.authenticate('jwt', { session: false }), require('./routes/doccountsm/findOne'));
 app.use('/doccountsm/update', passport.authenticate('jwt', { session: false }), require('./routes/doccountsm/update'));
+//doccounttr X
+app.use('/doccounttr/create', passport.authenticate('jwt', { session: false }), require('./routes/doccounttr/create'));
+app.use('/doccounttr/delete', passport.authenticate('jwt', { session: false }), require('./routes/doccounttr/delete'));
+app.use('/doccounttr/findAll', passport.authenticate('jwt', { session: false }), require('./routes/doccounttr/findAll'));
+app.use('/doccounttr/findOne', passport.authenticate('jwt', { session: false }), require('./routes/doccounttr/findOne'));
+app.use('/doccounttr/update', passport.authenticate('jwt', { session: false }), require('./routes/doccounttr/update'));
 //docdef X
 app.use('/docdef/create', passport.authenticate('jwt', { session: false }), require('./routes/docdef/create'));
 app.use('/docdef/delete', passport.authenticate('jwt', { session: false }), require('./routes/docdef/delete'));

@@ -375,6 +375,7 @@ app.use('/template/generatePt', passport.authenticate('jwt', { session: false })
 app.use('/template/generateSh', passport.authenticate('jwt', { session: false }), require('./routes/template/generateSh'));
 app.use('/template/generateSi', passport.authenticate('jwt', { session: false }), require('./routes/template/generateSi'));
 app.use('/template/generateSm', passport.authenticate('jwt', { session: false }), require('./routes/template/generateSm'));
+app.use('/template/generateTr', passport.authenticate('jwt', { session: false }), require('./routes/template/generateTr'));
 app.use('/template/generateWhPl', passport.authenticate('jwt', { session: false }), require('./routes/template/generateWhPl'));
 app.use('/template/generateWhPn', passport.authenticate('jwt', { session: false }), require('./routes/template/generateWhPn'));
 app.use('/template/generateWhSi', passport.authenticate('jwt', { session: false }), require('./routes/template/generateWhSi'));

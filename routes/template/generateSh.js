@@ -46,7 +46,7 @@ router.post('/', function (req, res) {
                 path: 'project',
                 populate: {
                     path: 'transactions',
-                    match: { poId: { $in: poIds } },
+                    match: { poId: selectedIds.length > 0 ? { $in: poIds } : { $exists: true } },
                     options: {
                         sort: {
                             createdAt: 'asc'

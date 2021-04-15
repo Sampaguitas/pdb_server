@@ -43,7 +43,7 @@ router.post('/', function (req, res) {
     path: 'project',
     populate: { 
       path: 'pos',
-      match: { _id: { $in : poIds } },
+      match: { _id: selectedIds.length > 0 ? { $in : poIds } : { $exists: true } },
       options: {
         sort: {
           clPo: 'asc',
@@ -55,7 +55,7 @@ router.post('/', function (req, res) {
       [
         {
           path: 'subs',
-          match: { _id: { $in : subIds } },
+          match: { _id: selectedIds.length > 0 ? { $in : subIds } : { $exists: true } },
           populate: [
             {
               path: 'packitems',

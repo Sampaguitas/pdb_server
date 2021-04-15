@@ -15,24 +15,24 @@ aws.config.update({
   region: region
 });
 
-router.post('/', function (req, res) {
+router.get('/', function (req, res) {
   const docDefId = req.query.id;
   const locale = req.query.locale;
-  const selectedIds = req.body.selectedIds;
+  // const selectedIds = req.body.selectedIds;
 
 
 
-  let poIds = [];
-  let subIds = [];
-  let heatIds= [];
-  let returnIds = [];
+  // let poIds = [];
+  // let subIds = [];
+  // let heatIds= [];
+  // let returnIds = [];
 
-  selectedIds.forEach(element => {
-    element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
-    element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
-    element.heatId && !heatIds.includes(element.heatId) && heatIds.push(element.heatId);
-    element.returnId && !returnIds.includes(element.returnId) && subIds.push(element.returnId);
-  });
+  // selectedIds.forEach(element => {
+  //   element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
+  //   element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
+  //   element.heatId && !heatIds.includes(element.heatId) && heatIds.push(element.heatId);
+  //   element.returnId && !returnIds.includes(element.returnId) && subIds.push(element.returnId);
+  // });
 
   DocDef.findById(docDefId)
   .populate([
@@ -46,7 +46,7 @@ router.post('/', function (req, res) {
       path: 'project',
       populate: { 
         path: 'pos',
-        match: { _id: { $in : poIds } },
+        // match: { _id: { $in : poIds } },
         options: {
           sort: {
             clPo: 'asc',
@@ -57,10 +57,10 @@ router.post('/', function (req, res) {
         populate: [
           {
             path: 'subs',
-            match: { _id: { $in : subIds } },
+            // match: { _id: { $in : subIds } },
             populate: {
               path: 'heats',
-              match: { _id: { $in : heatIds } },
+              // match: { _id: { $in : heatIds } },
               options: {
                   sort: {
                       heatNr: 'asc'
@@ -73,7 +73,7 @@ router.post('/', function (req, res) {
           },
           {
             path: 'returns',
-            match: { _id: { $in : returnIds } },
+            // match: { _id: { $in : returnIds } },
             populate: {
               path: 'heats',
               options: {
@@ -242,11 +242,11 @@ function wsPageSetup(firstRow, ws, lastCol) {
 function getLines(docDef, docfields, locale) {
   let arrayLines = [];
   let arrayRow = [];
-  if(docDef.project.pos) {
+  if(docDef.project.pos.length > 0) {
     docDef.project.pos.map(po => {
-      if(po.subs) {
+      if(po.subs.length > 0) {
         po.subs.map(sub => {
-          if (sub.heats) {
+          if (sub.heats.length > 0) {
             sub.heats.map(heat => {
               arrayRow = [];
               docfields.map(docfield => {

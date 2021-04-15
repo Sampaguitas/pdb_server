@@ -15,24 +15,22 @@ aws.config.update({
   region: region
 });
 
-router.get('/', function (req, res) {
+router.post('/', function (req, res) {
   const docDefId = req.query.id;
   const locale = req.query.locale;
-  // const selectedIds = req.body.selectedIds;
+  const selectedIds = req.body.selectedIds;
 
+  let poIds = [];
+  let subIds = [];
+  let heatIds= [];
+  let returnIds = [];
 
-
-  // let poIds = [];
-  // let subIds = [];
-  // let heatIds= [];
-  // let returnIds = [];
-
-  // selectedIds.forEach(element => {
-  //   element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
-  //   element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
-  //   element.heatId && !heatIds.includes(element.heatId) && heatIds.push(element.heatId);
-  //   element.returnId && !returnIds.includes(element.returnId) && subIds.push(element.returnId);
-  // });
+  selectedIds.forEach(element => {
+    element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
+    element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
+    element.heatId && !heatIds.includes(element.heatId) && heatIds.push(element.heatId);
+    element.returnId && !returnIds.includes(element.returnId) && subIds.push(element.returnId);
+  });
 
   DocDef.findById(docDefId)
   .populate([
@@ -46,7 +44,7 @@ router.get('/', function (req, res) {
       path: 'project',
       populate: { 
         path: 'pos',
-        // match: { _id: { $in : poIds } },
+        match: { _id: selectedIds.length > 0 ? { $in : poIds } : { $exists: true } },
         options: {
           sort: {
             clPo: 'asc',
@@ -57,10 +55,10 @@ router.get('/', function (req, res) {
         populate: [
           {
             path: 'subs',
-            // match: { _id: { $in : subIds } },
+            match: { _id: selectedIds.length > 0 ? { $in : subIds } : { $exists: true } },
             populate: {
               path: 'heats',
-              // match: { _id: { $in : heatIds } },
+              match: { _id: selectedIds.length > 0 ? { $in : heatIds } : { $exists: true } },
               options: {
                   sort: {
                       heatNr: 'asc'
@@ -73,7 +71,7 @@ router.get('/', function (req, res) {
           },
           {
             path: 'returns',
-            // match: { _id: { $in : returnIds } },
+            match: { _id: selectedIds.length > 0 ? { $in : returnIds } : { $exists: true } },
             populate: {
               path: 'heats',
               options: {

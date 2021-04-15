@@ -15,10 +15,12 @@ aws.config.update({
   region: region
 });
 
-router.get('/', function (req, res) {
+router.post('/', function (req, res) {
   const docDefId = req.query.id;
   const locale = req.query.locale;
   const selectedIds = req.body.selectedIds;
+
+
 
   let poIds = [];
   let subIds = [];
@@ -28,7 +30,7 @@ router.get('/', function (req, res) {
   selectedIds.forEach(element => {
     element.poId && !poIds.includes(element.poId) && poIds.push(element.poId);
     element.subId && !subIds.includes(element.subId) && subIds.push(element.subId);
-    element.heatId && !heatIds.includes(element.heatId) && subIds.push(element.heatId);
+    element.heatId && !heatIds.includes(element.heatId) && heatIds.push(element.heatId);
     element.returnId && !returnIds.includes(element.returnId) && subIds.push(element.returnId);
   });
 
@@ -242,10 +244,10 @@ function getLines(docDef, docfields, locale) {
   let arrayRow = [];
   if(docDef.project.pos) {
     docDef.project.pos.map(po => {
-      if(po.subs){
+      if(po.subs) {
         po.subs.map(sub => {
-          if (po.subs.heats) {
-            po.subs.heats.map(heat => {
+          if (sub.heats) {
+            sub.heats.map(heat => {
               arrayRow = [];
               docfields.map(docfield => {
                 switch(docfield.fields.fromTbl) {

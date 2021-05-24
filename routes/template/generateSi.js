@@ -362,7 +362,6 @@ function TypeToString(fieldValue, fieldType, locale) {
 function getLines(docDef, docfields, locale, spColli) {
     return new Promise(async function (resolve) {
         // let arrayLines = [];
-        // let arrayRow = [];
         let myRowPromises = [];
         let arrayColli = [];
 
@@ -474,7 +473,7 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                         });
                         break;
                     case 'certificate':
-                        arrayRow.push({
+                        arrayLine.push({
                             val: certificate[docfield.fields.name] || '',
                             row: docfield.row,
                             col: docfield.col,
@@ -483,14 +482,14 @@ function getRows(docDef, docfields, collipack, packitem, itemIndex, spColli) {
                         break;
                     case 'sub':
                         if (docfield.fields.name === 'heatNr') {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: certificate[docfield.fields.name] || '',
                                 row: docfield.row,
                                 col: docfield.col,
                                 type: docfield.fields.type
                             });
                         } else {
-                            arrayRow.push({
+                            arrayLine.push({
                                 val: packitem.sub[docfield.fields.name] || '',
                                 row: docfield.row,
                                 col: docfield.col,

@@ -484,17 +484,26 @@ function alphabet(num){
   }
 
   function getScreenTbls (fieldnames, screenId) {
-    if (!_.isUndefined(fieldnames) && fieldnames.hasOwnProperty('items') && !_.isEmpty(fieldnames.items)) {
-        return fieldnames.items.reduce(function (acc, cur) {
-            if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
-                acc.push(cur.fields.fromTbl)
-            }
-            return acc;
-        },[]);
-    } else {
-        return [];
-    }
+    return fieldnames.reduce(function(acc, cur) {
+      if (String(cur.screenId) === screenId && !!cur.fields && !acc.includes(cur.fields.fromTbl)) {
+        acc.push(cur.fields.fromTbl);
+      }
+      return acc;
+    }, []);
   }
+
+  // function getScreenTbls (fieldnames, screenId) {
+  //   if (!_.isUndefined(fieldnames) && fieldnames.hasOwnProperty('items') && !_.isEmpty(fieldnames.items)) {
+  //       return fieldnames.items.reduce(function (acc, cur) {
+  //           if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
+  //               acc.push(cur.fields.fromTbl)
+  //           }
+  //           return acc;
+  //       },[]);
+  //   } else {
+  //       return [];
+  //   }
+  // }
 
   function getTblFields (fieldnames, fromTbl) {
     if (fieldnames) {

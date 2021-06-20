@@ -51,7 +51,7 @@ router.post('/', upload.single('file'), function (req, res) {
             nEdited: nEdited
         });
       } else {
-        // var hasPackitems = getScreenTbls(resFieldNames).includes('packitem');
+        // var hasPackitems = getScreenTbls(resFieldNames, screenId).includes('packitem');
         var workbook = new Excel.Workbook();
         workbook.xlsx.load(file.buffer).then(wb => { //edited
           
@@ -357,14 +357,23 @@ function alphabet(num){
   return s || undefined;
 }
 
-function getScreenTbls (resFieldNames) {
-  return resFieldNames.reduce(function (acc, cur) {
-      if(!acc.includes(cur.fields.fromTbl)) {
-          acc.push(cur.fields.fromTbl)
-      }
-      return acc;
-  },[]);
+function getScreenTbls (fieldnames, screenId) {
+  return fieldnames.reduce(function(acc, cur) {
+    if (String(cur.screenId) === screenId && !!cur.fields && !acc.includes(cur.fields.fromTbl)) {
+      acc.push(cur.fields.fromTbl);
+    }
+    return acc;
+  }, []);
 }
+
+// function getScreenTbls (resFieldNames) {
+//   return resFieldNames.reduce(function (acc, cur) {
+//       if(!acc.includes(cur.fields.fromTbl)) {
+//           acc.push(cur.fields.fromTbl)
+//       }
+//       return acc;
+//   },[]);
+// }
 
 function clean(value) {
   let nonPrintable = /[\t\r\n]/mg;

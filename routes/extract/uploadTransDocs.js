@@ -361,14 +361,23 @@ function alphabet(num){
   return s || undefined;
 }
 
-function getScreenTbls (resFieldNames, screenId) {
-  return resFieldNames.reduce(function (acc, cur) {
-      if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
-          acc.push(cur.fields.fromTbl)
-      }
-      return acc;
-  },[]);
+function getScreenTbls (fieldnames, screenId) {
+  return fieldnames.reduce(function(acc, cur) {
+    if (String(cur.screenId) === screenId && !!cur.fields && !acc.includes(cur.fields.fromTbl)) {
+      acc.push(cur.fields.fromTbl);
+    }
+    return acc;
+  }, []);
 }
+
+// function getScreenTbls (resFieldNames, screenId) {
+//   return resFieldNames.reduce(function (acc, cur) {
+//       if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
+//           acc.push(cur.fields.fromTbl)
+//       }
+//       return acc;
+//   },[]);
+// }
 
 function clean(value) {
   let nonPrintable = /[\t\r\n]/mg;

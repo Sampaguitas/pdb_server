@@ -497,33 +497,29 @@ function alphabet(num){
   }
 
   function getScreenTbls (fieldnames, screenId) {
-    if (!_.isUndefined(fieldnames) && fieldnames.hasOwnProperty('items') && !_.isEmpty(fieldnames.items)) {
-        return fieldnames.items.reduce(function (acc, cur) {
-            if(!acc.includes(cur.fields.fromTbl) && cur.screenId === screenId) {
-                acc.push(cur.fields.fromTbl)
-            }
-            return acc;
-        },[]);
-    } else {
-        return [];
-    }
+    return fieldnames.reduce(function(acc, cur) {
+      if (String(cur.screenId) === screenId && !!cur.fields && !acc.includes(cur.fields.fromTbl)) {
+        acc.push(cur.fields.fromTbl);
+      }
+      return acc;
+    }, []);
   }
 
-  function getTblFields (fieldnames, fromTbl) {
-    if (fieldnames) {
-        let tempArray = [];
-        fieldnames.reduce(function (acc, cur) {
-            if (cur.fields.fromTbl === fromTbl && !acc.includes(cur.fields._id)) {
-                tempArray.push(cur.fields);
-                acc.push(cur.fields._id);
-            }
-            return acc;
-        },[]);
-        return tempArray;
-    } else {
-        return [];
-    }
-  }
+  // function getTblFields (fieldnames, fromTbl) {
+  //   if (fieldnames) {
+  //       let tempArray = [];
+  //       fieldnames.reduce(function (acc, cur) {
+  //           if (cur.fields.fromTbl === fromTbl && !acc.includes(cur.fields._id)) {
+  //               tempArray.push(cur.fields);
+  //               acc.push(cur.fields._id);
+  //           }
+  //           return acc;
+  //       },[]);
+  //       return tempArray;
+  //   } else {
+  //       return [];
+  //   }
+  // }
 
   function hasPackingList(packItemFields) {
     let tempResult = false;

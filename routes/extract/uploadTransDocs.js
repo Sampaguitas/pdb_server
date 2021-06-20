@@ -94,9 +94,12 @@ router.post('/', upload.single('file'), function (req, res) {
                 //assign Sub Ids
                 tempSub._id = clean(worksheet.getCell('B' + row).value);
                 tempSub.poId = clean(worksheet.getCell('A' + row).value);
+                tempSub.projectId = projectId; //------------new projectId
                 //assign PackItem Ids
                 tempPackItem._id = clean(worksheet.getCell('C' + row).value);
                 tempPackItem.subId = clean(worksheet.getCell('B' + row).value);
+                tempPackItem.poId = tempPo._id; //------------new projectId
+                tempPackItem.projectId = projectId; //------------new projectId
 
                 resFieldNames.map((resFieldName, index) => {
                   let cell = alphabet(index + 4) + row;

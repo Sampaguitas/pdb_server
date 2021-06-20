@@ -215,6 +215,10 @@ const SubSchema = new Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'pos' 
     },
+    projectId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'projects'  
+    },
     daveId: {
         type: Number,
     }

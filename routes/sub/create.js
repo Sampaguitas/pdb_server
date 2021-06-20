@@ -74,6 +74,7 @@ router.post('/', (req, res) => {
                 udfSbD9: req.body.udfSbD9,
                 udfSbD10: req.body.udfSbD10,
                 poId: req.body.poId,
+                projectId: req.body.projectId, //------------new projectId
                 daveId: req.body.daveId,
             });
 

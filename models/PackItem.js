@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 const ColliPack = require('./ColliPack');
 const Po = require('../models/Po');
 const _ = require('lodash');
-const { resolve } = require('bluebird');
 
 //Create Schema
 const PackItemSchema = new Schema({
@@ -137,6 +136,14 @@ const PackItemSchema = new Schema({
     collipackId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'collipacks'  
+    },
+    poId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'pos'
+    },
+    projectId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'projects'
     },
     daveId: {
         type: Number,

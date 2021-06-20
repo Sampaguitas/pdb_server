@@ -49,6 +49,8 @@ router.post('/', (req, res) => {
                 udfPiD10: req.body.udfPiD10,
                 subId: req.body.subId,
                 collipackId: req.body.collipackId,
+                poId: req.body.poId,
+                projectId: req.body.projectId,
                 daveId: req.body.daveId,
             });
 

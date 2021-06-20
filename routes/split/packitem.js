@@ -4,13 +4,15 @@ const PackItem = require('../../models/PackItem');
 const _ = require('lodash');
 const ObjectId = require('mongodb').ObjectID;
 
-function alterArray(virtuals, subId, includingFirst) {
+function alterArray(virtuals, projectId, poId, subId, includingFirst) {
     if (!includingFirst) {
         virtuals.shift();
     }
     let tempObject = {};
     return virtuals.reduce(function (acc, curr) {
         tempObject = curr;
+        tempObject.projectId = projectId;
+        tempObject.poId = poId;
         tempObject.subId = subId;
         acc.push(tempObject);
         return acc;
@@ -26,6 +28,8 @@ router.put('/', async (req, res) => {
     let myPromises = [];
 
     const virtuals = req.body.virtuals;
+    const projectId = req.query.projectId;
+    const poId = req.query.poId;
     const subId = req.query.subId;
     const packitemId = req.query.packitemId;
 
@@ -37,7 +41,7 @@ router.put('/', async (req, res) => {
         switch(!packitemId){
             case true:
                 //create all virtuals (no existing packitem)
-                alterArray(virtuals, subId, true).map(element => {
+                alterArray(virtuals, projectId, poId, subId, true).map(element => {
                     myPromises.push(upsert(element));
                 });
                 await Promise.all(myPromises).then(resMyPromises => {
@@ -66,7 +70,7 @@ router.put('/', async (req, res) => {
                     if(virtuals.length === 1) {
                         return res.status(200).json({ message: 'Sub information was successfuly updated.' });
                     } else {
-                        alterArray(virtuals, subId, false).map(element => {
+                        alterArray(virtuals, projectId, poId, subId, false).map(element => {
                             myPromises.push(upsert(element));
                         });
                         await Promise.all(myPromises).then(resMyPromises => {

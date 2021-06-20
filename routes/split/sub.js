@@ -4,12 +4,13 @@ const Sub = require('../../models/Sub');
 const _ = require('lodash');
 
 
-function alterArray(virtuals, poId) {
+function alterArray(virtuals, poId, projectId) {
     virtuals.shift();
     let tempObject = {};
     return virtuals.reduce(function (acc, curr) {
         tempObject = curr;
         tempObject.poId = poId;
+        tempObject.projectId = projectId;
         acc.push(tempObject);
         return acc;
     },[]);
@@ -27,7 +28,7 @@ router.put('/', (req, res) => {
             return res.status(200).json({ message: 'Sub information was successfuly updated.' });
           } else {
             Sub
-            .insertMany(alterArray(virtuals, result.poId))
+            .insertMany(alterArray(virtuals, result.poId, result.projectId)) //------------new projectId
             .then( () => {
                 return res.status(200).json({ message: 'Sub lines where successfully created / updated.' });
             })

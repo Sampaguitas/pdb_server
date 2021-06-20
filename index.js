@@ -401,6 +401,8 @@ app.use('/user/register', passport.authenticate('jwt', { session: false }), requ
 app.use('/user/login', require('./routes/user/login'));
 app.use('/user/requestPwd', require('./routes/user/requestPwd'));
 app.use('/user/resetPwd', require('./routes/user/resetPwd'));
+// app.use('/sub/test', require('./routes/sub/test'));
+app.use('/packitem/test', require('./routes/packitem/test'));
 //---------------------------------
 app.use('/user/setAdmin', passport.authenticate('jwt', { session: false }), require('./routes/user/setAdmin'));
 app.use('/user/setSpAdmin', passport.authenticate('jwt', { session: false }), require('./routes/user/setSpAdmin'));

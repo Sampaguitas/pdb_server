@@ -26,6 +26,7 @@ router.put('/', async (req, res) => {
     let pickitemIds = [];
     let whpackitemIds = [];
     let whcollipackIds = []
+    let projectIds = [];
 
     let myPromises = [];
     let nEdited = 0;
@@ -42,6 +43,7 @@ router.put('/', async (req, res) => {
             element.pickitemId && !pickitemIds.includes(element.pickitemId) && pickitemIds.push(element.pickitemId);
             element.whpackitemId && !whpackitemIds.includes(element.whpackitemId) && whpackitemIds.push(element.whpackitemId);
             element.whcollipackId && !whcollipackIds.includes(element.whcollipackId) && whcollipackIds.push(element.whcollipackId);
+            element.projectId && !projectIds.includes(element.projectId) && projectIds.push(element.projectId); //------------new projectId
         });
 
         switch(collection){
@@ -338,7 +340,7 @@ function upsertPackItem(selectedId, fieldName, fieldValue) {
     return new Promise(function(resolve){
         if (!!selectedId.packitemId || !!selectedId.subId) {
             let query = selectedId.packitemId ? { _id: selectedId.packitemId } : { _id: new ObjectId() };
-            let update = { $set: { [fieldName]: fieldValue, subId: selectedId.subId } };
+            let update = { $set: { [fieldName]: fieldValue, subId: selectedId.subId, poId: selectedId.poId, projectId: selectedId.projectId } }; //------------new projectId
             let options = { new: true, upsert: true };
             PackItem.findOneAndUpdate(query, update, options, function(errPackItem) {
                 if (errPackItem) {

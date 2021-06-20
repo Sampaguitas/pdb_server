@@ -88,7 +88,8 @@ router.post('/', upload.single('file'), function (req, res) {
                 tempPo._id = clean(worksheet.getCell('A' + row).value);
                 //assign Sub Ids
                 tempSub._id = clean(worksheet.getCell('B' + row).value);
-                tempSub.poId = clean(worksheet.getCell('A' + row).value);;
+                tempSub.poId = clean(worksheet.getCell('A' + row).value);
+                tempSub.projectId = projectId; //------------new projectId
                 //assign PackItem Ids
 
                 resFieldNames.map((resFieldName, index) => {

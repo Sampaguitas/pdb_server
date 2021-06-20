@@ -241,6 +241,7 @@ router.post('/', upload.single('file'), function (req, res) {
             //assign poId and Split Qty
             tempSub.poId = resNewPo.value._id;
             tempSub.splitQty = resNewPo.value.qty;
+            tempSub.projectId = resNewPo.value.projectId; //------------new projectId
             Sub.findOneAndUpdate({poId: resNewPo.value._id}, tempSub,{ new: true, upsert: true }, function(errNewSub, resNewSub) {
               if (errNewSub || !resNewSub) {
                 resolve({

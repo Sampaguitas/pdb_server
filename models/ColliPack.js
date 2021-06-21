@@ -132,6 +132,13 @@ const ColliPackSchema = new Schema({
     }
 });
 
+// ColliPackSchema.virtual("packitems", {
+//     ref: "packitems",
+//     localField: [ "projectId", "plNr", "colliNr" ],
+//     foreignField: [ "projectId", "plNr", "colliNr" ],
+//     justOne: false
+// });
+
 ColliPackSchema.virtual("packitems", {
     ref: "packitems",
     localField: "_id",

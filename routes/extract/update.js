@@ -335,12 +335,11 @@ function editSub(selectedId, fieldName, fieldValue) {
     });
 }
 
-
 function upsertPackItem(selectedId, fieldName, fieldValue) {
     return new Promise(function(resolve){
         if (!!selectedId.packitemId || !!selectedId.subId) {
-            let query = selectedId.packitemId ? { _id: selectedId.packitemId } : { _id: new ObjectId() };
-            let update = { $set: { [fieldName]: fieldValue, subId: selectedId.subId, poId: selectedId.poId, projectId: selectedId.projectId } }; //------------new projectId
+            let query = selectedId.packitemId ? { "_id": selectedId.packitemId } : { _id: new ObjectId() };
+            let update = { "$set": { [fieldName]: fieldValue, "subId": selectedId.subId, "poId": selectedId.poId, "projectId": selectedId.projectId } }; //------------new projectId
             let options = { new: true, upsert: true };
             PackItem.findOneAndUpdate(query, update, options, function(errPackItem) {
                 if (errPackItem) {

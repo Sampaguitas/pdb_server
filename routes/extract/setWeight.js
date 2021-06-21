@@ -4,6 +4,8 @@ const PackItem = require('../../models/PackItem');
 const ColliPack = require('../../models/ColliPack');
 const Article = require('../../models/Article');
 const _ = require('lodash');
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 router.put('/', (req, res) => {
     
@@ -23,34 +25,79 @@ router.put('/', (req, res) => {
     } else {
 
         selectedIds.forEach(element => {
-            element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(element.collipackId);
+            element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(new ObjectId(element.collipackId));
         });
 
-        PackItem.find({ collipackId: { $in: collipackIds} })
-        .populate({
-            path: 'sub',
-            populate: {
-                path: 'po'
+        ColliPack.aggregate([
+            {
+                "$match": {
+                    "_id": { "$in": collipackIds} 
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "packitems",
+                    "let": { "collipack_projectId": "$projectId", "collipack_plNr": "$plNr", "collipack_colliNr": "$colliNr" },
+                    "pipeline": [
+                        { "$match":
+                           { "$expr":
+                              { "$and":
+                                 [
+                                   { "$eq": [ "$projectId",  "$$collipack_projectId" ] },
+                                   { "$eq": [ { "$toString": "$plNr" },  { "$toString": "$$collipack_plNr" } ] },
+                                   { "$eq": [ "$colliNr",  "$$collipack_colliNr" ] },
+                                 ]
+                              }
+                           }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "pos",
+                                "localField": "poId",
+                                "foreignField": "_id",
+                                "as": "po"
+                            }
+                        },
+                        {
+                            "$addFields": {
+                                "po": { "$arrayElemAt": [ "$po", 0] }
+                            }
+                        },
+                        {
+                            "$project": {
+                                "pcs": 1,
+                                "mtrs": 1,
+                                "uom": "$po.uom",
+                                "vlArtNo": "$po.vlArtNo",
+                                "vlArtNoX": "$po.vlArtNoX"
+                            }
+                        }
+                    ],
+                    "as": "packitem"
+                }
+            },
+            {
+                "$project": {
+                    "packitem": 1
+                }
+            },
+            {
+                "$unwind": "$packitem"
             }
-        })
-        .exec(async function (err, packitems) {
-            if (err) {
+        ]).exec(function (errCollipacks, collipacks) {
+            if (!!errCollipacks) {
                 res.status(400).json({ message: 'An error has occured.'});
             } else {
-
-                packitems.map(function(packitem) {
-                    itemsWeight.push(getweight(erp, packitem.pcs, packitem.mtrs, packitem.collipackId,  packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX));
-                });
-
-                await Promise.all(itemsWeight).then(async resItemsWeight => {
+                collipacks.map(collipack => itemsWeight.push(getweight(erp, collipack.packitem.pcs, collipack.packitem.mtrs, collipack._id,  collipack.packitem.uom, collipack.packitem.vlArtNo, collipack.packitem.vlArtNoX)));
+                Promise.all(itemsWeight).then(resItemsWeight => {
                     
                     let myCollis = resItemsWeight.reduce(function (acc, cur) {
                         if (!cur.isRejected) {
-                           if (acc.hasOwnProperty([cur.collipackId])) {
+                            if (acc.hasOwnProperty([cur.collipackId])) {
                             acc[cur.collipackId] += cur.weight;
-                           } else {
+                            } else {
                             acc[cur.collipackId] = cur.weight;
-                           }
+                            }
                         }
                         return acc;
                     }, {});
@@ -59,7 +106,7 @@ router.put('/', (req, res) => {
                         collisWeight.push(setWeight(k, myCollis[k]));
                     });
 
-                    await Promise.all(collisWeight).then(async resCollisWeight => {
+                    Promise.all(collisWeight).then(async resCollisWeight => {
                         
                         resCollisWeight.map(resColliWeight => {
                             if (resColliWeight.isRejected) {
@@ -75,6 +122,57 @@ router.put('/', (req, res) => {
                 });
             }
         });
+
+
+        // PackItem.find({ collipackId: { $in: collipackIds} })
+        // .populate({
+        //     path: 'sub',
+        //     populate: {
+        //         path: 'po'
+        //     }
+        // })
+        // .exec(async function (err, packitems) {
+        //     if (err) {
+        //         res.status(400).json({ message: 'An error has occured.'});
+        //     } else {
+
+        //         packitems.map(function(packitem) {
+        //             itemsWeight.push(getweight(erp, packitem.pcs, packitem.mtrs, packitem.collipackId,  packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX));
+        //         });
+
+        //         await Promise.all(itemsWeight).then(async resItemsWeight => {
+                    
+        //             let myCollis = resItemsWeight.reduce(function (acc, cur) {
+        //                 if (!cur.isRejected) {
+        //                    if (acc.hasOwnProperty([cur.collipackId])) {
+        //                     acc[cur.collipackId] += cur.weight;
+        //                    } else {
+        //                     acc[cur.collipackId] = cur.weight;
+        //                    }
+        //                 }
+        //                 return acc;
+        //             }, {});
+
+        //             Object.keys(myCollis).forEach(function (k) {
+        //                 collisWeight.push(setWeight(k, myCollis[k]));
+        //             });
+
+        //             await Promise.all(collisWeight).then(async resCollisWeight => {
+                        
+        //                 resCollisWeight.map(resColliWeight => {
+        //                     if (resColliWeight.isRejected) {
+        //                         nRejected++;
+        //                     } else {
+        //                         nEdited++;
+        //                     }
+        //                 });
+
+        //                 res.status(nRejected ? 400 : 200).json({ message: `${nEdited} items edited, ${nRejected} items rejected.`});
+
+        //             });
+        //         });
+        //     }
+        // });
     }
 
 });

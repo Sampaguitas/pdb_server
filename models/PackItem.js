@@ -166,191 +166,104 @@ PackItemSchema.virtual("transactions", {
 
 PackItemSchema.set('toJSON', { virtuals: true });
 
-
-// PackItemSchema.post('findOneAndDelete', function(doc, next) {
-//     doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
-//         if (!err && !!res.sub.po.projectId) {
-//             let projectId = res.sub.po.projectId;
-//             removeDirtyCollis(projectId);
-//         }
-//     });
-//     next();
-// });
-
-PackItemSchema.pre('findOneAndDelete', async function() {
-    const docToDelete = await this.model.findOne(this.getQuery());
-    if (!!docToDelete) {
-        isUnique(docToDelete.collipackId, false).then(res => res.isUnique && mongoose.model('collipacks').findByIdAndDelete(docToDelete.collipackId));
+PackItemSchema.pre('findOneAndDelete', async function(next) {
+    let myPromises = [];
+    const packitem = await this.model.findOne(this.getQuery());
+    if (!packitem) {
+        next();
+    } else {
+        isUnique(packitem, false).then(res => {
+            if (!res.isUnique) {
+                next();
+            } else {
+                mongoose.model('collipacks').find({
+                    plNr: packitem.plNr,
+                    colliNr: packitem.colliNr,
+                    projectId: packitem.projectId
+                }).exec(function (errCollipacks, collipacks) {
+                    if (!!errCollipacks || !collipacks) {
+                        next();
+                    } else {
+                        collipacks.map(collipack => myPromises.push(deleteCollipack(collipack._id)));
+                        Promise.all(myPromises).then(() => next());
+                    }
+                });
+            }
+        });
     }
 });
 
-
-PackItemSchema.pre('findOneAndUpdate', async function() {
-    const docToUpdate = await this.model.findOne(this.getQuery());
-    if (!!docToUpdate && this._update.hasOwnProperty('$set') && (this._update['$set'].hasOwnProperty('plNr') || this._update['$set'].hasOwnProperty('colliNr'))) {
-        isUnique(docToUpdate.collipackId, !!docToUpdate.plNr && !!docToUpdate.colliNr).then(res => res.isUnique && mongoose.model('collipacks').findByIdAndDelete(docToUpdate.collipackId));
-        this._update['$set'].collipackId = undefined;
+PackItemSchema.pre('findOneAndUpdate', async function(next) {
+    let myPromises = [];
+    const packitem = await this.model.findOne(this.getQuery());
+    if (!packitem || !this._update.hasOwnProperty('$set') || (!this._update['$set'].hasOwnProperty('plNr') && !this._update['$set'].hasOwnProperty('colliNr'))) {
+        next();
+    } else {
+        isUnique(packitem, !!packitem.plNr && !!packitem.colliNr).then(res => {
+            if (!res.isUnique) {
+                next();
+            } else {
+                mongoose.model('collipacks').find({
+                    plNr: packitem.plNr,
+                    colliNr: packitem.colliNr,
+                    projectId: packitem.projectId
+                }).exec(function (errCollipacks, collipacks) {
+                    if (!!errCollipacks || !collipacks) {
+                        next();
+                    } else {
+                        collipacks.map(collipack => myPromises.push(deleteCollipack(collipack._id)));
+                        Promise.all(myPromises).then(() => next());
+                    }
+                });
+            }
+        }); 
     }
 });
 
 PackItemSchema.post('findOneAndUpdate', function(doc, next) {
-    doc.populate({ path: 'sub', populate: { path: 'po' } }, function(err, res) {
-        if (!err && !!res.sub.po.projectId) {
-            let plNr = res.plNr;
-            let colliNr = res.colliNr
-            let projectId = res.sub.po.projectId;
-            // removeDirtyCollis(projectId).then( () => {
-                //if new packitem has plNr and colliNr:
-                if (!!plNr && !!colliNr) {
-                    let filter = { plNr: plNr, colliNr: colliNr, projectId: projectId };
-                    let update = { plNr: plNr, colliNr: colliNr, projectId: projectId };
-                    let options = { new: true, upsert: true };
-                    //we want to create a colli in the collipack collection (if it does not already exist);
-                    mongoose.model('collipacks').findOneAndUpdate(filter, update, options, function(errColliPack, resColliPack) {
-                        if (!errColliPack && !!resColliPack._id) {
-                            // removeDirtyCollis(projectId).then(onfulfilled => {
-                                doc.collipackId = resColliPack._id;
-                                doc.save();
-                            // });
-                        } else {
-                            doc.collipackId = undefined;
-                            doc.save();
-                        }
-                    });
-                } else {
-                    doc.collipackId = undefined;
-                    doc.save();
-                }
-            // });
-        }
-    });
-    next();
+    // create a collipack if it does not exist already (with upsert)
+    if (!doc.plNr || !doc.colliNr || !doc.projectId) {
+        next();
+    } else {
+        
+        let filter = { "plNr": doc.plNr, "colliNr": doc.colliNr, "projectId": doc.projectId };
+        let update = { "plNr": doc.plNr, "colliNr": doc.colliNr, "projectId": doc.projectId };
+        let options = { "new": true, "upsert": true };
+        
+        mongoose.model("collipacks").findOneAndUpdate(filter, update, options, () => next());
+    }
 });
 
 module.exports = PackItem = mongoose.model('packitems', PackItemSchema);
 
-async function isUnique(collipackId, noblank) {
+function isUnique(packitem, noblank) {
     return new Promise(function(resolve) {
-        if (!!collipackId) {
-            mongoose.model('collipacks').findById(collipackId)
-            .populate('packitems')
-            .exec(function(err, res) {
-                if (!!err || !res || (res.packitems.length + noblank > 1)) {
+        if (!packitem.plNr || !packitem.colliNr || !packitem.projectId) {
+            resolve({isUnique: false});
+        } else {
+            mongoose.model('packitems').find({
+                plNr: packitem.plNr,
+                colliNr: packitem.colliNr,
+                projectId: packitem.projectId
+            }).count(function (err, count) {
+                if (!!err || count > 1) { //!!err || count + noblank > 1
                     resolve({isUnique: false});
                 } else {
                     resolve({isUnique: true});
                 }
             });
-        } else {
-            resolve({isUnique: false});
         }
     });
 }
 
-// function removeDirtyCollis(projectId) {
-//     return new Promise(function (resolve) {
-//         Po.find({ projectId: projectId })
-//         .populate({
-//             path: 'subs',
-//             populate: {
-//                 path: 'packitems'
-//             }
-//         })
-//         .exec(function(errPo, resPos) {
-//             if (errPo) {
-//                 resolve ({
-//                     isRejected: true,
-//                     message: 'Could not retrive pos.'
-//                 });
-//             } else if (_.isEmpty(resPos)) {
-//                 resolve ({
-//                     isRejected: true,
-//                     message: 'Po seems to be empty.'
-//                 });
-//             } else {
-//                 let projectCollis = resPos.reduce(function (accPo, curPo) {
-//                     let tempSubs = curPo.subs.reduce(function (accSub, curSub) {
-//                         let temPackItems = curSub.packitems.reduce(function (accPackItem, curPackItem) {
-//                             if(!!curPackItem.plNr && !!curPackItem.colliNr && !doesHave(accPackItem, curPackItem.plNr, curPackItem.colliNr)) {
-//                                 accPackItem.push({plNr: curPackItem.plNr, colliNr: curPackItem.colliNr});
-//                             }
-//                             return accPackItem;
-//                         }, []);
-//                         temPackItems.map(temPackItem => {
-//                             if(!doesHave(accSub, temPackItem.plNr, temPackItem.colliNr)) {
-//                                 accSub.push({
-//                                     plNr: temPackItem.plNr, 
-//                                     colliNr: temPackItem.colliNr
-//                                 });
-//                             }
-//                         });
-    
-//                         return accSub;
-//                     }, []);
-//                     tempSubs.map(tempSub => {
-//                         if(!doesHave(accPo, tempSub.plNr, tempSub.colliNr)) {
-//                             accPo.push({
-//                                 plNr: tempSub.plNr, 
-//                                 colliNr: tempSub.colliNr
-//                             });
-//                         }
-//                     });
-    
-//                     return accPo;
-//                 }, []);
-
-//                 if (projectCollis) {
-//                     ColliPack.find({projectId: projectId}, function (err, collipacks) {
-//                         if (err) {
-//                             resolve({
-//                                 isRejected: true,
-//                                 message: 'an error occured while trying to retrive ColliPacks.' 
-//                             });
-//                         } else if (_.isEmpty(collipacks)) {
-//                             resolve({
-//                                 isRejected: false,
-//                                 message: 'No ColliPacks.' 
-//                             });
-//                         } else {
-//                             let tempPackIds = [];
-//                             collipacks.map(collipack => {
-//                                 if (!doesHave(projectCollis, collipack.plNr, collipack.colliNr)) {
-//                                     tempPackIds.push(collipack._id);
-//                                 }
-//                             });
-//                             if (_.isEmpty(tempPackIds)) {
-//                                 resolve({
-//                                     isRejected: false,
-//                                     message: 'No ColliPacks are different than packitems.' 
-//                                 }); 
-//                             } else {
-//                                 ColliPack.deleteMany({_id: { $in: tempPackIds } }, function (err) {
-//                                     if (err) {
-//                                         resolve({
-//                                             isRejected: true,
-//                                             message: 'An error has occured while removing ColliPacks.' 
-//                                         });
-//                                     } else {
-//                                         resolve({
-//                                             isRejected: false,
-//                                             message: 'All collipacks have been removed.' 
-//                                         });
-//                                     }
-//                                 });
-//                             }
-//                         }
-//                     });
-//                 } else {
-//                     resolve({
-//                         isRejected: false,
-//                         message: 'no packitem colli(s) to be deleted.'
-//                     })
-//                 }
-//             }
-//         });
-//     });
-// }
-
-function doesHave(array, plNr, colliNr) {
-    return !!array.find(e => e.plNr == plNr && e.colliNr == colliNr);
+function deleteCollipack(_id) {
+    return new Promise(function(resolve) {
+        mongoose.model("collipacks").findOneAndDelete({_id}, function(err, res) {
+            if (!!err) {
+                resolve();
+            } else {
+                resolve();
+            }
+        });
+    });
 }

@@ -1,18 +1,48 @@
 const express = require('express');
 const router = express.Router();
 const ColliPack = require('../../models/ColliPack');
+const _ = require('lodash');
 
-router.delete('/', (req, res) => {
-    const id = req.query.id
-    ColliPack.findByIdAndDelete(id, function (err, collipack) {
-        if (err) {
-            return res.status(400).json({ message: 'An error has occured.' });
-        } else if (!collipack) {
-            return res.status(400).json({ message: 'Could not find ColliPack.' });
-        } else {
-            return res.status(200).json({ message: 'ColliPack has successfully been deleted' });
-        }
-    });
+router.delete('/', async (req, res) => {
+
+    const selectedIds = req.body.selectedIds;
+    let myPromises = [];
+    let nRejected = 0;
+    let nDeleted = 0;
+
+    if (_.isEmpty(selectedIds)) {
+        return res.status(400).json({message: 'You need to pass an Id.'});
+    } else {
+        selectedIds.map(selectedId => !!selectedId.collipackId && myPromises.push(removeColliPack(selectedId.collipackId)));
+        
+        await Promise.all(myPromises).then(function (resPromises) {
+            resPromises.map(function (resPromise) {
+                if (resPromise.isRejected) {
+                    nRejected++;
+                } else {
+                    nDeleted++;
+                }
+            });
+            res.status(!!nRejected ? 400 : 200).json({message: `${nDeleted} item(s) deleted, ${nRejected} item(s) rejected.`});
+        });
+
+    }
 });
+
+function removeColliPack(id) {
+    return new Promise(function(resolve) {
+        ColliPack.findByIdAndDelete(id, function (err) {
+            if(err) {
+                resolve({
+                    isRejected: true
+                });
+            } else {
+                resolve({
+                    isRejected: false
+                });
+            }
+        });
+    });
+}
 
 module.exports = router;

@@ -13,6 +13,9 @@ fs = require('fs');
 const moment = require('moment');
 const _ = require('lodash');
 
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 aws.config.update({
   accessKeyId: accessKeyId,
   secretAccessKey: secretAccessKey,
@@ -24,75 +27,218 @@ router.get('/', function (req, res) {
   const locale = req.query.locale;
   const selectedPl = req.query.selectedPl;
     
-    DocDef
-    .findById(docDefId)
-    .populate([
+    DocDef.aggregate([
         {
-            path: 'docfields',
-            populate: {
-                path: 'fields'
+            "$match": { "_id": new ObjectId(docDefId) }
+        },
+        {
+            "$lookup": {
+                "from": "docfields",
+                "let": { "docdef_id": "$_id" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$and": [
+                                    { "$eq": [ "$docdefId",  "$$docdef_id" ] },
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$lookup": {
+                            "from": "fields",
+                            "localField": "fieldId",
+                            "foreignField": "_id",
+                            "as": "fields"
+                        }
+                    },
+                    {
+                        "$addFields": {
+                            "fields": { "$arrayElemAt": [ "$fields", 0] }
+                        }
+                    },
+                ],
+                "as": "docfields"
             }
         },
         {
-            path: 'project',
-            populate: [
-                {
-                    path: 'erp',
-                },
-                {
-                    path: 'collipacks',
-                    match: { plNr: selectedPl },
-                    options: {
-                        sort: {
-                            plNr: 'asc',
-                            colliNr: 'asc',
+            "$lookup": {
+                "from": "projects",
+                "let": { "docdef_projectId": "$projectId" },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$and": [
+                                    { "$eq": [ "$_id",  "$$docdef_projectId" ] },
+                                ]
+                            }
                         }
                     },
-                    populate: {
-                        path: 'packitems',
-                        populate: {
-                            path: 'sub',
-                            populate: [
+                    {
+                        "$lookup": {
+                            "from": "erps",
+                            "localField": "erpId",
+                            "foreignField": "_id",
+                            "as": "erp"
+                        }
+                    },
+                    {
+                        "$addFields": {
+                            "erp": { "$arrayElemAt": [ "$erp", 0] }
+                        }
+                    },
+                    {
+                        "$lookup": {
+                            "from": "collipacks",
+                            "let": { "project_id": "$_id" },
+                            "pipeline": [
                                 {
-                                    path: 'po',
+                                    "$match": {
+                                        "$expr": {
+                                            "$and": [
+                                                { "$eq": [ "$projectId", "$$project_id"] },
+                                                { "$eq": [ "$plNr",  selectedPl ] }
+                                            ]
+                                        }
+                                    }
                                 },
                                 {
-                                    path: 'heats',
-                                    options: {
-                                        sort: {
-                                            heatNr: 'asc'
-                                        }
-                                    },
-                                    populate: {
-                                        path: 'certificate',
+                                    "$lookup": {
+                                        "from": "packitems",
+                                        "let": {
+                                            "collipack_plNr": "$plNr",
+                                            "collipack_colliNr": "$colliNr",
+                                            "collipack_projectId": "$projectId"
+                                        },
+                                        "pipeline": [
+                                            {
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$and": [
+                                                            { "$eq": [ { "$toString": "$plNr" }, "$$collipack_plNr"] },
+                                                            { "$eq": [ "$colliNr", "$$collipack_colliNr"] },
+                                                            { "$eq": [ "$projectId", "$$collipack_projectId"] },
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "$lookup": {
+                                                    "from": "subs",
+                                                    "let": { "packitem_subId": "$subId" },
+                                                    "pipeline": [
+                                                        {
+                                                            "$match": {
+                                                                "$expr": {
+                                                                    "$and": [
+                                                                        { "$eq": ["$_id", "$$packitem_subId" ] }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "$lookup": {
+                                                                "from": "pos",
+                                                                "localField": "poId",
+                                                                "foreignField": "_id",
+                                                                "as": "po"
+                                                            }
+                                                        },
+                                                        {
+                                                            "$lookup": {
+                                                                "from": "heats",
+                                                                "let": { "sub_id": "$_id" },
+                                                                "pipeline": [
+                                                                    {
+                                                                        "$match": {
+                                                                            "$expr": {
+                                                                                "$and": [
+                                                                                    { "$eq": ["$subId", "$$sub_id" ] }
+                                                                                ]
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "$lookup": {
+                                                                            "from": "certificates",
+                                                                            "localField": "certificateId",
+                                                                            "foreignField": "_id",
+                                                                            "as": "certificate"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "$addFields": {
+                                                                            "certificate": { "$arrayElemAt": [ "$certificate", 0] }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "$sort": {
+                                                                            "heatNr": 1
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "as": "heats"
+                                                            }
+                                                        },
+                                                        {
+                                                            "$addFields": {
+                                                                "po": { "$arrayElemAt": [ "$po", 0] }
+                                                            }
+                                                        }
+                                                    ],
+                                                    "as": "sub"
+                                                }
+                                            },
+                                            {
+                                                "$addFields": {
+                                                    "sub": { "$arrayElemAt": [ "$sub", 0] }
+                                                }
+                                            }
+                                        ],
+                                        "as": "packitems"
+                                    }
+                                },
+                                {
+                                    "$sort": {
+                                        "plNr": 1,
+                                        "colliNr": 1,
                                     }
                                 }
-                            ]
+                            ],
+                            "as": "collipacks"
                         }
                     }
-                }
-            ]
-        }
+                ],
+                "as": "project"
+            }
+        },
+        {
+            "$addFields": {
+                "project": { "$arrayElemAt": [ "$project", 0] }
+            }
+        },
     ])
     .exec(function (err, docDef){
         if (err) {
         return res.status(400).json({message: 'An error has occured'});
-        } else if (!docDef || !docDef.project) {
+        } else if (!!docDef.length < 1 || !docDef[0].project) {
         return res.status(400).json({message: 'Could not retrive project information.'});
         } else {
             var s3 = new aws.S3();
             var params = {
                 Bucket: awsBucketName,
-                Key: path.join('templates', String(docDef.project.number), docDef.field),
+                Key: path.join('templates', String(docDef[0].project.number), docDef[0].field),
             };
             var wb = new Excel.Workbook();
             wb.xlsx.read(s3.getObject(params).createReadStream())
             .then(async function(workbook) {
 
                 // console.log('--------------------------');
-                // console.log(docDef.project.collipacks);
+                // console.log(docDef[0].project.collipacks);
 
-                let spColli = docDef.project.collipacks.reduce(function(acc, cur) {
+                let spColli = docDef[0].project.collipacks.reduce(function(acc, cur) {
                     if (!!cur.type && !acc.hasOwnProperty(cur.type.toUpperCase())){
                         acc[cur.type.toUpperCase()] = { spColliQty: 1, spColliWeight: cur.grossWeight || 0 }
                     } else if (!!cur.type && acc.hasOwnProperty(cur.type.toUpperCase())){
@@ -102,22 +248,22 @@ router.get('/', function (req, res) {
                     return acc;
                 }, {});
 
-                const docFieldSol = filterDocFiled(docDef.docfields, 'Sheet1', 'Line');
-                const docFieldSoh = filterDocFiled(docDef.docfields, 'Sheet1', 'Header');
+                const docFieldSol = filterDocFiled(docDef[0].docfields, 'Sheet1', 'Line');
+                const docFieldSoh = filterDocFiled(docDef[0].docfields, 'Sheet1', 'Header');
                 const firstColSol = getColumnFirst(docFieldSol);
-                const lastColSol = getColumnLast(docFieldSol, docDef.col1);
-                const soh = await getLines(docDef, docFieldSoh, locale, spColli);
-                const sol = await getLines(docDef, docFieldSol, locale, spColli);
+                const lastColSol = getColumnLast(docFieldSol, docDef[0].col1);
+                const soh = await getLines(docDef[0], docFieldSoh, locale, spColli);
+                const sol = await getLines(docDef[0], docFieldSol, locale, spColli);
                 
-                const docFieldStl = filterDocFiled(docDef.docfields, 'Sheet2', 'Line');
-                const docFieldSth = filterDocFiled(docDef.docfields, 'Sheet2', 'Header');
+                const docFieldStl = filterDocFiled(docDef[0].docfields, 'Sheet2', 'Line');
+                const docFieldSth = filterDocFiled(docDef[0].docfields, 'Sheet2', 'Header');
                 const firstColStl = getColumnFirst(docFieldStl);
-                const lastColStl = getColumnLast(docFieldStl, docDef.col2);
-                const sth = await getLines(docDef, docFieldSth, locale, spColli);
-                const stl = await getLines(docDef, docFieldStl, locale, spColli);
+                const lastColStl = getColumnLast(docFieldStl, docDef[0].col2);
+                const sth = await getLines(docDef[0], docFieldSth, locale, spColli);
+                const stl = await getLines(docDef[0], docFieldStl, locale, spColli);
 
                 workbook.eachSheet(function(worksheet, sheetId) {
-                    if (sheetId === 1 && docDef.row1 && !_.isEmpty(sol)) {
+                    if (sheetId === 1 && docDef[0].row1 && !_.isEmpty(sol)) {
                         //fill all headers first
                         soh.map(function (head) {
                             head.map(function (cell) {
@@ -128,7 +274,7 @@ router.get('/', function (req, res) {
                         });
                         //get nLines and nRows per line
                         let columnCount = worksheet.columnCount;
-                        let startRow = docDef.row1;
+                        let startRow = docDef[0].row1;
                         let nLines = sol.length;
                         let nRows = sol.reduce(function(accLine, curLine) {
                             let nRowLine = curLine.reduce(function(accCell, curCell) {
@@ -169,8 +315,8 @@ router.get('/', function (req, res) {
                             });
                         });
                         // set up page for printing
-                        wsPageSetup(docDef.row1, worksheet, lastColSol);
-                    } else if (sheetId === 2 && docDef.row2 && !_.isEmpty(stl)) {
+                        wsPageSetup(docDef[0].row1, worksheet, lastColSol);
+                    } else if (sheetId === 2 && docDef[0].row2 && !_.isEmpty(stl)) {
                         // fill all headers first (second page)
                         sth.map(function (head) {
                             head.map(function (cell) {
@@ -181,7 +327,7 @@ router.get('/', function (req, res) {
                         });
                         //get nLines and nRows per line
                         let columnCount = worksheet.columnCount;
-                        let startRow = docDef.row2;
+                        let startRow = docDef[0].row2;
                         let nLines = stl.length;
                         let nRows = stl.reduce(function(accLine, curLine) {
                             let nRowLine = curLine.reduce(function(accCell, curCell) {
@@ -221,7 +367,7 @@ router.get('/', function (req, res) {
                             });
                         });
                         //set up page for printing
-                        wsPageSetup(docDef.row2, worksheet, lastColStl);
+                        wsPageSetup(docDef[0].row2, worksheet, lastColStl);
                     }
                 });
                 workbook.xlsx.write(res);
@@ -615,7 +761,56 @@ function calcWeight(tempUom, pcs, mtrs, weight) {
 
 
 
-
+// DocDef
+// .findById(docDefId)
+// .populate([
+//     {
+//         path: 'docfields',
+//         populate: {
+//             path: 'fields'
+//         }
+//     },
+//     {
+//         path: 'project',
+//         populate: [
+//             {
+//                 path: 'erp',
+//             },
+//             {
+//                 path: 'collipacks',
+//                 match: { plNr: selectedPl },
+//                 options: {
+//                     sort: {
+//                         plNr: 'asc',
+//                         colliNr: 'asc',
+//                     }
+//                 },
+//                 populate: {
+//                     path: 'packitems',
+//                     populate: {
+//                         path: 'sub',
+//                         populate: [
+//                             {
+//                                 path: 'po',
+//                             },
+//                             {
+//                                 path: 'heats',
+//                                 options: {
+//                                     sort: {
+//                                         heatNr: 'asc'
+//                                     }
+//                                 },
+//                                 populate: {
+//                                     path: 'certificate',
+//                                 }
+//                             }
+//                         ]
+//                     }
+//                 }
+//             }
+//         ]
+//     }
+// ])
 
 
 

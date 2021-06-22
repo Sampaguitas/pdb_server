@@ -13,6 +13,9 @@ fs = require('fs');
 const moment = require('moment');
 const _ = require('lodash');
 
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 aws.config.update({
   accessKeyId: accessKeyId,
   secretAccessKey: secretAccessKey,

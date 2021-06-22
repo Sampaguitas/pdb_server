@@ -43,7 +43,8 @@ router.post('/', function (req, res) {
         },
         {
           path: 'picktickets',
-          match: { _id: { $in: pickticketIds} },
+          // match: { _id: { $in: pickticketIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : pickticketIds } : { $exists: true } },
           options: { sort: { pickNr: 'asc' } },
           populate: [
             {

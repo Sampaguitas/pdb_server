@@ -53,7 +53,8 @@ router.post('/', function (req, res) {
         },
         {
           path: 'pos',
-          match: { _id: { $in: poIds} },
+          // match: { _id: { $in: poIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : poIds } : { $exists: true } },
           options: { sort: { clPo: 'asc', clPoRev: 'asc', clPoItem: 'asc' } },
         }
       ])

@@ -48,12 +48,13 @@ router.post('/', function (req, res) {
         },
         {
           path: 'picktickets',
-          match: { _id: { $in: pickticketIds} },
-          // options: { sort: { pickNr: 'asc' } },
+          // match: { _id: { $in: pickticketIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : pickticketIds } : { $exists: true } },
           populate: [
             {
               path: 'pickitems',
-              match: { _id: { $in: pickitemIds} },
+              // match: { _id: { $in: pickitemIds} },
+              match: { _id: selectedIds.length > 0 ? { $in : pickitemIds } : { $exists: true } },
               populate: [
                 {
                     path: 'miritem',
@@ -69,7 +70,8 @@ router.post('/', function (req, res) {
                 },
                 {
                     path: 'whpackitems',
-                    match: { _id: { $in: whpackitemIds} },
+                    // match: { _id: { $in: whpackitemIds} },
+                    match: { _id: selectedIds.length > 0 ? { $in : whpackitemIds } : { $exists: true } },
                 }
               ]
             },

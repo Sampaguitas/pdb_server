@@ -46,11 +46,11 @@ router.post('/', function (req, res) {
         },
         {
           path: 'picktickets',
-          match: { _id: { $in: pickticketIds} },
+          // match: { _id: { $in: pickticketIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : pickticketIds } : { $exists: true } },
           populate: [
             {
               path: 'pickitems',
-              // match: { _id: { $in: pickitemIds} },
               populate: [
                 {
                   path: 'miritem',

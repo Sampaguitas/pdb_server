@@ -61,16 +61,19 @@ router.post('/', function (req, res) {
         },
         {
           path: 'pos',
-          match: { _id: { $in: poIds} },
+          // match: { _id: { $in: poIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : poIds } : { $exists: true } },
           options: { sort: { clPo: 'asc', clPoRev: 'asc', clPoItem: 'asc' } },
           populate: [
             {
               path: 'subs',
-              match: { _id: { $in: subIds} },
+              // match: { _id: { $in: subIds} },
+              match: { _id: selectedIds.length > 0 ? { $in : subIds } : { $exists: true } },
               populate: [
                 {
                   path: 'packitems',
-                  match: { _id: { $in: packitemIds} },
+                  // match: { _id: { $in: packitemIds} },
+                  match: { _id: selectedIds.length > 0 ? { $in : packitemIds } : { $exists: true } },
                   options: { sort: {  'plNr': 'asc', 'colliNr': 'asc' } }
                 },
                 {
@@ -90,7 +93,6 @@ router.post('/', function (req, res) {
               path: 'transactions',
               populate: {
                 path: 'location',
-                // match: { _id: { $in: locationIds} },
                 populate: {
                   path: 'area',
                   populate: {
@@ -103,12 +105,9 @@ router.post('/', function (req, res) {
         },
         {
           path: 'collipacks',
-          match: { _id: { $in: collipackIds} }
+          // match: { _id: { $in: collipackIds} }
+          match: { _id: selectedIds.length > 0 ? { $in : collipackIds } : { $exists: true } },
         },
-        // {
-        //   path: 'certificates',
-        //   match: { _id: { $in: subIds} }
-        // }
       ])
       .exec(async function(errProject, resProject) {
         if (errProject) {

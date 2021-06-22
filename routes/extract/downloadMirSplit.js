@@ -39,10 +39,12 @@ router.post('/', function (req, res) {
         },
         {
           path: 'mirs',
-          match: { _id: { $in: mirIds} },
+          // match: { _id: { $in: mirIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : mirIds } : { $exists: true } },
           populate: {
             path: 'miritems',
-            match: { _id: { $in: miritemIds} },
+            // match: { _id: { $in: miritemIds} },
+            match: { _id: selectedIds.length > 0 ? { $in : miritemIds } : { $exists: true } },
             options: { sort: { lineNr: 'asc' } },
             populate: {
               path: 'po'

@@ -38,7 +38,8 @@ router.post('/', function (req, res) {
         },
         {
           path: 'mirs',
-          match: { _id: { $in: mirIds} },
+          // match: { _id: { $in: mirIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : mirIds } : { $exists: true } },
           options: { sort: { mir: 'asc' } },
           populate: {
             path: 'miritems',

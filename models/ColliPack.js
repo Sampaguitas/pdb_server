@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const PackItem = require("../models/PackItem");
 
 //Create Schema
 const ColliPackSchema = new Schema({
@@ -131,13 +132,6 @@ const ColliPackSchema = new Schema({
         type: Number,
     }
 });
-
-// ColliPackSchema.virtual("packitems", {
-//     ref: "packitems",
-//     localField: [ "projectId", "plNr", "colliNr" ],
-//     foreignField: [ "projectId", "plNr", "colliNr" ],
-//     justOne: false
-// });
 
 ColliPackSchema.virtual("packitems", {
     ref: "packitems",

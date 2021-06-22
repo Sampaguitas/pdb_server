@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const PackItem = require('../../models/PackItem');
 const ColliPack = require('../../models/ColliPack');
 const Article = require('../../models/Article');
 const _ = require('lodash');
@@ -25,7 +24,7 @@ router.put('/', (req, res) => {
     } else {
 
         selectedIds.forEach(element => {
-            element.collipackId && !collipackIds.includes(element.collipackId) && collipackIds.push(new ObjectId(element.collipackId));
+            element.collipackId && !collipackIds.includes(new ObjectId(element.collipackId)) && collipackIds.push(new ObjectId(element.collipackId));
         });
 
         ColliPack.aggregate([
@@ -122,57 +121,6 @@ router.put('/', (req, res) => {
                 });
             }
         });
-
-
-        // PackItem.find({ collipackId: { $in: collipackIds} })
-        // .populate({
-        //     path: 'sub',
-        //     populate: {
-        //         path: 'po'
-        //     }
-        // })
-        // .exec(async function (err, packitems) {
-        //     if (err) {
-        //         res.status(400).json({ message: 'An error has occured.'});
-        //     } else {
-
-        //         packitems.map(function(packitem) {
-        //             itemsWeight.push(getweight(erp, packitem.pcs, packitem.mtrs, packitem.collipackId,  packitem.sub.po.uom, packitem.sub.po.vlArtNo, packitem.sub.po.vlArtNoX));
-        //         });
-
-        //         await Promise.all(itemsWeight).then(async resItemsWeight => {
-                    
-        //             let myCollis = resItemsWeight.reduce(function (acc, cur) {
-        //                 if (!cur.isRejected) {
-        //                    if (acc.hasOwnProperty([cur.collipackId])) {
-        //                     acc[cur.collipackId] += cur.weight;
-        //                    } else {
-        //                     acc[cur.collipackId] = cur.weight;
-        //                    }
-        //                 }
-        //                 return acc;
-        //             }, {});
-
-        //             Object.keys(myCollis).forEach(function (k) {
-        //                 collisWeight.push(setWeight(k, myCollis[k]));
-        //             });
-
-        //             await Promise.all(collisWeight).then(async resCollisWeight => {
-                        
-        //                 resCollisWeight.map(resColliWeight => {
-        //                     if (resColliWeight.isRejected) {
-        //                         nRejected++;
-        //                     } else {
-        //                         nEdited++;
-        //                     }
-        //                 });
-
-        //                 res.status(nRejected ? 400 : 200).json({ message: `${nEdited} items edited, ${nRejected} items rejected.`});
-
-        //             });
-        //         });
-        //     }
-        // });
     }
 
 });

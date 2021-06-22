@@ -37,7 +37,8 @@ router.post('/', function (req, res) {
         },
         {
           path: 'collipacks',
-          match: { _id: { $in: collipackIds} },
+          // match: { _id: { $in: collipackIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : collipackIds } : { $exists: true } },
           options: { sort: { plNr: 'asc', colliNr: 'asc' } },
         }
       ])

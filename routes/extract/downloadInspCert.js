@@ -45,15 +45,16 @@ router.post('/', function (req, res) {
         },
         {
           path: 'pos',
-          match: { _id: { $in: poIds} },
+          match: { _id: selectedIds.length > 0 ? { $in : poIds } : { $exists: true } },
           options: { sort: { clPo: 'asc', clPoRev: 'asc', clPoItem: 'asc' } },
           populate: [
             {
               path: 'subs',
-              match: { _id: { $in: subIds} },
+              match: { _id: selectedIds.length > 0 ? { $in : subIds } : { $exists: true } },
               populate: {
                 path: 'heats',
-                match: { _id: { $in: heatIds} },
+                match: { _id: selectedIds.length > 0 ? { $in : heatIds } : { $exists: true } },
+                // match: { _id: { $in: heatIds} },
                 populate: {
                   path: 'certificate'
                 }
@@ -61,10 +62,12 @@ router.post('/', function (req, res) {
             },
             {
               path: 'returns',
-              match: { _id: { $in: returnIds} },
+              match: { _id: selectedIds.length > 0 ? { $in : returnIds } : { $exists: true } },
+              // match: { _id: { $in: returnIds} },
               populate: {
                 path: 'heats',
-                match: { _id: { $in: heatIds} },
+                match: { _id: selectedIds.length > 0 ? { $in : heatIds } : { $exists: true } },
+                // match: { _id: { $in: heatIds} },
                 populate: {
                   path: 'certificate'
                 }

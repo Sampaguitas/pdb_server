@@ -107,14 +107,17 @@ function upsert (element) {
         let query = new ObjectId();
         let update = { $set: element };
         let options = { new: true, upsert: true };
+        console.log("upsert element:", element);
         // PackItem.findOneAndUpdate(query, update, options, function(err) {
         PackItem.findByIdAndUpdate(query, update, options, function(err) {
             if (err) {
+                console.log("upsert err:", err);
                 resolve({
                     isAdded: false,
                     isRejected: true,
                 });
             } else {
+                console.log("upsert success:");
                 resolve({
                     isAdded: true,
                     isRejected: false

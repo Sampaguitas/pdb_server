@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ColliPack = require('./ColliPack');
-const Po = require('../models/Po');
 const _ = require('lodash');
 
 //Create Schema
@@ -229,7 +227,6 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
         let filter = { "plNr": doc.plNr, "colliNr": doc.colliNr, "projectId": doc.projectId };
         let update = { "plNr": doc.plNr, "colliNr": doc.colliNr, "projectId": doc.projectId };
         let options = { "new": true, "upsert": true };
-        
         mongoose.model("collipacks").findOneAndUpdate(filter, update, options, () => next());
     }
 });

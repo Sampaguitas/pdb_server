@@ -64,7 +64,7 @@ router.put('/', async (req, res) => {
                 break
             case false:
                 //update first and update others (existing packitem)
-                PackItem.findByIdAndUpdate(packitemId, { $set: virtuals[0]})
+                PackItem.findByIdAndUpdate(packitemId, { $set: virtuals[0]}, { new: true, upsert: true }) // <---------------------
                 .then( async () => {
                     nEdited++;
                     if(virtuals.length === 1) {
@@ -103,8 +103,7 @@ router.put('/', async (req, res) => {
 module.exports = router;
 
 function upsert (element) {
-    return new Promise(function (resolve, reject) {
-        // let query = { _id: new ObjectId() }; new ObjectId()
+    return new Promise(function (resolve) {
         let query = new ObjectId();
         let update = { $set: element };
         let options = { new: true, upsert: true };

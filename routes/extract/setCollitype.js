@@ -43,14 +43,18 @@ router.put('/', (req, res) => {
             {
                 "$lookup": {
                     "from": "packitems",
-                    "let": { "collipack_projectId": "$projectId", "collipack_plNr": "$plNr", "collipack_colliNr": "$colliNr" },
+                    "let": { 
+                        "collipack_projectId": "$projectId", 
+                        "collipack_plNr": "$plNr", 
+                        "collipack_colliNr": "$colliNr" 
+                    },
                     "pipeline": [
                         { "$match":
                            { "$expr":
                               { "$and":
                                  [
                                    { "$eq": [ "$projectId",  "$$collipack_projectId" ] },
-                                   { "$eq": [ { "$toString": "$plNr" },  { "$toString": "$$collipack_plNr" } ] },
+                                   { "$eq": [ { "$toDouble": "$plNr" },  { "$toDouble": "$$collipack_plNr" } ] },
                                    { "$eq": [ "$colliNr",  "$$collipack_colliNr" ] },
                                  ]
                               }

@@ -108,7 +108,7 @@ router.get('/', function (req, res) {
                                     "$lookup": {
                                         "from": "packitems",
                                         "let": {
-                                            "collipack_plNr": { "$toDouble": "$plNr" },
+                                            "collipack_plNr": "$plNr",
                                             "collipack_colliNr": "$colliNr",
                                             "collipack_projectId": "$projectId"
                                         },
@@ -117,7 +117,7 @@ router.get('/', function (req, res) {
                                                 "$match": {
                                                     "$expr": {
                                                         "$and": [
-                                                            { "$eq": [ { "$toDouble": "$plNr" }, "$$collipack_plNr"] },
+                                                            { "$eq": [ { "$toDouble": "$plNr" }, { "$toDouble": "$$collipack_plNr" } ] },
                                                             { "$eq": [ "$colliNr", "$$collipack_colliNr"] },
                                                             { "$eq": [ "$projectId", "$$collipack_projectId"] },
                                                         ]

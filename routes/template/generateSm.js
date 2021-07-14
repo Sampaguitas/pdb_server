@@ -115,7 +115,7 @@ router.get('/', function (req, res) {
                                                 "$match": {
                                                     "$expr": {
                                                         "$and": [
-                                                            { "$eq": [ { "$toString": "$plNr" }, "$$collipack_plNr"] },
+                                                            { "$eq": [ { "$toDouble": "$plNr" }, { "$toDouble": "$$collipack_plNr" } ] },
                                                             { "$eq": [ "$colliNr", "$$collipack_colliNr"] },
                                                             { "$eq": [ "$projectId", "$$collipack_projectId"] },
                                                         ]

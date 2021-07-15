@@ -231,6 +231,18 @@ PackItemSchema.post('findOneAndUpdate', function(doc, next) {
     }
 });
 
+PackItemSchema.post('save', function(doc, next) {
+    if (!doc.plNr || !doc.colliNr || !doc.projectId) {
+        next();
+    } else {
+        
+        let filter = { "plNr": doc.plNr, "colliNr": doc.colliNr, "projectId": doc.projectId };
+        let update = { "plNr": doc.plNr, "colliNr": doc.colliNr, "projectId": doc.projectId };
+        let options = { "new": true, "upsert": true };
+        mongoose.model("collipacks").findOneAndUpdate(filter, update, options, () => next());
+    }
+});
+
 module.exports = PackItem = mongoose.model('packitems', PackItemSchema);
 
 function isUnique(packitem, noblank) {
